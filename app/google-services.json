@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "457174643063",
+    "project_id": "telgo-4d507",
+    "storage_bucket": "telgo-4d507.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457174643063:android:2d8bb7d80ea3a5bdb0f172",
+        "android_client_info": {
+          "package_name": "com.mbkm.telgo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQSru3CGCQsIrUxWWGcru5ZhzJZKJblVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
