@@ -18,6 +18,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
+
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.TelGO">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".HomeActivity"
             android:exported="true"
@@ -36,13 +47,13 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.TelGO">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-    </application>
 
+        <!-- Add the UploadProjectActivity we created earlier -->
+        <activity
+            android:name=".UploadProjectActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TelGO"/>
+    </application>
 
 </manifest>
