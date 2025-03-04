@@ -53,11 +53,14 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 return true
             }
             R.id.navigation_history -> {
-                // To be implemented later
+                // To be implemented later - History feature
+                // You can add code here to navigate to a History activity when it's implemented
                 return true
             }
             R.id.navigation_account -> {
-                // To be implemented later
+                // Navigate to ProfileActivity
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
                 return true
             }
         }
