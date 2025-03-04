@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Include this permission to grab user's general location -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- Include only if your app benefits from precise location access. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Include only if your app benefits from precise location access. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
 
     <application
         android:allowBackup="true"
@@ -18,42 +15,43 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
-
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.TelGO">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".HomeActivity"
             android:exported="true"
-            android:theme="@style/Theme.TelGO"/>
+            android:theme="@style/Theme.TelGO" />
         <activity
             android:name=".RegisterActivity"
             android:exported="true"
-            android:theme="@style/Theme.TelGO"/>
+            android:theme="@style/Theme.TelGO" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:theme="@style/Theme.TelGO"/>
-
+            android:theme="@style/Theme.TelGO" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.TelGO">
-        </activity>
-
-        <!-- Add the UploadProjectActivity we created earlier -->
+            android:theme="@style/Theme.TelGO" /> <!-- Add the UploadProjectActivity we created earlier -->
         <activity
             android:name=".UploadProjectActivity"
             android:exported="false"
-            android:theme="@style/Theme.TelGO"/>
+            android:theme="@style/Theme.TelGO" />
     </application>
 
 </manifest>
