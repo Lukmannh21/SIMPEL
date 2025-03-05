@@ -12,6 +12,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var btnLogout: Button
     private lateinit var btnUploadProject: Button
+    private lateinit var btnWitelSearch: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +22,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottomNavigationView = findViewById(R.id.bottomNavigation)
         btnLogout = findViewById(R.id.btnLogout)
         btnUploadProject = findViewById(R.id.btnUploadProject)
+        btnWitelSearch = findViewById(R.id.btnWitelSearch)
 
         // Set up bottom navigation
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
@@ -42,6 +44,12 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         // Set up upload project button click listener
         btnUploadProject.setOnClickListener {
             val intent = Intent(this, UploadProjectActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Set up witel search button click listener
+        btnWitelSearch.setOnClickListener {
+            val intent = Intent(this, WitelSearchActivity::class.java)
             startActivity(intent)
         }
     }

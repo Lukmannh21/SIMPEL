@@ -16,6 +16,12 @@
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
         <activity
+            android:name=".WitelDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WitelSearchActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditProfileActivity"
             android:exported="false" />
         <activity
