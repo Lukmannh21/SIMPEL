@@ -80,6 +80,19 @@
                         android:backgroundTint="@color/purple_500"
                         android:padding="12dp" />
 
+                    <!-- New Witel Search Button -->
+                    <Button
+                        android:id="@+id/btnWitelSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Witel Search"
+                        android:drawableStart="@android:drawable/ic_menu_search"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical|start"
+                        android:backgroundTint="@color/purple_500"
+                        android:padding="12dp"
+                        android:layout_marginTop="8dp" />
+
                     <!-- Other service buttons will be added later -->
 
                 </LinearLayout>
