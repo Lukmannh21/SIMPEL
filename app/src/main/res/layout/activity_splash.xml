@@ -7,17 +7,15 @@
     android:background="@color/white"
     tools:context=".SplashActivity">
 
-    <TextView
-        android:id="@+id/splash_text"
+    <!-- Logo ImageView -->
+    <ImageView
+        android:id="@+id/splash_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TelGO"
-        android:textSize="42sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/holo_red_dark"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:src="@drawable/logo"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
