@@ -1,0 +1,74 @@
+<HorizontalScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:scrollbars="horizontal">
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/teal_200"
+            android:padding="4dp">
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Site ID"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Witel"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Status"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Last Issue"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Koordinat"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Created At"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+        </TableRow>
+    </TableLayout>
+</HorizontalScrollView>
