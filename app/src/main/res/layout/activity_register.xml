@@ -28,6 +28,7 @@
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:layout_gravity="center"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="50dp"/>
 
     <!-- Name Input -->
@@ -140,6 +141,6 @@
         android:text="Already have an account? Sign in"
         android:textSize="14sp"
         android:layout_gravity="center"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="140dp"
         android:textColor="@android:color/black"/>
 </LinearLayout>

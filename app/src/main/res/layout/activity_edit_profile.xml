@@ -1,133 +1,217 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".EditProfileActivity">
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#F1F6FB"
+    tools:context=".RegisterActivity">
 
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="20dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="Back"
+        tools:ignore="HardcodedText" />
+
+    <!-- Title -->
     <TextView
-        android:id="@+id/tvEditProfileTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit Profile"
-        android:textSize="24sp"
+        android:text="Edit Profile Information"
+        android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textColor="@android:color/black"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        tools:ignore="HardcodedText" />
 
-    <ScrollView
+    <!--Account Identity Form-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Account Identity"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="5dp"
+        tools:ignore="HardcodedText" />
+
+    <!-- Full Name Input -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Full Name"
+        android:textColor="@android:color/black"
+        android:textSize="13sp"
+        android:layout_marginBottom="5dp"/>
+
+    <EditText
+        android:id="@+id/etFullName"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvEditProfileTitle">
+        android:layout_height="40dp"
+        android:background="@drawable/input_bg"
+        android:padding="10dp"
+        android:textSize="14sp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <!-- Date of Birth Input -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date of Birth"
+        android:textColor="@android:color/black"
+        android:textSize="13sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"/>
+
+    <EditText
+        android:id="@+id/etDateBirth"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/input_bg"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:inputType="textEmailAddress"/>
+
+    <!-- Witel Region -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Witel Region"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"/>
+
+    <EditText
+        android:id="@+id/etWitelRegion"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/input_bg"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:inputType="phone"/>
+
+    <!-- Site Location ID Input -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Site Location ID"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:id="@+id/etSiteLocationID"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/input_bg"
+        android:padding="10dp"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detail Info"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="5dp"/>
+
+    <!--Detail Info Form-->
+    <!-- Email Input -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:layout_marginBottom="5dp"/>
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/input_bg"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:inputType="textEmailAddress"/>
+
+    <!-- Password Input -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Password"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/input_bg"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="textPassword"
+            tools:ignore="Autofill,LabelFor" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Full Name"
-                android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/ivShowPassword"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_visibility"
+            android:contentDescription="Toggle Password Visibility"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
 
-            <EditText
-                android:id="@+id/etFullName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="16dp"
-                android:inputType="textPersonName"
-                android:hint="Enter your full name" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gender"
-                android:textStyle="bold" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
 
-            <RadioGroup
-                android:id="@+id/rgGender"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal">
+        <!-- Phone Input -->
+        <EditText
+            android:id="@+id/etPhone"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
+            android:importantForAutofill="no"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="phone"/>
 
-                <RadioButton
-                    android:id="@+id/rbMan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:text="Man" />
+        <!-- Save Button (Menimpa EditText) -->
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Save"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:backgroundTint="@color/red"
+            android:background="@drawable/btn_red"
+            android:textAllCaps="false"
+            android:gravity="center"/>
+    </FrameLayout>
 
-                <RadioButton
-                    android:id="@+id/rbWoman"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Woman" />
-            </RadioGroup>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Birth Date"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/etBirthDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="16dp"
-                android:inputType="none"
-                android:focusable="false"
-                android:hint="dd/mm/yyyy"
-                android:clickable="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Telephone"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/etPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="32dp"
-                android:inputType="phone"
-                android:hint="Enter your phone number" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <Button
-                    android:id="@+id/btnCancel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="Cancel"
-                    android:backgroundTint="@android:color/darker_gray" />
-
-                <Button
-                    android:id="@+id/btnSave"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="Save"
-                    android:backgroundTint="@color/design_default_color_primary" />
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
