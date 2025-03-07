@@ -13,6 +13,8 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var tvFullName: TextView
     private lateinit var tvGender: TextView
     private lateinit var tvBirthDate: TextView
+    private lateinit var tvWitelRegion: TextView
+    private lateinit var tvSiteId: TextView
     private lateinit var tvEmail: TextView
     private lateinit var tvPhone: TextView
     private lateinit var btnEditProfile: Button
@@ -32,6 +34,8 @@ class ProfileActivity : AppCompatActivity() {
         tvFullName = findViewById(R.id.tvFullName)
         tvGender = findViewById(R.id.tvGender)
         tvBirthDate = findViewById(R.id.tvBirthDate)
+        tvWitelRegion = findViewById(R.id.tvWitelRegion)
+        tvSiteId = findViewById(R.id.tvSiteId)
         tvEmail = findViewById(R.id.tvEmail)
         tvPhone = findViewById(R.id.tvPhone)
         btnEditProfile = findViewById(R.id.btnEditProfile)
@@ -68,11 +72,15 @@ class ProfileActivity : AppCompatActivity() {
                         val fullName = document.getString("fullName") ?: ""
                         val gender = document.getString("gender") ?: ""
                         val birthDate = document.getString("birthDate") ?: ""
+                        val witelRegion = document.getString("witelRegion") ?: ""
+                        val siteId = document.getString("siteId") ?: ""
                         val phone = document.getString("phone") ?: ""
 
                         tvFullName.text = if (fullName.isNotEmpty()) fullName else "Not set"
                         tvGender.text = if (gender.isNotEmpty()) gender else "Not set"
                         tvBirthDate.text = if (birthDate.isNotEmpty()) birthDate else "Not set"
+                        tvWitelRegion.text = if (witelRegion.isNotEmpty()) witelRegion else "Not set"
+                        tvSiteId.text = if (siteId.isNotEmpty()) siteId else "Not set"
                         tvPhone.text = if (phone.isNotEmpty()) phone else "Not set"
                     } else {
                         // No document found
@@ -95,6 +103,8 @@ class ProfileActivity : AppCompatActivity() {
         tvFullName.text = "Not set"
         tvGender.text = "Not set"
         tvBirthDate.text = "Not set"
+        tvWitelRegion.text = "Not set"
+        tvSiteId.text = "Not set"
         tvPhone.text = "Not set"
     }
 }
