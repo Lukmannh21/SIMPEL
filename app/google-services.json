@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "457174643063",
-    "project_id": "telgo-4d507",
-    "storage_bucket": "telgo-4d507.firebasestorage.app"
+    "project_number": "141669765257",
+    "project_id": "trackread-d4fa1",
+    "storage_bucket": "trackread-d4fa1.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:457174643063:android:2d8bb7d80ea3a5bdb0f172",
+        "mobilesdk_app_id": "1:141669765257:android:598c58683cfcd87f697658",
         "android_client_info": {
           "package_name": "com.mbkm.telgo"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCQSru3CGCQsIrUxWWGcru5ZhzJZKJblVM"
+          "current_key": "AIzaSyC99-aCkZ5uxkgx_BpiMRcovFcpPguZZTo"
         }
       ],
       "services": {
