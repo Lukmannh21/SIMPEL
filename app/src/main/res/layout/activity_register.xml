@@ -217,30 +217,4 @@
 
         <!-- Sign In Option -->
     </LinearLayout>
-
-
-    <!-- Sign Up Button -->
-    <Button
-        android:id="@+id/btnSignUp"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="20dp"
-        android:text="Sign up"
-        android:textSize="15sp"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:backgroundTint="@color/red"
-        android:background="@drawable/btn_red"/>
-
-    <!-- Sign In Option -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="150dp"
-        android:textColor="@android:color/black"
-        android:textSize="14sp" />
-</LinearLayout>
-
 </ScrollView>
-
