@@ -23,7 +23,7 @@ class ImagesAdapter(
 
             // If image is null, display placeholder
             if (image.path == null) {
-                thumbnailImageView.setImageResource(R.drawable.ic_arrow_back) // Placeholder
+                thumbnailImageView.setImageResource(R.drawable.ic_image_placeholder) // Placeholder
                 thumbnailImageView.alpha = 0.5f
             } else {
                 // Load image from Firebase Storage using Glide
@@ -34,8 +34,8 @@ class ImagesAdapter(
                 imageRef.downloadUrl.addOnSuccessListener { uri ->
                     Glide.with(itemView.context)
                         .load(uri)
-                        .placeholder(R.drawable.ic_visibility)
-                        .error(R.drawable.ic_visibility)
+                        .placeholder(R.drawable.ic_image_loading)
+                        .error(R.drawable.ic_image_error)
                         .into(thumbnailImageView)
                 }.addOnFailureListener {
                     thumbnailImageView.setImageResource(R.drawable.ic_visibility)
