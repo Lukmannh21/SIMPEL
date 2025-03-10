@@ -1,63 +1,59 @@
 package com.mbkm.telgo
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 class EditProfileActivity : AppCompatActivity() {
     private lateinit var etFullName: EditText
-    private lateinit var rgGender: RadioGroup
-    private lateinit var rbMan: RadioButton
-    private lateinit var rbWoman: RadioButton
-    private lateinit var etBirthDate: EditText
+    private lateinit var etNIK: EditText
+    private lateinit var etCompanyName: EditText
+    private lateinit var etUnit: EditText
+    private lateinit var etPosition: EditText
+    private lateinit var etEmail: EditText
     private lateinit var etPhone: EditText
+    private lateinit var etPassword: EditText
     private lateinit var btnSave: Button
-    private lateinit var btnCancel: Button
+    private lateinit var btnBack: ImageView
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
-    private val calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-        // Initialize Firebase components
+        // Initialize Firebase
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
         // Initialize UI components
         etFullName = findViewById(R.id.etFullName)
-        rgGender = findViewById(R.id.rgGender)
-        rbMan = findViewById(R.id.rbMan)
-        rbWoman = findViewById(R.id.rbWoman)
-        etBirthDate = findViewById(R.id.etBirthDate)
+        etNIK = findViewById(R.id.etNIK)
+        etCompanyName = findViewById(R.id.etCompanyName)
+        etUnit = findViewById(R.id.etUnit)
+        etPosition = findViewById(R.id.etPosition)
+        etEmail = findViewById(R.id.etEmail)
         etPhone = findViewById(R.id.etPhone)
+        etPassword = findViewById(R.id.etPassword)
         btnSave = findViewById(R.id.btnSave)
-        btnCancel = findViewById(R.id.btnCancel)
+        btnBack = findViewById(R.id.btnBack)
 
         // Load current user data
         loadUserData()
 
-        // Setup date picker
-        setupDatePicker()
-
-        // Setup button click listeners
+        // Save button listener
         btnSave.setOnClickListener {
             saveUserData()
         }
 
-        btnCancel.setOnClickListener {
+        // Back button listener
+        btnBack.setOnClickListener {
             finish()
         }
     }
@@ -71,79 +67,37 @@ class EditProfileActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
-                        // Set fields with existing data
-                        val fullName = document.getString("fullName") ?: ""
-                        val gender = document.getString("gender") ?: ""
-                        val birthDate = document.getString("birthDate") ?: ""
-                        val phone = document.getString("phone") ?: ""
-
-                        etFullName.setText(fullName)
-
-                        when (gender) {
-                            "Man" -> rbMan.isChecked = true
-                            "Woman" -> rbWoman.isChecked = true
-                        }
-
-                        etBirthDate.setText(birthDate)
-                        etPhone.setText(phone)
+                        etFullName.setText(document.getString("fullName") ?: "")
+                        etNIK.setText(document.getString("nik") ?: "")
+                        etCompanyName.setText(document.getString("companyName") ?: "")
+                        etUnit.setText(document.getString("unit") ?: "")
+                        etPosition.setText(document.getString("position") ?: "")
+                        etEmail.setText(document.getString("email") ?: "")
+                        etPhone.setText(document.getString("phone") ?: "")
                     }
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error loading profile: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         } else {
-            // User not logged in, finish activity
             finish()
         }
-    }
-
-    private fun setupDatePicker() {
-        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-            calendar.set(Calendar.YEAR, year)
-            calendar.set(Calendar.MONTH, monthOfYear)
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            updateDateInView()
-        }
-
-        etBirthDate.setOnClickListener {
-            DatePickerDialog(
-                this, dateSetListener,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-    }
-
-    private fun updateDateInView() {
-        val format = "dd/MM/yyyy"
-        val sdf = SimpleDateFormat(format, Locale.getDefault())
-        etBirthDate.setText(sdf.format(calendar.time))
     }
 
     private fun saveUserData() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val userId = currentUser.uid
-            val fullName = etFullName.text.toString().trim()
-            val gender = when (rgGender.checkedRadioButtonId) {
-                R.id.rbMan -> "Man"
-                R.id.rbWoman -> "Woman"
-                else -> ""
-            }
-            val birthDate = etBirthDate.text.toString().trim()
-            val phone = etPhone.text.toString().trim()
-
-            // Create user data hashmap
             val userData = hashMapOf(
-                "fullName" to fullName,
-                "gender" to gender,
-                "birthDate" to birthDate,
-                "phone" to phone,
-                "email" to currentUser.email // Store email in Firestore as well
+                "fullName" to etFullName.text.toString().trim(),
+                "nik" to etNIK.text.toString().trim(),
+                "companyName" to etCompanyName.text.toString().trim(),
+                "unit" to etUnit.text.toString().trim(),
+                "position" to etPosition.text.toString().trim(),
+                "email" to etEmail.text.toString().trim(),
+                "phone" to etPhone.text.toString().trim()
             )
 
-            // Save to Firestore
             firestore.collection("users").document(userId)
                 .set(userData)
                 .addOnSuccessListener {
