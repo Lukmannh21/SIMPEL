@@ -101,14 +101,5 @@
             android:textColor="@android:color/holo_red_dark"
             android:layout_marginTop="4dp"/>
 
-        <TextView
-            android:id="@+id/signUpTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New to TelGo? Sign up"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginTop="107dp"/>
-
     </LinearLayout>
 </ScrollView>
