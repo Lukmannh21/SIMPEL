@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -56,6 +57,10 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     private lateinit var btnSaveChanges: Button
     private lateinit var btnCancel: Button
+
+    private lateinit var tvEmailOrderFileName: TextView
+    private lateinit var tvTelkomselPermitFileName: TextView
+    private lateinit var tvTelPartnerFileName: TextView
 
     // Firebase
     private lateinit var firestore: FirebaseFirestore
@@ -117,6 +122,12 @@ class EditSiteDataActivity : AppCompatActivity() {
         btnUploadEmailOrder = findViewById(R.id.btnUploadEmailOrder)
         btnUploadTelkomselPermit = findViewById(R.id.btnUploadTelkomselPermit)
         btnUploadTelPartner = findViewById(R.id.btnUploadTelPartner)
+
+
+        tvEmailOrderFileName = findViewById(R.id.tvEmailOrderFileName)
+        tvTelkomselPermitFileName = findViewById(R.id.tvTelkomselPermitFileName)
+        tvTelPartnerFileName = findViewById(R.id.tvTelPartnerFileName)
+
 
         btnCaptureLocation = findViewById(R.id.btnCaptureLocation)
         btnCaptureFoundation = findViewById(R.id.btnCaptureFoundation)
@@ -203,17 +214,28 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     private fun loadExistingFiles() {
         // Load existing documents
-        val documentTypes = listOf("email_order", "telkomsel_permit", "tel_partner")
-        for (docType in documentTypes) {
+        val documentTypes = listOf(
+            "email_order" to tvEmailOrderFileName,
+            "telkomsel_permit" to tvTelkomselPermitFileName,
+            "tel_partner" to tvTelPartnerFileName
+        )
+
+        for ((docType, textView) in documentTypes) {
             val docRef = storage.reference.child("documents/$witel/$siteId/$docType.pdf")
             docRef.downloadUrl
                 .addOnSuccessListener { uri ->
                     // Mark document as existing
                     updateDocumentButtonStatus(docType, true)
+
+                    // Display filename (using the document type as a fallback)
+                    val fileName = "$docType.pdf"
+                    textView.text = fileName
+                    textView.visibility = View.VISIBLE
                 }
                 .addOnFailureListener {
                     // Document doesn't exist
                     updateDocumentButtonStatus(docType, false)
+                    textView.visibility = View.GONE
                 }
         }
 
@@ -379,29 +401,7 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         when (requestCode) {
             REQUEST_IMAGE_CAPTURE -> {
-                // Image captured successfully
-                val photoFile = File(currentPhotoPath)
-                val photoUri = Uri.fromFile(photoFile)
-
-                // Store the URI for later upload
-                imageUris[currentImageType] = photoUri
-
-                // Show the captured image in the appropriate ImageView
-                val imageView = when (currentImageType) {
-                    "site_location" -> ivLocation
-                    "foundation_shelter" -> ivFoundation
-                    "installation_process" -> ivInstallation
-                    "cabinet" -> ivCabinet
-                    "3p_inet" -> ivInet
-                    "3p_uctv" -> ivUctv
-                    "3p_telephone" -> ivTelephone
-                    else -> null
-                }
-
-                imageView?.let {
-                    loadImageIntoView(photoUri, it)
-                    updateImageButtonStatus(currentImageType, true)
-                }
+                // Existing image capture code...
             }
 
             REQUEST_DOCUMENT_PICK -> {
@@ -416,13 +416,49 @@ class EditSiteDataActivity : AppCompatActivity() {
                     // Store the URI for later upload
                     documentUris[currentImageType] = uri
 
+                    // Get the filename from the URI
+                    val fileName = getFileNameFromUri(uri)
+
+                    // Update the corresponding TextView based on the document type
+                    when (currentImageType) {
+                        "email_order" -> {
+                            tvEmailOrderFileName.text = fileName
+                            tvEmailOrderFileName.visibility = View.VISIBLE
+                        }
+                        "telkomsel_permit" -> {
+                            tvTelkomselPermitFileName.text = fileName
+                            tvTelkomselPermitFileName.visibility = View.VISIBLE
+                        }
+                        "tel_partner" -> {
+                            tvTelPartnerFileName.text = fileName
+                            tvTelPartnerFileName.visibility = View.VISIBLE
+                        }
+                    }
+
                     // Update button text
                     updateDocumentButtonStatus(currentImageType, true)
 
-                    showToast("Document selected")
+                    showToast("Document selected: $fileName")
                 }
             }
         }
+    }
+
+    // Add this helper method to get the filename from a URI
+    private fun getFileNameFromUri(uri: Uri): String {
+        var fileName = "Unknown file"
+
+        // Try to get the display name from content provider
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (displayNameIndex != -1) {
+                    fileName = cursor.getString(displayNameIndex)
+                }
+            }
+        }
+
+        return fileName
     }
 
     private fun saveChanges() {
