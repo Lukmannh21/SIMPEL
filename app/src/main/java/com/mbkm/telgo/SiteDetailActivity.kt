@@ -154,14 +154,20 @@ class SiteDetailActivity : AppCompatActivity() {
             val docRef = storage.reference.child("documents/$witel/$siteId/$docType.pdf")
             docRef.metadata
                 .addOnSuccessListener {
-                    // Document exists
-                    documentsList.add(DocumentModel(docName, docType, docRef.path))
-                    documentsAdapter.notifyDataSetChanged()
+                    // Only update the adapter if the activity is still active
+                    if (!isFinishing && !isDestroyed) {
+                        // Document exists
+                        documentsList.add(DocumentModel(docName, docType, docRef.path))
+                        documentsAdapter.notifyDataSetChanged()
+                    }
                 }
                 .addOnFailureListener {
-                    // Document doesn't exist (null)
-                    documentsList.add(DocumentModel(docName, docType, null))
-                    documentsAdapter.notifyDataSetChanged()
+                    // Only update the adapter if the activity is still active
+                    if (!isFinishing && !isDestroyed) {
+                        // Document doesn't exist (null)
+                        documentsList.add(DocumentModel(docName, docType, null))
+                        documentsAdapter.notifyDataSetChanged()
+                    }
                 }
         }
     }
@@ -185,16 +191,54 @@ class SiteDetailActivity : AppCompatActivity() {
             val imageRef = storage.reference.child("images/$witel/$siteId/$imageType.jpg")
             imageRef.metadata
                 .addOnSuccessListener {
-                    // Image exists
-                    imagesList.add(ImageModel(imageName, imageType, imageRef.path))
-                    imagesAdapter.notifyDataSetChanged()
+                    // Only update the adapter if the activity is still active
+                    if (!isFinishing && !isDestroyed) {
+                        // Image exists
+                        imagesList.add(ImageModel(imageName, imageType, imageRef.path))
+                        imagesAdapter.notifyDataSetChanged()
+                    }
                 }
                 .addOnFailureListener {
-                    // Image doesn't exist (null)
-                    imagesList.add(ImageModel(imageName, imageType, null))
-                    imagesAdapter.notifyDataSetChanged()
+                    // Only update the adapter if the activity is still active
+                    if (!isFinishing && !isDestroyed) {
+                        // Image doesn't exist (null)
+                        imagesList.add(ImageModel(imageName, imageType, null))
+                        imagesAdapter.notifyDataSetChanged()
+                    }
                 }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // If you've added the onStart method to ImagesAdapter as suggested earlier
+        if (::imagesAdapter.isInitialized) {
+            (imagesAdapter as? ImagesAdapter)?.let { adapter ->
+                // Check if the adapter has an onStart method
+                try {
+                    val method = adapter.javaClass.getMethod("onStart", android.app.Activity::class.java)
+                    method.invoke(adapter, this)
+                } catch (e: NoSuchMethodException) {
+                    // Method doesn't exist, which is fine if you haven't added it yet
+                }
+            }
+        }
+    }
+
+    override fun onStop() {
+        // If you've added the onStop method to ImagesAdapter as suggested earlier
+        if (::imagesAdapter.isInitialized) {
+            (imagesAdapter as? ImagesAdapter)?.let { adapter ->
+                // Check if the adapter has an onStop method
+                try {
+                    val method = adapter.javaClass.getMethod("onStop")
+                    method.invoke(adapter)
+                } catch (e: NoSuchMethodException) {
+                    // Method doesn't exist, which is fine if you haven't added it yet
+                }
+            }
+        }
+        super.onStop()
     }
 
     override fun onResume() {
@@ -205,5 +249,13 @@ class SiteDetailActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
+    }
+
+    // Clear any pending callbacks to prevent crashes when activity is destroyed
+    override fun onDestroy() {
+        // Cancel any Firebase callbacks if needed
+        imagesList.clear()
+        documentsList.clear()
+        super.onDestroy()
     }
 }
