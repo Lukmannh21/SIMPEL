@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@android:drawable/ic_menu_agenda"
+            android:tint="@color/purple_500"/>
+
+        <TextView
+            android:id="@+id/tvDocumentName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Document Name"
+            android:layout_marginStart="8dp"
+            android:textSize="14sp"/>
+
+        <Button
+            android:id="@+id/btnViewDocument"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="View PDF"
+            android:textSize="12sp"
+            android:textAllCaps="false"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
