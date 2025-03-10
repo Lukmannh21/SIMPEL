@@ -2,14 +2,17 @@ package com.mbkm.telgo
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
-import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class EditProfileActivity : AppCompatActivity() {
     private lateinit var etFullName: EditText
@@ -17,8 +20,6 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var rbMan: RadioButton
     private lateinit var rbWoman: RadioButton
     private lateinit var etBirthDate: EditText
-    private lateinit var witelRegionDropdown: MaterialAutoCompleteTextView
-    private lateinit var etSiteId: EditText
     private lateinit var etPhone: EditText
     private lateinit var btnSave: Button
     private lateinit var btnCancel: Button
@@ -26,12 +27,6 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private val calendar = Calendar.getInstance()
-
-    // Witel options
-    private val witelOptions = listOf(
-        "ACEH", "BABEL", "BENGKULU", "JAMBI", "LAMPUNG",
-        "RIDAR", "RIKEP", "SUMBAR", "SUMSEL", "SUMUT"
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,15 +42,9 @@ class EditProfileActivity : AppCompatActivity() {
         rbMan = findViewById(R.id.rbMan)
         rbWoman = findViewById(R.id.rbWoman)
         etBirthDate = findViewById(R.id.etBirthDate)
-        witelRegionDropdown = findViewById(R.id.witelRegionDropdown)
-        etSiteId = findViewById(R.id.etSiteId)
         etPhone = findViewById(R.id.etPhone)
         btnSave = findViewById(R.id.btnSave)
         btnCancel = findViewById(R.id.btnCancel)
-
-        // Set up dropdown for Witel Region
-        val adapter = ArrayAdapter(this, R.layout.dropdown_item, witelOptions)
-        witelRegionDropdown.setAdapter(adapter)
 
         // Load current user data
         loadUserData()
@@ -86,20 +75,17 @@ class EditProfileActivity : AppCompatActivity() {
                         val fullName = document.getString("fullName") ?: ""
                         val gender = document.getString("gender") ?: ""
                         val birthDate = document.getString("birthDate") ?: ""
-                        val witelRegion = document.getString("witelRegion") ?: ""
-                        val siteId = document.getString("siteId") ?: ""
                         val phone = document.getString("phone") ?: ""
 
                         etFullName.setText(fullName)
-                        etBirthDate.setText(birthDate)
-                        witelRegionDropdown.setText(witelRegion)
-                        etSiteId.setText(siteId)
-                        etPhone.setText(phone)
 
                         when (gender) {
                             "Man" -> rbMan.isChecked = true
                             "Woman" -> rbWoman.isChecked = true
                         }
+
+                        etBirthDate.setText(birthDate)
+                        etPhone.setText(phone)
                     }
                 }
                 .addOnFailureListener { e ->
@@ -146,8 +132,6 @@ class EditProfileActivity : AppCompatActivity() {
                 else -> ""
             }
             val birthDate = etBirthDate.text.toString().trim()
-            val witelRegion = witelRegionDropdown.text.toString().trim()
-            val siteId = etSiteId.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
             // Create user data hashmap
@@ -155,15 +139,13 @@ class EditProfileActivity : AppCompatActivity() {
                 "fullName" to fullName,
                 "gender" to gender,
                 "birthDate" to birthDate,
-                "witelRegion" to witelRegion,
-                "siteId" to siteId,
                 "phone" to phone,
-                "updatedAt" to "2025-03-07 01:54:39" // Use the provided current date/time
+                "email" to currentUser.email // Store email in Firestore as well
             )
 
             // Save to Firestore
             firestore.collection("users").document(userId)
-                .update(userData as Map<String, Any>)
+                .set(userData)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
                     finish()
