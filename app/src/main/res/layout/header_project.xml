@@ -47,7 +47,7 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Last Issue"
+                android:text="Last Issues"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:textColor="@color/white"/>

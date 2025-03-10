@@ -7,13 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <!-- Top Bar with Logout Button -->
+    <!-- Toolbar (Top Bar) -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/purple_500"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <TextView
             android:layout_width="wrap_content"
@@ -21,23 +22,25 @@
             android:text="TelGO"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginStart="16dp"/>
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginEnd="16dp"
             android:text="Logout"
             android:textColor="@android:color/white"
-            android:backgroundTint="@android:color/transparent" />
+            android:backgroundTint="@android:color/transparent"
+            android:padding="8dp"/>
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Main Content -->
-    <ScrollView
+    <!-- Kontainer ScrollView untuk konten utama -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation">
 
@@ -47,7 +50,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- TelGO Service Section -->
+            <!-- Section Header -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,6 +59,7 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
 
+            <!-- CardView untuk Tombol -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,9 +82,10 @@
                         android:drawablePadding="8dp"
                         android:gravity="center_vertical|start"
                         android:backgroundTint="@color/purple_500"
-                        android:padding="12dp" />
+                        android:textColor="@android:color/white"
+                        android:padding="12dp"/>
 
-                    <!-- Tombol Pencarian Witel (Tambahan agar tidak error) -->
+                    <!-- Tombol Pencarian Witel -->
                     <Button
                         android:id="@+id/btnWitelSearch"
                         android:layout_width="match_parent"
@@ -92,21 +97,27 @@
                         android:backgroundTint="@color/teal_700"
                         android:textColor="@android:color/white"
                         android:padding="12dp"
-                        android:layout_marginTop="8dp" />
-
+                        android:layout_marginTop="8dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Placeholder for future content -->
+            <!-- RecyclerView untuk daftar proyek -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:padding="8dp"/>
+
+            <!-- Placeholder untuk fitur mendatang -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="More features coming soon..."
                 android:textAlignment="center"
-                android:layout_marginTop="24dp" />
-
+                android:layout_marginTop="24dp"/>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -115,6 +126,6 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
