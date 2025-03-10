@@ -31,11 +31,16 @@ class ImagesAdapter(
                 // Fix: Use the non-null path after null check
                 val imageRef = storage.reference.child(image.path!!) // Add !! to assert non-null
 
-                Glide.with(itemView.context)
-                    .load(imageRef)
-                    .placeholder(R.drawable.ic_visibility) // Image buat loading nya
-                    .error(R.drawable.ic_visibility) // image buat kalo ada error
-                    .into(thumbnailImageView)
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    Glide.with(itemView.context)
+                        .load(uri)
+                        .placeholder(R.drawable.ic_visibility)
+                        .error(R.drawable.ic_visibility)
+                        .into(thumbnailImageView)
+                }.addOnFailureListener {
+                    thumbnailImageView.setImageResource(R.drawable.ic_visibility)
+                }
+
 
                 // Setup click listener to show full image
                 thumbnailImageView.setOnClickListener {
@@ -61,9 +66,12 @@ class ImagesAdapter(
             val storage = FirebaseStorage.getInstance()
             val imageRef = storage.reference.child(image.path!!) // Add !! for non-null assertion
 
-            Glide.with(itemView.context)
-                .load(imageRef)
-                .into(fullImageView)
+            imageRef.downloadUrl.addOnSuccessListener { uri ->
+                Glide.with(itemView.context)
+                    .load(uri)
+                    .into(fullImageView)
+            }
+
 
             closeButton.setOnClickListener {
                 dialog.dismiss()
