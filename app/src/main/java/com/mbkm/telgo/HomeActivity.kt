@@ -4,8 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -13,60 +17,75 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var btnLogout: Button
     private lateinit var btnUploadProject: Button
     private lateinit var btnWitelSearch: Button
+    private lateinit var recyclerViewDashboard: RecyclerView
+    private lateinit var projectAdapter: ProjectAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        // Initialize UI components
+        // Inisialisasi komponen UI
         bottomNavigationView = findViewById(R.id.bottomNavigation)
         btnLogout = findViewById(R.id.btnLogout)
         btnUploadProject = findViewById(R.id.btnUploadProject)
         btnWitelSearch = findViewById(R.id.btnWitelSearch)
+        recyclerViewDashboard = findViewById(R.id.recyclerViewDashboard)
 
-        // Set up bottom navigation
+        // Set listener navigasi bawah
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
-
-        // Set default selected item
         bottomNavigationView.selectedItemId = R.id.navigation_home
 
-        // Set up logout button click listener
+        // Tombol logout
         btnLogout.setOnClickListener {
-            // For now, just go back to login screen
-            // In a real app, you would clear user session data first
             val intent = Intent(this, LoginActivity::class.java)
-            // Clear back stack so user can't go back to HomeActivity after logout
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
 
-        // Set up upload project button click listener
+        // Tombol upload proyek
         btnUploadProject.setOnClickListener {
             val intent = Intent(this, UploadProjectActivity::class.java)
             startActivity(intent)
         }
 
-        // Set up witel search button click listener
+        // Tombol pencarian witel
         btnWitelSearch.setOnClickListener {
             val intent = Intent(this, WitelSearchActivity::class.java)
             startActivity(intent)
         }
+
+        // Setup RecyclerView untuk daftar proyek
+        recyclerViewDashboard.layoutManager = LinearLayoutManager(this)
+        projectAdapter = ProjectAdapter()
+        recyclerViewDashboard.adapter = projectAdapter
+
+        // Load data proyek dari Firestore
+        loadProjects()
+    }
+
+    private fun loadProjects() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("projects")
+            .get()
+            .addOnSuccessListener { result ->
+                val projectList = mutableListOf<ProjectModel>()
+                for (document in result) {
+                    val project = document.toObject(ProjectModel::class.java)
+                    projectList.add(project)
+                }
+                projectAdapter.setProjects(projectList)
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "Gagal memuat data: ${exception.message}", Toast.LENGTH_LONG).show()
+            }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.navigation_home -> {
-                // Already on home, do nothing
-                return true
-            }
-            R.id.navigation_history -> {
-                // To be implemented later - History feature
-                // You can add code here to navigate to a History activity when it's implemented
-                return true
-            }
+            R.id.navigation_home -> return true
+            R.id.navigation_history -> return true
             R.id.navigation_account -> {
-                // Navigate to ProfileActivity
                 val intent = Intent(this, ProfileActivity::class.java)
                 startActivity(intent)
                 return true
