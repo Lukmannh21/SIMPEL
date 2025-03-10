@@ -3,7 +3,7 @@
     <!-- Ubah tema utama menjadi turunan dari MaterialComponents -->
     <style name="Theme.TelGO" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimary">@color/red</item>
         <item name="colorPrimaryDark">@color/purple_700</item>
         <item name="colorAccent">@color/teal_200</item>
         <!-- Status bar color. -->
