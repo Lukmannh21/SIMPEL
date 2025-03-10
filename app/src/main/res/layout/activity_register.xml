@@ -1,124 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp"
     android:background="@android:color/white"
     tools:context=".RegisterActivity">
 
-    <!-- Back Button -->
-    <ImageView
-        android:id="@+id/btnBack"
-        android:layout_width="20dp"
-        android:layout_height="40dp"
-        android:src="@drawable/ic_arrow_back"
-        android:layout_marginBottom="10dp"
-        android:contentDescription="Back" />
-
-    <!-- Title -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create account"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_gravity="center"
-        android:layout_marginBottom="50dp"/>
-
-    <!-- Name Input -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Name"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:layout_marginBottom="5dp"/>
-
-    <EditText
-        android:id="@+id/etName"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/input_bg"
-        android:padding="10dp"
-        android:textSize="14sp"/>
-
-    <!-- Email Input -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
-
-    <EditText
-        android:id="@+id/etEmail"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/input_bg"
-        android:padding="10dp"
-        android:textSize="14sp"
-        android:inputType="textEmailAddress"/>
-
-    <!-- Phone Input -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No. Telepon"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
-
-    <EditText
-        android:id="@+id/etPhone"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/input_bg"
-        android:padding="10dp"
-        android:textSize="14sp"
-        android:inputType="phone"/>
-
-    <!-- Password Input -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Password"
-        android:textSize="14sp"
-        android:textColor="@android:color/black"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/input_bg"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Back Button -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="20dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_arrow_back"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="Back" />
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create account"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_gravity="center"
+            android:layout_marginBottom="30dp"/>
+
+        <!-- Name Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"/>
 
         <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
             android:padding="10dp"
             android:textSize="14sp"
-            android:inputType="textPassword"/>
+            android:inputType="textPersonName"
+            android:layout_marginBottom="10dp"/>
 
-        <ImageView
-            android:id="@+id/ivShowPassword"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:padding="5dp"
-            android:src="@drawable/ic_visibility"
-            android:contentDescription="Toggle Password Visibility"/>
+        <!-- NIK Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NIK"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:id="@+id/etNik"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="number"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Email Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="textEmailAddress"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Phone Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone Number"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:id="@+id/etPhone"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="phone"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Company Name Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Company Name"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:id="@+id/etCompanyName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="text"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Unit Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Unit"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:id="@+id/etUnit"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="text"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Position Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Position"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:id="@+id/etPosition"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="text"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Password Input -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="5dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/input_bg"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="20dp">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:textSize="14sp"
+                android:inputType="textPassword"
+                android:background="@null"/>
+
+            <ImageView
+                android:id="@+id/ivShowPassword"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_visibility"
+                android:contentDescription="Toggle Password Visibility"/>
+        </LinearLayout>
+
+        <!-- Sign Up Button -->
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Sign up"
+            android:textSize="15sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:backgroundTint="@color/red"
+            android:background="@drawable/btn_red"/>
+
+        <!-- Sign In Option -->
+        <TextView
+            android:id="@+id/tvSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already have an account? Sign in"
+            android:textSize="14sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:textColor="@android:color/black"/>
     </LinearLayout>
+
 
     <!-- Sign Up Button -->
     <Button
@@ -142,3 +250,6 @@
         android:textColor="@android:color/black"
         android:textSize="14sp" />
 </LinearLayout>
+
+</ScrollView>
+
