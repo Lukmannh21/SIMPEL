@@ -175,8 +175,17 @@
                     android:id="@+id/btnUploadEmailOrder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Upload Document"
-                    android:layout_marginBottom="8dp"/>
+                    android:text="Upload Document"/>
+
+                <TextView
+                    android:id="@+id/tvEmailOrderFileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -188,8 +197,17 @@
                     android:id="@+id/btnUploadTelkomselPermit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Upload Document"
-                    android:layout_marginBottom="8dp"/>
+                    android:text="Upload Document"/>
+
+                <TextView
+                    android:id="@+id/tvTelkomselPermitFileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -202,6 +220,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Upload Document"/>
+
+                <TextView
+                    android:id="@+id/tvTelPartnerFileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
