@@ -1,5 +1,6 @@
 package com.mbkm.telgo
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -86,8 +87,14 @@ class WitelDetailActivity : AppCompatActivity() {
         // Initialize site list with click listener to focus map on selected site
         siteList = arrayListOf()
         siteAdapter = SiteAdapter(siteList) { site ->
-            // When a site is clicked, focus the map on its location
+            // When a site is clicked, either focus the map or navigate to detail view
             focusMapOnSite(site)
+
+            // Navigate to SiteDetailActivity
+            val intent = Intent(this, SiteDetailActivity::class.java)
+            intent.putExtra("SITE_ID", site.siteId)
+            intent.putExtra("WITEL", site.witel)
+            startActivity(intent)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)

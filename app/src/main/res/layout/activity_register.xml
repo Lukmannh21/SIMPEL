@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
-
-<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -34,52 +28,26 @@
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="30dp"/>
+        android:layout_marginBottom="50dp"/>
 
-    <!-- Full Name -->
+    <!-- Name Input -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Full Name"
+        android:text="Name"
         android:textColor="@android:color/black"
         android:textSize="14sp"
         android:layout_marginBottom="5dp"/>
 
-    <!-- Full Name Input -->
     <EditText
-        android:id="@+id/etFullName"
+        android:id="@+id/etName"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:background="@drawable/input_bg"
         android:padding="10dp"
-        android:textSize="14sp"
-        android:hint="Enter your full name"
-        android:inputType="text"/>
+        android:textSize="14sp"/>
 
-    <!-- NIK -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="NIK"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
-
-    <!-- NIK Input -->
-    <EditText
-        android:id="@+id/etNIK"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/input_bg"
-        android:padding="10dp"
-        android:textSize="14sp"
-        android:hint="Enter your NIK"
-        android:maxLength="16"
-        android:inputType="number"/>
-
-    <!-- Email -->
+    <!-- Email Input -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,105 +57,35 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"/>
 
-    <!-- Email Input -->
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:background="@drawable/input_bg"
         android:padding="10dp"
         android:textSize="14sp"
-        android:inputType="textEmailAddress"
-        android:hint="Enter your email"
-        android:importantForAutofill="yes"/>
+        android:inputType="textEmailAddress"/>
 
-    <!-- Phone -->
+    <!-- Phone Input -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Phone Number"
+        android:text="No. Telepon"
         android:textColor="@android:color/black"
         android:textSize="14sp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"/>
 
-    <!-- Phone Input -->
     <EditText
         android:id="@+id/etPhone"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:background="@drawable/input_bg"
         android:padding="10dp"
         android:textSize="14sp"
-        android:inputType="phone"
-        android:digits="0123456789"
-        android:maxLength="15"
-        android:hint="Enter your phone number"/>
+        android:inputType="phone"/>
 
-    <!-- Company Name -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Company Name"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
-
-    <!-- Company Name Input -->
-    <EditText
-        android:id="@+id/etCompanyName"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/input_bg"
-        android:hint="Enter your company name"
-        android:inputType="text"
-        android:padding="10dp"
-        android:textSize="14sp" />
-
-    <!-- Unit -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Unit"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
-
-    <!-- Unit Input -->
-    <EditText
-        android:id="@+id/etUnit"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/input_bg"
-        android:padding="10dp"
-        android:textSize="14sp"
-        android:hint="Enter your unit"
-        android:inputType="text"/>
-
-    <!-- Position -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Position"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
-
-    <!-- Position Input -->
-    <EditText
-        android:id="@+id/etPosition"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/input_bg"
-        android:padding="10dp"
-        android:textSize="14sp"
-        android:hint="Enter your position"
-        android:inputType="text"/>
-
-    <!-- Password -->
+    <!-- Password Input -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -199,20 +97,18 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:background="@drawable/input_bg"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <!-- Password Input -->
         <EditText
             android:id="@+id/etPassword"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:padding="10dp"
             android:textSize="14sp"
-            android:hint="Enter your password"
             android:inputType="textPassword"/>
 
         <ImageView
@@ -235,25 +131,15 @@
         android:textColor="@android:color/white"
         android:textStyle="bold"
         android:backgroundTint="@color/red"
-        android:background="@drawable/btn_red"
-        android:textAllCaps="false"/>
+        android:background="@drawable/btn_red"/>
 
+    <!-- Sign In Option -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Already have an account?"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center"/>
-
-    <TextView
-        android:id="@+id/registerTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign in"
+        android:text="Already have an account? Sign in"
+        android:textSize="14sp"
         android:layout_gravity="center"
-        android:textColor="@android:color/holo_red_dark"
-        android:layout_marginTop="5dp"
-        android:textStyle="bold"/>
-
+        android:layout_marginTop="150dp"
+        android:textColor="@android:color/black"/>
 </LinearLayout>
-</ScrollView>

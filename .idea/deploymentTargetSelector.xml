@@ -5,11 +5,7 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-<<<<<<< HEAD
-      <SelectionState runConfigName="SplashActivity">
-=======
       <SelectionState runConfigName="LoginActivity">
->>>>>>> c2d1dd3501b630728634e8036b9d4250e24c0f0d
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
