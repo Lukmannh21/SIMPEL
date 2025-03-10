@@ -21,8 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/buttonsLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvEditProfileTitle">
 
         <LinearLayout
@@ -30,205 +29,105 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardPersonalInfo"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Full Name"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etFullName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                android:inputType="textPersonName"
+                android:hint="Enter your full name" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gender"
+                android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Personal Information"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="#DDDDDD" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Full Name"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etFullName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="textPersonName"
-                        android:hint="Enter your full name" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Gender"
-                        android:textStyle="bold" />
-
-                    <RadioGroup
-                        android:id="@+id/rgGender"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:orientation="horizontal">
-
-                        <RadioButton
-                            android:id="@+id/rbMan"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
-                            android:text="Man" />
-
-                        <RadioButton
-                            android:id="@+id/rbWoman"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Woman" />
-                    </RadioGroup>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Birth Date"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etBirthDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="none"
-                        android:focusable="false"
-                        android:hint="dd/mm/yyyy"
-                        android:clickable="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Witel Region"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp">
-
-                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                            android:id="@+id/witelRegionDropdown"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="none"
-                            android:hint="Select Witel Region" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Site ID"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etSiteId"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="text"
-                        android:hint="Enter Site ID" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardAccountDetails"
+            <RadioGroup
+                android:id="@+id/rgGender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <RadioButton
+                    android:id="@+id/rbMan"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_marginEnd="16dp"
+                    android:text="Man" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Account Details"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
+                <RadioButton
+                    android:id="@+id/rbWoman"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Woman" />
+            </RadioGroup>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="#DDDDDD" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Birth Date"
+                android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Telephone"
-                        android:textStyle="bold" />
+            <EditText
+                android:id="@+id/etBirthDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="16dp"
+                android:inputType="none"
+                android:focusable="false"
+                android:hint="dd/mm/yyyy"
+                android:clickable="true" />
 
-                    <EditText
-                        android:id="@+id/etPhone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="phone"
-                        android:hint="Enter your phone number" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Telephone"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="32dp"
+                android:inputType="phone"
+                android:hint="Enter your phone number" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Cancel"
+                    android:backgroundTint="@android:color/darker_gray" />
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Save"
+                    android:backgroundTint="@color/design_default_color_primary" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/buttonsLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="Cancel"
-            android:backgroundTint="@android:color/darker_gray" />
-
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="Save"
-            android:backgroundTint="@color/design_default_color_primary" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
