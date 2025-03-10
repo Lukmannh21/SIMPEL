@@ -1,149 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".HomeActivity">
 
-    <!-- Welcome Text -->
-    <TextView
-        android:id="@+id/welcome_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Hi, Welcome To"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.119"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Logo Image -->
-
-    <ImageView
-        android:id="@+id/logout_icon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:contentDescription="Logout"
-        android:src="@drawable/logout2"
-        tools:layout_editor_absoluteX="351dp"
-        tools:layout_editor_absoluteY="14dp" />
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo"
-        android:contentDescription="Logo TelGo"
-        app:layout_constraintTop_toBottomOf="@id/welcome_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
-
-    <!-- TelGo Services Title -->
-    <FrameLayout
-        android:layout_width="390dp"
-        android:layout_height="143dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/rounded_border"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logo">
+    <!-- Top Bar with Logout Button -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/purple_500"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/telgo_services_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:text="TelGo Services"
-            android:textColor="@android:color/black"
+            android:text="TelGO"
+            android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:text="Logout"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/transparent" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Main Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation">
+
         <LinearLayout
-            android:id="@+id/services_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="42dp"
-            android:gravity="center"
-            android:orientation="horizontal"> <!-- Increased marginTop to push the icons down even more -->
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- Witel Search Icon -->
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <!-- TelGO Service Section -->
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:text="TelGO Service"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
 
-                <ImageView
-                    android:id="@+id/search_icon"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="Witel Search"
-                    android:src="@drawable/search" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Witel Search"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold" />
-            </LinearLayout>
-
-            <!-- Upload Project Icon -->
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
 
-                <ImageView
-                    android:id="@+id/upload_icon"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="Upload Project"
-                    android:src="@drawable/upload" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Upload Project"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"/>
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <!-- History Icon -->
-            <LinearLayout
-                android:layout_width="wrap_content"
+                    <Button
+                        android:id="@+id/btnUploadProject"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Upload Project"
+                        android:drawableStart="@android:drawable/ic_menu_upload"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical|start"
+                        android:backgroundTint="@color/purple_500"
+                        android:padding="12dp" />
+
+                    <!-- Other service buttons will be added later -->
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Placeholder for future content -->
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/history_icon"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="History"
-                    android:src="@drawable/history" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="History"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"/>
-            </LinearLayout>
+                android:text="More features coming soon..."
+                android:textAlignment="center"
+                android:layout_marginTop="24dp" />
 
         </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,15 +12,32 @@
         android:gravity="center"
         android:padding="24dp">
 
-        <TextView
-            android:id="@+id/welcomeTextView"
+        <!-- Layout untuk Welcome Text -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome back to"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="16dp"/>
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/welcomeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome to"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:id="@+id/telgoTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TelGo"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/holo_red_dark"/>
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/logoImageView"
@@ -64,17 +81,16 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
-            android:text="Log in"
+            android:text="Login"
             android:textSize="15sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
-            android:backgroundTint="@color/red"
             android:background="@drawable/btn_red"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't Have an Account?"
+            android:text="Don't Have Account?"
             android:layout_marginTop="16dp"/>
 
         <TextView
