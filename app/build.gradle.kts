@@ -48,6 +48,8 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation("com.mapbox.maps:android:11.10.2")
     implementation ("com.google.android.material:material:1.8.0")
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)

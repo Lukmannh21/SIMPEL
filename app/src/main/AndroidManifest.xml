@@ -4,6 +4,7 @@
     <!-- Include this permission to grab user's general location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Include only if your app benefits from precise location access. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +16,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.mbkm.telgo.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".EditSiteDataActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SiteDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".WitelDetailActivity"
             android:exported="false" />
@@ -59,5 +77,6 @@
             android:exported="false"
             android:theme="@style/MaterialAppTheme" />
     </application>
+
 
 </manifest>
