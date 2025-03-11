@@ -137,12 +137,14 @@
         <!-- Add Data Button -->
         <Button
             android:id="@+id/btnAddData"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Add Data"
             android:textAllCaps="false"
-            app:layout_constraintTop_toBottomOf="@id/btnCurrentLocation" />
+            app:layout_constraintTop_toBottomOf="@id/btnCurrentLocation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <!-- Back Button -->
         <Button
@@ -152,8 +154,9 @@
             android:layout_marginTop="8dp"
             android:text="Back"
             android:textAllCaps="false"
+            app:layout_constraintTop_toBottomOf="@id/btnAddData"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnAddData" />
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
