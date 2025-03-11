@@ -10,6 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class SiteDetailActivity : AppCompatActivity() {
 
@@ -23,6 +28,8 @@ class SiteDetailActivity : AppCompatActivity() {
     private lateinit var btnBack: Button
     private lateinit var rvDocuments: RecyclerView
     private lateinit var rvImages: RecyclerView
+
+    private val REQUEST_STORAGE_PERMISSION = 200
 
     // Firebase
     private lateinit var firestore: FirebaseFirestore
@@ -80,11 +87,56 @@ class SiteDetailActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Check and request storage permissions
+        checkAndRequestStoragePermission()
+
         // Set up RecyclerViews
         setupRecyclerViews()
 
         // Load site data
         loadSiteData()
+    }
+
+    private fun checkAndRequestStoragePermission(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // On Android 10 and above, we don't need to ask for storage permission
+            // for saving to Pictures/Downloads using MediaStore
+            return true
+        }
+
+        // For older versions, we need WRITE_EXTERNAL_STORAGE permission
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                REQUEST_STORAGE_PERMISSION
+            )
+            return false
+        }
+        return true
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            REQUEST_STORAGE_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted, proceed with operation
+                    showToast("Storage permission granted")
+                } else {
+                    showToast("Storage permission is required to save images")
+                }
+            }
+        }
     }
 
     private fun setupRecyclerViews() {
@@ -94,7 +146,7 @@ class SiteDetailActivity : AppCompatActivity() {
         rvDocuments.adapter = documentsAdapter
 
         // Set up Images RecyclerView
-        imagesAdapter = ImagesAdapter(imagesList)
+        imagesAdapter = ImagesAdapter(imagesList, this)  // Pass activity context for permission checking
         rvImages.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         rvImages.adapter = imagesAdapter
     }
@@ -214,13 +266,7 @@ class SiteDetailActivity : AppCompatActivity() {
         // If you've added the onStart method to ImagesAdapter as suggested earlier
         if (::imagesAdapter.isInitialized) {
             (imagesAdapter as? ImagesAdapter)?.let { adapter ->
-                // Check if the adapter has an onStart method
-                try {
-                    val method = adapter.javaClass.getMethod("onStart", android.app.Activity::class.java)
-                    method.invoke(adapter, this)
-                } catch (e: NoSuchMethodException) {
-                    // Method doesn't exist, which is fine if you haven't added it yet
-                }
+                adapter.onStart(this)
             }
         }
     }
@@ -229,13 +275,7 @@ class SiteDetailActivity : AppCompatActivity() {
         // If you've added the onStop method to ImagesAdapter as suggested earlier
         if (::imagesAdapter.isInitialized) {
             (imagesAdapter as? ImagesAdapter)?.let { adapter ->
-                // Check if the adapter has an onStop method
-                try {
-                    val method = adapter.javaClass.getMethod("onStop")
-                    method.invoke(adapter)
-                } catch (e: NoSuchMethodException) {
-                    // Method doesn't exist, which is fine if you haven't added it yet
-                }
+                adapter.onStop()
             }
         }
         super.onStop()
