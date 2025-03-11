@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/purple_500"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="143dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -27,9 +28,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="16dp"
+            android:backgroundTint="@android:color/transparent"
             android:text="Back"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@android:color/transparent" />
+            android:textColor="@android:color/white" />
     </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
