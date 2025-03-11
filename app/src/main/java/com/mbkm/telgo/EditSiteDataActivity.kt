@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -292,13 +293,24 @@ class EditSiteDataActivity : AppCompatActivity() {
     }
 
     private fun loadImageIntoView(uri: Uri, imageView: ImageView) {
-        // Using a library like Glide or Picasso would be better for production code
-        // For simplicity, we'll use a direct approach here
         try {
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-            imageView.setImageBitmap(bitmap)
-            imageView.visibility = View.VISIBLE
+            // For images from camera, we need to handle the file:// URI differently
+            if (uri.scheme == "file") {
+                val bitmap = android.graphics.BitmapFactory.decodeFile(uri.path)
+                if (bitmap != null) {
+                    imageView.setImageBitmap(bitmap)
+                    imageView.visibility = View.VISIBLE
+                } else {
+                    showToast("Error loading image: Could not decode bitmap")
+                }
+            } else {
+                // For content:// URIs (from storage)
+                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                imageView.setImageBitmap(bitmap)
+                imageView.visibility = View.VISIBLE
+            }
         } catch (e: Exception) {
+            showToast("Error loading image: ${e.message}")
             e.printStackTrace()
         }
     }
@@ -401,11 +413,50 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         when (requestCode) {
             REQUEST_IMAGE_CAPTURE -> {
-                // Existing image capture code...
+                // Image captured from camera
+                if (currentPhotoPath.isNotEmpty()) {
+                    // Create URI from file path
+                    val photoFile = File(currentPhotoPath)
+                    val photoUri = Uri.fromFile(photoFile)
+
+                    // Store the URI for later upload
+                    imageUris[currentImageType] = photoUri
+
+                    // Display the captured image in the appropriate ImageView
+                    val imageView = when (currentImageType) {
+                        "site_location" -> ivLocation
+                        "foundation_shelter" -> ivFoundation
+                        "installation_process" -> ivInstallation
+                        "cabinet" -> ivCabinet
+                        "3p_inet" -> ivInet
+                        "3p_uctv" -> ivUctv
+                        "3p_telephone" -> ivTelephone
+                        else -> null
+                    }
+
+                    imageView?.let {
+                        // Load and display the image
+                        try {
+                            val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+                            it.setImageBitmap(bitmap)
+                            it.visibility = View.VISIBLE
+                        } catch (e: Exception) {
+                            showToast("Error displaying image: ${e.message}")
+                            e.printStackTrace()
+                        }
+
+                        // Update button text to indicate replacement is possible
+                        updateImageButtonStatus(currentImageType, true)
+                    }
+
+                    showToast("Image captured successfully")
+                } else {
+                    showToast("Error: Image file not created")
+                }
             }
 
             REQUEST_DOCUMENT_PICK -> {
-                // Document selected
+                // Document selected (keep your existing code)
                 data?.data?.let { uri ->
                     // Take a persistent URI permission
                     contentResolver.takePersistableUriPermission(
