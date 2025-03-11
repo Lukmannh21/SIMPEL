@@ -27,6 +27,14 @@
             android:textSize="18sp"/>
 
         <ImageView
+            android:id="@+id/btnDownloadImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_download"
+            android:tint="@android:color/white"
+            android:layout_marginEnd="16dp"/>
+
+        <ImageView
             android:id="@+id/btnCloseFullImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
