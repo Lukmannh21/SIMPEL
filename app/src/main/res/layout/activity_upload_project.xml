@@ -37,6 +37,23 @@
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+        <!-- Status Dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/statusInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Pilih Status (B)"
+            app:layout_constraintTop_toBottomOf="@id/tvFormTitle">
+
+            <AutoCompleteTextView
+                android:id="@+id/statusDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Witel Dropdown -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/witelInputLayout"
@@ -44,14 +61,167 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Pilih Witel"
-            app:layout_constraintTop_toBottomOf="@id/tvFormTitle">
+            android:hint="Pilih Witel (C)"
+            app:layout_constraintTop_toBottomOf="@id/statusInputLayout">
 
             <AutoCompleteTextView
                 android:id="@+id/witelDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Kode STO -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/kodeStoInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Kode STO (D)"
+            app:layout_constraintTop_toBottomOf="@id/witelInputLayout">
+
+            <EditText
+                android:id="@+id/kodeStoInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Nama STO Catuan Uplink -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/namaStoInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Nama STO Catuan Uplink (E)"
+            app:layout_constraintTop_toBottomOf="@id/kodeStoInputLayout">
+
+            <EditText
+                android:id="@+id/namaStoInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Port Metro -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/portMetroInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Port Metro (F)"
+            app:layout_constraintTop_toBottomOf="@id/namaStoInputLayout">
+
+            <EditText
+                android:id="@+id/portMetroInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- SFP -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sfpInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="SFP (G)"
+            app:layout_constraintTop_toBottomOf="@id/portMetroInputLayout">
+
+            <EditText
+                android:id="@+id/sfpInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Hostname -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/hostnameInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Hostname (H)"
+            app:layout_constraintTop_toBottomOf="@id/sfpInputLayout">
+
+            <EditText
+                android:id="@+id/hostnameInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Size OLT Dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sizeOltInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Size OLT (I)"
+            app:layout_constraintTop_toBottomOf="@id/hostnameInputLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/sizeOltDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Platform Dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/platformInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Platform (J)"
+            app:layout_constraintTop_toBottomOf="@id/sizeOltInputLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/platformDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Type Dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/typeInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Type (K)"
+            app:layout_constraintTop_toBottomOf="@id/platformInputLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/typeDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Jumlah Modul -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/jmlModulInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Jumlah Modul (L)"
+            app:layout_constraintTop_toBottomOf="@id/typeInputLayout">
+
+            <EditText
+                android:id="@+id/jmlModulInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Site ID Location -->
@@ -61,50 +231,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Site ID Location"
-            app:layout_constraintTop_toBottomOf="@id/witelInputLayout">
+            android:hint="Site ID Location (M)"
+            app:layout_constraintTop_toBottomOf="@id/jmlModulInputLayout">
 
             <EditText
                 android:id="@+id/siteIdInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Status Dropdown -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/statusInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Pilih Status"
-            app:layout_constraintTop_toBottomOf="@id/siteIdInputLayout">
-
-            <AutoCompleteTextView
-                android:id="@+id/statusDropdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Last Issue -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lastIssueInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Last Issue"
-            app:layout_constraintTop_toBottomOf="@id/statusInputLayout">
-
-            <EditText
-                android:id="@+id/lastIssueInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:minLines="3"
-                android:gravity="top|start" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Koordinat -->
@@ -114,8 +248,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Koordinat"
-            app:layout_constraintTop_toBottomOf="@id/lastIssueInputLayout">
+            android:hint="Koordinat (N)"
+            app:layout_constraintTop_toBottomOf="@id/siteIdInputLayout">
 
             <EditText
                 android:id="@+id/koordinatInput"
@@ -134,6 +268,252 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/koordinatInputLayout" />
 
+        <!-- Site Provider -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/siteProviderInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Site Provider (O)"
+            app:layout_constraintTop_toBottomOf="@id/btnCurrentLocation">
+
+            <EditText
+                android:id="@+id/siteProviderInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Kecamatan Lokasi OLT -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/kecamatanLokasiInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Kecamatan Lokasi OLT (P)"
+            app:layout_constraintTop_toBottomOf="@id/siteProviderInputLayout">
+
+            <EditText
+                android:id="@+id/kecamatanLokasiInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Kode IHLD -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/kodeIhldInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Kode IHLD (Q)"
+            app:layout_constraintTop_toBottomOf="@id/kecamatanLokasiInputLayout">
+
+            <EditText
+                android:id="@+id/kodeIhldInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- LOP Downlink -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lopDownlinkInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="LOP Downlink (R)"
+            app:layout_constraintTop_toBottomOf="@id/kodeIhldInputLayout">
+
+            <EditText
+                android:id="@+id/lopDownlinkInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Kontrak Pengadaan -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/kontrakPengadaanInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Kontrak Pengadaan (S)"
+            app:layout_constraintTop_toBottomOf="@id/lopDownlinkInputLayout">
+
+            <EditText
+                android:id="@+id/kontrakPengadaanInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- TOC (Date) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tocInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="TOC (T) - Format Tanggal"
+            app:layout_constraintTop_toBottomOf="@id/kontrakPengadaanInputLayout">
+
+            <EditText
+                android:id="@+id/tocInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Start Project (Date) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/startProjectInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Start Project (U) - Format Tanggal"
+            app:layout_constraintTop_toBottomOf="@id/tocInputLayout">
+
+            <EditText
+                android:id="@+id/startProjectInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Catuan AC Dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/catuanAcInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Catuan AC (V)"
+            app:layout_constraintTop_toBottomOf="@id/startProjectInputLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/catuanAcDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Last Issue -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lastIssueInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Last Issue (W)"
+            app:layout_constraintTop_toBottomOf="@id/catuanAcInputLayout">
+
+            <EditText
+                android:id="@+id/lastIssueInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:gravity="top|start" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Kendala Dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/kendalaInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Kendala (X)"
+            app:layout_constraintTop_toBottomOf="@id/lastIssueInputLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/kendalaDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Tgl Plan OA (Date) -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tglPlanOaInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Tgl Plan OA (Y) - Format Tanggal"
+            app:layout_constraintTop_toBottomOf="@id/kendalaInputLayout">
+
+            <EditText
+                android:id="@+id/tglPlanOaInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Week Plan OA -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/weekPlanOaInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Week Plan OA (Z)"
+            app:layout_constraintTop_toBottomOf="@id/tglPlanOaInputLayout">
+
+            <EditText
+                android:id="@+id/weekPlanOaInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ODP -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/odpInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="ODP (AB)"
+            app:layout_constraintTop_toBottomOf="@id/weekPlanOaInputLayout">
+
+            <EditText
+                android:id="@+id/odpInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Port -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/portInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Port (AC)"
+            app:layout_constraintTop_toBottomOf="@id/odpInputLayout">
+
+            <EditText
+                android:id="@+id/portInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Add Data Button -->
         <Button
             android:id="@+id/btnAddData"
@@ -142,7 +522,7 @@
             android:layout_marginTop="32dp"
             android:text="Add Data"
             android:textAllCaps="false"
-            app:layout_constraintTop_toBottomOf="@id/btnCurrentLocation"
+            app:layout_constraintTop_toBottomOf="@id/portInputLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -152,11 +532,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
             android:text="Back"
             android:textAllCaps="false"
             app:layout_constraintTop_toBottomOf="@id/btnAddData"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
