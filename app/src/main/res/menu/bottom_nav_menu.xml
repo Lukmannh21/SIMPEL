@@ -2,14 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_home"
-        android:icon="@android:drawable/ic_menu_compass"
+        android:icon="@android:drawable/ic_menu_zoom"
         android:title="Home" />
+    <item
+        android:id="@+id/navigation_Upload"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:title="Upload" />
     <item
         android:id="@+id/navigation_history"
         android:icon="@android:drawable/ic_menu_recent_history"
-        android:title="History" />
+        android:title="Last Update" />
     <item
         android:id="@+id/navigation_account"
         android:icon="@android:drawable/ic_menu_myplaces"
-        android:title="Account" />
+        android:title="Me" />
+
 </menu>
