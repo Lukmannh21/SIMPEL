@@ -24,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        emailEditText = findViewById(R.id.emailEditText)  // Menggunakan email sebagai input
+        emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         loginButton = findViewById(R.id.loginButton)
         forgotPasswordTextView = findViewById(R.id.forgotPasswordTextView)
@@ -40,6 +40,10 @@ class LoginActivity : AppCompatActivity() {
             }
 
             loginUser(email, password)
+        }
+
+        forgotPasswordTextView.setOnClickListener {
+            resetPassword()
         }
 
         registerTextView.setOnClickListener {
@@ -58,6 +62,24 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 } else {
                     Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun resetPassword() {
+        val email = emailEditText.text.toString().trim()
+
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Enter your email to reset password", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Reset link sent to your email", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Failed to send reset email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
