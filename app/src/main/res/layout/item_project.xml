@@ -20,14 +20,6 @@
             android:padding="2dp">
 
             <TextView
-                android:id="@+id/txtSiteId"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:gravity="center"
-                android:textColor="@android:color/black"/>
-
-            <TextView
                 android:id="@+id/txtWitel"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
@@ -36,8 +28,24 @@
                 android:textColor="@android:color/black"/>
 
             <TextView
-                android:id="@+id/txtStatus"
+                android:id="@+id/txtKodeIhld"
                 android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/txtPort"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/txtSiteProvider"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:gravity="center"
@@ -52,7 +60,15 @@
                 android:textColor="@android:color/black"/>
 
             <TextView
-                android:id="@+id/txtKoordinat"
+                android:id="@+id/txtStatus"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:gravity="center"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/txtKendala"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
@@ -60,13 +76,12 @@
                 android:textColor="@android:color/black"/>
 
             <TextView
-                android:id="@+id/txtCreatedAt"
+                android:id="@+id/txtTglPlanOa"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:gravity="center"
                 android:textColor="@android:color/black"/>
         </TableRow>
-
     </TableLayout>
 </HorizontalScrollView>
