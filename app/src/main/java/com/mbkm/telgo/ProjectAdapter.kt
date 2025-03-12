@@ -29,20 +29,24 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder>() 
     override fun getItemCount(): Int = projectList.size
 
     class ProjectViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val txtSiteId: TextView = view.findViewById(R.id.txtSiteId)
         private val txtWitel: TextView = view.findViewById(R.id.txtWitel)
-        private val txtStatus: TextView = view.findViewById(R.id.txtStatus)
+        private val txtKodeIhld: TextView = view.findViewById(R.id.txtKodeIhld)
+        private val txtPort: TextView = view.findViewById(R.id.txtPort)
+        private val txtSiteProvider: TextView = view.findViewById(R.id.txtSiteProvider)
         private val txtLastIssue: TextView = view.findViewById(R.id.txtLastIssue)
-        private val txtKoordinat: TextView = view.findViewById(R.id.txtKoordinat)
-        private val txtCreatedAt: TextView = view.findViewById(R.id.txtCreatedAt)
+        private val txtStatus: TextView = view.findViewById(R.id.txtStatus)
+        private val txtKendala: TextView = view.findViewById(R.id.txtKendala)
+        private val txtTglPlanOa: TextView = view.findViewById(R.id.txtTglPlanOa)
 
         fun bind(project: ProjectModel) {
-            txtSiteId.text = project.siteId
             txtWitel.text = project.witel
-            txtStatus.text = project.status
+            txtKodeIhld.text = project.kodeIhld
+            txtPort.text = project.port
+            txtSiteProvider.text = project.siteProvider
             txtLastIssue.text = project.lastIssueHistory.joinToString("\n")
-            txtKoordinat.text = project.koordinat
-            txtCreatedAt.text = project.createdAt
+            txtStatus.text = project.status
+            txtKendala.text = project.kendala
+            txtTglPlanOa.text = project.tglPlanOa
         }
     }
 }

@@ -7,5 +7,10 @@ data class ProjectModel(
     val lastIssueHistory: List<String> = emptyList(),
     val koordinat: String = "",
     val createdAt: String = "",
-    val updatedAt: String = ""
+    val updatedAt: String = "",
+    val kodeIhld: String = "",
+    val port: String = "",
+    val siteProvider: String = "",
+    val kendala: String = "",
+    val tglPlanOa: String = ""
 )
