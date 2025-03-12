@@ -11,21 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="37dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@android:color/transparent"
+            android:drawableTop="@drawable/back"
+            android:text="Back"
+            android:textColor="@android:color/white" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/red">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit Site Data"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </androidx.appcompat.widget.Toolbar>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -60,7 +56,7 @@
                         android:layout_height="wrap_content"
                         android:text="Update Data"
                         android:textSize="12sp"
-                        android:padding="8dp"/>
+                        android:padding="8dp" />
                 </LinearLayout>
 
                 <TextView
@@ -254,7 +250,8 @@
                     android:id="@+id/btnUploadEmailOrder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Upload Document"/>
+                    android:text="Upload Document"
+                    android:background="@drawable/btn_red"/>
 
                 <TextView
                     android:id="@+id/tvEmailOrderFileName"
@@ -276,7 +273,8 @@
                     android:id="@+id/btnUploadTelkomselPermit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Upload Document"/>
+                    android:text="Upload Document"
+                    android:background="@drawable/btn_red"/>
 
                 <TextView
                     android:id="@+id/tvTelkomselPermitFileName"
@@ -298,7 +296,8 @@
                     android:id="@+id/btnUploadTelPartner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Upload Document"/>
+                    android:text="Upload Document"
+                    android:background="@drawable/btn_red"/>
 
                 <TextView
                     android:id="@+id/tvTelPartnerFileName"
@@ -347,7 +346,8 @@
                     android:id="@+id/btnCaptureLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Capture Image"/>
+                    android:text="Capture Image"
+                    android:background="@drawable/btn_red"/>
 
                 <ImageView
                     android:id="@+id/ivLocation"
@@ -368,7 +368,8 @@
                     android:id="@+id/btnCaptureFoundation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Capture Image"/>
+                    android:text="Capture Image"
+                    android:background="@drawable/btn_red"/>
 
                 <ImageView
                     android:id="@+id/ivFoundation"
@@ -389,7 +390,8 @@
                     android:id="@+id/btnCaptureInstallation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Capture Image"/>
+                    android:text="Capture Image"
+                    android:background="@drawable/btn_red"/>
 
                 <ImageView
                     android:id="@+id/ivInstallation"
@@ -410,7 +412,8 @@
                     android:id="@+id/btnCaptureCabinet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Capture Image"/>
+                    android:text="Capture Image"
+                    android:background="@drawable/btn_red"/>
 
                 <ImageView
                     android:id="@+id/ivCabinet"
@@ -431,7 +434,8 @@
                     android:id="@+id/btnCaptureInet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Capture Image"/>
+                    android:text="Capture Image"
+                    android:background="@drawable/btn_red"/>
 
                 <ImageView
                     android:id="@+id/ivInet"
@@ -452,7 +456,8 @@
                     android:id="@+id/btnCaptureUctv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Capture Image"/>
+                    android:text="Capture Image"
+                    android:background="@drawable/btn_red"/>
 
                 <ImageView
                     android:id="@+id/ivUctv"
@@ -473,7 +478,8 @@
                     android:id="@+id/btnCaptureTelephone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Capture Image"/>
+                    android:text="Capture Image"
+                    android:background="@drawable/btn_red"/>
 
                 <ImageView
                     android:id="@+id/ivTelephone"
