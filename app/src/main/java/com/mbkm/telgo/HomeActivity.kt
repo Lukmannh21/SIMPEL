@@ -1,15 +1,23 @@
 package com.mbkm.telgo
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.apache.poi.ss.usermodel.Row
+import java.io.File
+import java.io.FileOutputStream
 
 class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -17,6 +25,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var btnLogout: Button
     private lateinit var btnUploadProject: Button
     private lateinit var btnWitelSearch: Button
+    private lateinit var btnDownload: Button
     private lateinit var recyclerViewDashboard: RecyclerView
     private lateinit var projectAdapter: ProjectAdapter
 
@@ -29,6 +38,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         btnLogout = findViewById(R.id.btnLogout)
         btnUploadProject = findViewById(R.id.btnUploadProject)
         btnWitelSearch = findViewById(R.id.btnWitelSearch)
+        btnDownload = findViewById(R.id.btnDownload)
         recyclerViewDashboard = findViewById(R.id.recyclerViewDashboard)
 
         // Set listener navigasi bawah
@@ -55,6 +65,11 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             startActivity(intent)
         }
 
+        // Tombol download
+        btnDownload.setOnClickListener {
+            downloadProjectsAsExcel()
+        }
+
         // Setup RecyclerView untuk daftar proyek
         recyclerViewDashboard.layoutManager = LinearLayoutManager(this)
         projectAdapter = ProjectAdapter()
@@ -79,6 +94,81 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Gagal memuat data: ${exception.message}", Toast.LENGTH_LONG).show()
             }
+    }
+
+    private fun downloadProjectsAsExcel() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("projects")
+            .get()
+            .addOnSuccessListener { result ->
+                val wb = HSSFWorkbook()
+                val sheet = wb.createSheet("Projects")
+
+                // Header row
+                val header: Row = sheet.createRow(0)
+                header.createCell(0).setCellValue("Witel")
+                header.createCell(1).setCellValue("IHLD ID")
+                header.createCell(2).setCellValue("Port")
+                header.createCell(3).setCellValue("Site Provider")
+                header.createCell(4).setCellValue("Last Issue")
+                header.createCell(5).setCellValue("Status")
+                header.createCell(6).setCellValue("Kendala")
+                header.createCell(7).setCellValue("Tgl Plan OA")
+
+                // Data rows
+                var rowIndex = 1
+                for (document in result) {
+                    val project = document.toObject(ProjectModel::class.java)
+                    val row: Row = sheet.createRow(rowIndex++)
+                    row.createCell(0).setCellValue(project.witel)
+                    row.createCell(1).setCellValue(project.kodeIhld)
+                    row.createCell(2).setCellValue(project.port)
+                    row.createCell(3).setCellValue(project.siteProvider)
+                    row.createCell(4).setCellValue(project.lastIssueHistory.joinToString("\n"))
+                    row.createCell(5).setCellValue(project.status)
+                    row.createCell(6).setCellValue(project.kendala)
+                    row.createCell(7).setCellValue(project.tglPlanOa)
+                }
+
+                // Write to file
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val filePath = File(downloadsDir, "Projects.xls")
+                val fileOut = FileOutputStream(filePath)
+                wb.write(fileOut)
+                fileOut.close()
+                wb.close()
+
+                Toast.makeText(this, "Data berhasil diunduh: ${filePath.absolutePath}", Toast.LENGTH_LONG).show()
+
+                // Open the file
+                openFile(filePath)
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "Gagal mengunduh data: ${exception.message}", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun openFile(file: File) {
+        val fileUri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            FileProvider.getUriForFile(
+                this,
+                "$packageName.provider",
+                file
+            )
+        } else {
+            Uri.fromFile(file)
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(fileUri, "application/vnd.ms-excel")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Tidak ada aplikasi yang dapat membuka file ini", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
