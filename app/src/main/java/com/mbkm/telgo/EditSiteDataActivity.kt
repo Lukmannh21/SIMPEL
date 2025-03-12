@@ -200,6 +200,31 @@ class EditSiteDataActivity : AppCompatActivity() {
         dropdownKendala.setAdapter(kendalaAdapter)
     }
 
+    // Ganti fungsi calculateIdLopOlt dengan fungsi berikut:
+    private fun calculateIdLopOlt(
+        platform: String?,
+        kontrakPengadaan: String?,
+        kodeSto: String?,
+        sizeOlt: String?,
+        jmlModul: String?,
+        siteId: String?,
+        kodeIhld: String?,
+        status: String?
+    ): String {
+        // Formula: platform/kontrakPengadaan(12 char)/kodeSto/sizeOlt/jmlModul/siteId/kodeIhld==>status
+
+        if (platform.isNullOrEmpty() || kodeSto.isNullOrEmpty() || sizeOlt.isNullOrEmpty() ||
+            jmlModul.isNullOrEmpty() || siteId.isNullOrEmpty() || kodeIhld.isNullOrEmpty() || status.isNullOrEmpty()) {
+            return ""
+        }
+
+        val kontrakPrefix = if (!kontrakPengadaan.isNullOrEmpty()) {
+            if (kontrakPengadaan.length > 12) kontrakPengadaan.substring(0, 12) else kontrakPengadaan
+        } else ""
+
+        return "$platform/$kontrakPrefix/$kodeSto/$sizeOlt/$jmlModul/$siteId/$kodeIhld==>$status"
+    }
+
     private fun setupDatePicker() {
         etTglPlanOa.setOnClickListener {
             showDatePicker()
@@ -730,12 +755,63 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         if (status.isNotEmpty()) {
             updateMap["status"] = status
+
+            // Ambil data yang diperlukan dari Firestore untuk menghitung ID LOP OLT
+            firestore.collection("projects").document(documentId)
+                .get()
+                .addOnSuccessListener { document ->
+                    val data = document.data
+                    if (data != null) {
+                        // Ambil semua field yang diperlukan untuk perhitungan ID LOP OLT
+                        val platform = data["platform"] as? String
+                        val kontrakPengadaan = data["kontrakPengadaan"] as? String
+                        val kodeSto = data["kodeSto"] as? String
+                        val sizeOlt = data["sizeOlt"] as? String
+                        val jmlModul = data["jmlModul"] as? String
+                        val kodeIhld = data["kodeIhld"] as? String
+
+                        // Hitung ID LOP OLT dengan formula yang benar
+                        val idLopOlt = calculateIdLopOlt(
+                            platform,
+                            kontrakPengadaan,
+                            kodeSto,
+                            sizeOlt,
+                            jmlModul,
+                            siteId,
+                            kodeIhld,
+                            status
+                        )
+
+                        // Tambahkan ke updateMap jika berhasil dihitung
+                        if (idLopOlt.isNotEmpty()) {
+                            updateMap["idLopOlt"] = idLopOlt
+                        }
+
+                        // Lanjutkan dengan kode yang sudah ada
+                        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
+                    } else {
+                        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    showToast("Error retrieving site data: ${e.message}")
+                    btnSaveChanges.isEnabled = true
+                }
+            return // Return early since we're handling in the callback
         }
 
+        // If status is not updated, continue with other updates
+        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
+    }
+
+    // Helper method to complete the update process
+    private fun completeUpdateProcess(updateMap: MutableMap<String, Any>, kendala: String, tglPlanOa: String, onComplete: () -> Unit) {
+        // Add kendala if not empty
         if (kendala.isNotEmpty()) {
             updateMap["kendala"] = kendala
         }
 
+        // Process tglPlanOa
         if (tglPlanOa.isNotEmpty()) {
             updateMap["tglPlanOa"] = tglPlanOa
 
