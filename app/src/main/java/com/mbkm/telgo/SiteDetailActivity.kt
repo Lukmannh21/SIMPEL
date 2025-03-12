@@ -1,24 +1,23 @@
 package com.mbkm.telgo
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 
 class SiteDetailActivity : AppCompatActivity() {
 
-    // UI Components
+    // UI Components - Original
     private lateinit var tvSiteId: TextView
     private lateinit var tvWitel: TextView
     private lateinit var tvStatus: TextView
@@ -28,6 +27,34 @@ class SiteDetailActivity : AppCompatActivity() {
     private lateinit var btnBack: Button
     private lateinit var rvDocuments: RecyclerView
     private lateinit var rvImages: RecyclerView
+
+    // Additional UI Components
+    private lateinit var tvIdLopOlt: TextView
+    private lateinit var tvKodeSto: TextView
+    private lateinit var tvNamaSto: TextView
+    private lateinit var tvPortMetro: TextView
+    private lateinit var tvSfp: TextView
+    private lateinit var tvHostname: TextView
+    private lateinit var tvSizeOlt: TextView
+    private lateinit var tvPlatform: TextView
+    private lateinit var tvType: TextView
+    private lateinit var tvJmlModul: TextView
+    private lateinit var tvSiteProvider: TextView
+    private lateinit var tvKecamatanLokasi: TextView
+    private lateinit var tvKodeIhld: TextView
+    private lateinit var tvLopDownlink: TextView
+    private lateinit var tvKontrakPengadaan: TextView
+    private lateinit var tvToc: TextView
+    private lateinit var tvStartProject: TextView
+    private lateinit var tvCatuanAc: TextView
+    private lateinit var tvKendala: TextView
+    private lateinit var tvTglPlanOa: TextView
+    private lateinit var tvWeekPlanOa: TextView
+    private lateinit var tvDurasiPekerjaan: TextView
+    private lateinit var tvOdp: TextView
+    private lateinit var tvPort: TextView
+    private lateinit var tvSisaHariThdpPlanOa: TextView
+    private lateinit var tvSisaHariThdpToc: TextView
 
     private val REQUEST_STORAGE_PERMISSION = 200
 
@@ -64,15 +91,7 @@ class SiteDetailActivity : AppCompatActivity() {
         storage = FirebaseStorage.getInstance()
 
         // Initialize UI components
-        tvSiteId = findViewById(R.id.tvSiteId)
-        tvWitel = findViewById(R.id.tvWitel)
-        tvStatus = findViewById(R.id.tvStatus)
-        tvLastIssue = findViewById(R.id.tvLastIssue)
-        tvKoordinat = findViewById(R.id.tvKoordinat)
-        btnEditData = findViewById(R.id.btnEditData)
-        btnBack = findViewById(R.id.btnBack)
-        rvDocuments = findViewById(R.id.rvDocuments)
-        rvImages = findViewById(R.id.rvImages)
+        initializeUI()
 
         // Set up back button
         btnBack.setOnClickListener {
@@ -97,6 +116,49 @@ class SiteDetailActivity : AppCompatActivity() {
         loadSiteData()
     }
 
+    private fun initializeUI() {
+        // Original UI Components
+        tvSiteId = findViewById(R.id.tvSiteId)
+        tvWitel = findViewById(R.id.tvWitel)
+
+        tvStatus = findViewById(R.id.tvStatus)
+        tvLastIssue = findViewById(R.id.tvLastIssue)
+        tvKoordinat = findViewById(R.id.tvKoordinat)
+        btnEditData = findViewById(R.id.btnEditData)
+        btnBack = findViewById(R.id.btnBack)
+        rvDocuments = findViewById(R.id.rvDocuments)
+        rvImages = findViewById(R.id.rvImages)
+
+        // Additional UI Components
+        tvIdLopOlt = findViewById(R.id.tvIdLopOlt)
+        tvKodeSto = findViewById(R.id.tvKodeSto)
+        tvNamaSto = findViewById(R.id.tvNamaSto)
+        tvPortMetro = findViewById(R.id.tvPortMetro)
+        tvSfp = findViewById(R.id.tvSfp)
+        tvHostname = findViewById(R.id.tvHostname)
+        tvSizeOlt = findViewById(R.id.tvSizeOlt)
+        tvPlatform = findViewById(R.id.tvPlatform)
+        tvType = findViewById(R.id.tvType)
+        tvJmlModul = findViewById(R.id.tvJmlModul)
+        tvSiteProvider = findViewById(R.id.tvSiteProvider)
+        tvKecamatanLokasi = findViewById(R.id.tvKecamatanLokasi)
+        tvKodeIhld = findViewById(R.id.tvKodeIhld)
+        tvLopDownlink = findViewById(R.id.tvLopDownlink)
+        tvKontrakPengadaan = findViewById(R.id.tvKontrakPengadaan)
+        tvToc = findViewById(R.id.tvToc)
+        tvStartProject = findViewById(R.id.tvStartProject)
+        tvCatuanAc = findViewById(R.id.tvCatuanAc)
+        tvKendala = findViewById(R.id.tvKendala)
+        tvTglPlanOa = findViewById(R.id.tvTglPlanOa)
+        tvWeekPlanOa = findViewById(R.id.tvWeekPlanOa)
+        tvDurasiPekerjaan = findViewById(R.id.tvDurasiPekerjaan)
+        tvOdp = findViewById(R.id.tvOdp)
+        tvPort = findViewById(R.id.tvPort)
+        tvSisaHariThdpPlanOa = findViewById(R.id.tvSisaHariThdpPlanOa)
+        tvSisaHariThdpToc = findViewById(R.id.tvSisaHariThdpToc)
+    }
+
+    // Existing methods remain unchanged
     private fun checkAndRequestStoragePermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // On Android 10 and above, we don't need to ask for storage permission
@@ -146,7 +208,8 @@ class SiteDetailActivity : AppCompatActivity() {
         rvDocuments.adapter = documentsAdapter
 
         // Set up Images RecyclerView
-        imagesAdapter = ImagesAdapter(imagesList, this)  // Pass activity context for permission checking
+        imagesAdapter =
+            ImagesAdapter(imagesList, this)  // Pass activity context for permission checking
         rvImages.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         rvImages.adapter = imagesAdapter
     }
@@ -170,15 +233,44 @@ class SiteDetailActivity : AppCompatActivity() {
                 val document = documents.documents[0]
                 val site = document.data
 
-                // Set basic site information
+                // Set basic site information (original)
                 tvSiteId.text = siteId
                 tvWitel.text = witel
-                tvStatus.text = site?.get("status").toString()
+                tvStatus.text = site?.get("status")?.toString() ?: ""
 
                 val lastIssueHistory = site?.get("lastIssueHistory") as? List<String>
-                tvLastIssue.text = if (lastIssueHistory.isNullOrEmpty()) "No issue reported" else lastIssueHistory[0]
+                tvLastIssue.text =
+                    if (lastIssueHistory.isNullOrEmpty()) "No issue reported" else lastIssueHistory[0]
 
-                tvKoordinat.text = site?.get("koordinat").toString()
+                tvKoordinat.text = site?.get("koordinat")?.toString() ?: ""
+
+                // Set additional site information
+                tvIdLopOlt.text = site?.get("idLopOlt")?.toString() ?: ""
+                tvKodeSto.text = site?.get("kodeSto")?.toString() ?: ""
+                tvNamaSto.text = site?.get("namaSto")?.toString() ?: ""
+                tvPortMetro.text = site?.get("portMetro")?.toString() ?: ""
+                tvSfp.text = site?.get("sfp")?.toString() ?: ""
+                tvHostname.text = site?.get("hostname")?.toString() ?: ""
+                tvSizeOlt.text = site?.get("sizeOlt")?.toString() ?: ""
+                tvPlatform.text = site?.get("platform")?.toString() ?: ""
+                tvType.text = site?.get("type")?.toString() ?: ""
+                tvJmlModul.text = site?.get("jmlModul")?.toString() ?: ""
+                tvSiteProvider.text = site?.get("siteProvider")?.toString() ?: ""
+                tvKecamatanLokasi.text = site?.get("kecamatanLokasi")?.toString() ?: ""
+                tvKodeIhld.text = site?.get("kodeIhld")?.toString() ?: ""
+                tvLopDownlink.text = site?.get("lopDownlink")?.toString() ?: ""
+                tvKontrakPengadaan.text = site?.get("kontrakPengadaan")?.toString() ?: ""
+                tvToc.text = site?.get("toc")?.toString() ?: ""
+                tvStartProject.text = site?.get("startProject")?.toString() ?: ""
+                tvCatuanAc.text = site?.get("catuanAc")?.toString() ?: ""
+                tvKendala.text = site?.get("kendala")?.toString() ?: ""
+                tvTglPlanOa.text = site?.get("tglPlanOa")?.toString() ?: ""
+                tvWeekPlanOa.text = site?.get("weekPlanOa")?.toString() ?: ""
+                tvDurasiPekerjaan.text = site?.get("durasiPekerjaan")?.toString() ?: ""
+                tvOdp.text = site?.get("odp")?.toString() ?: ""
+                tvPort.text = site?.get("port")?.toString() ?: ""
+                tvSisaHariThdpPlanOa.text = site?.get("sisaHariThdpPlanOa")?.toString() ?: ""
+                tvSisaHariThdpToc.text = site?.get("sisaHariThdpToc")?.toString() ?: ""
 
                 // Load documents
                 loadDocuments()
