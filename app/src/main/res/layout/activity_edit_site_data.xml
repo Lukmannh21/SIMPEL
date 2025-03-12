@@ -58,7 +58,7 @@
                         android:id="@+id/btnToggleUpdateFields"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Update Data"
+                        android:text="Edit Site Data"
                         android:textSize="12sp"
                         android:padding="8dp"/>
                 </LinearLayout>
