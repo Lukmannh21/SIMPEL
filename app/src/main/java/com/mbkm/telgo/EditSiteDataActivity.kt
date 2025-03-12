@@ -2,6 +2,7 @@ package com.mbkm.telgo
 
 import android.Manifest
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -11,25 +12,30 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 class EditSiteDataActivity : AppCompatActivity() {
 
-    // UI Components
+    // Original UI Components
     private lateinit var tvSiteId: TextView
     private lateinit var tvWitel: TextView
     private lateinit var tvStatus: TextView
@@ -63,6 +69,13 @@ class EditSiteDataActivity : AppCompatActivity() {
     private lateinit var tvTelkomselPermitFileName: TextView
     private lateinit var tvTelPartnerFileName: TextView
 
+    // New UI Components
+    private lateinit var btnToggleUpdateFields: Button
+    private lateinit var cardUpdateFields: CardView
+    private lateinit var dropdownStatus: AutoCompleteTextView
+    private lateinit var dropdownKendala: AutoCompleteTextView
+    private lateinit var etTglPlanOa: TextInputEditText
+
     // Firebase
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
@@ -71,6 +84,18 @@ class EditSiteDataActivity : AppCompatActivity() {
     private lateinit var siteId: String
     private lateinit var witel: String
     private var documentId: String = ""
+    private var isUpdateFieldsVisible = false
+
+    // Status and Kendala options
+    private val statusOptions = listOf(
+        "OA", "MAT DEL", "DONE", "SURVEY", "POWER ON",
+        "DROP", "MOS", "INTEGRASI", "SURVEY"
+    )
+
+    private val kendalaOptions = listOf(
+        "COMMCASE", "NEW PLN", "NO ISSUE", "PERMIT", "PONDASI",
+        "RELOC", "SFP BIDI", "UPGRADE PLN", "WAITING OTN", "WAITING UPLINK"
+    )
 
     // Request codes
     private val REQUEST_CAMERA_PERMISSION = 101
@@ -84,6 +109,9 @@ class EditSiteDataActivity : AppCompatActivity() {
     private val documentUris = mutableMapOf<String, Uri>()
     private val imageUris = mutableMapOf<String, Uri>()
     private var currentPhotoPath: String = ""
+
+    // Calendar for date picker
+    private val calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +134,12 @@ class EditSiteDataActivity : AppCompatActivity() {
         // Initialize UI components
         initializeViews()
 
+        // Set up adapters for dropdowns
+        setupDropdowns()
+
+        // Set up date picker
+        setupDatePicker()
+
         // Set up button listeners
         setupButtonListeners()
 
@@ -114,6 +148,7 @@ class EditSiteDataActivity : AppCompatActivity() {
     }
 
     private fun initializeViews() {
+        // Original views
         tvSiteId = findViewById(R.id.tvSiteId)
         tvWitel = findViewById(R.id.tvWitel)
         tvStatus = findViewById(R.id.tvStatus)
@@ -124,11 +159,9 @@ class EditSiteDataActivity : AppCompatActivity() {
         btnUploadTelkomselPermit = findViewById(R.id.btnUploadTelkomselPermit)
         btnUploadTelPartner = findViewById(R.id.btnUploadTelPartner)
 
-
         tvEmailOrderFileName = findViewById(R.id.tvEmailOrderFileName)
         tvTelkomselPermitFileName = findViewById(R.id.tvTelkomselPermitFileName)
         tvTelPartnerFileName = findViewById(R.id.tvTelPartnerFileName)
-
 
         btnCaptureLocation = findViewById(R.id.btnCaptureLocation)
         btnCaptureFoundation = findViewById(R.id.btnCaptureFoundation)
@@ -148,10 +181,58 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         btnSaveChanges = findViewById(R.id.btnSaveChanges)
         btnCancel = findViewById(R.id.btnCancel)
+
+        // New views
+        btnToggleUpdateFields = findViewById(R.id.btnToggleUpdateFields)
+        cardUpdateFields = findViewById(R.id.cardUpdateFields)
+        dropdownStatus = findViewById(R.id.dropdownStatus)
+        dropdownKendala = findViewById(R.id.dropdownKendala)
+        etTglPlanOa = findViewById(R.id.etTglPlanOa)
+    }
+
+    private fun setupDropdowns() {
+        // Set up Status dropdown
+        val statusAdapter = ArrayAdapter(this, R.layout.dropdown_item, statusOptions)
+        dropdownStatus.setAdapter(statusAdapter)
+
+        // Set up Kendala dropdown
+        val kendalaAdapter = ArrayAdapter(this, R.layout.dropdown_item, kendalaOptions)
+        dropdownKendala.setAdapter(kendalaAdapter)
+    }
+
+    private fun setupDatePicker() {
+        etTglPlanOa.setOnClickListener {
+            showDatePicker()
+        }
+    }
+
+    private fun showDatePicker() {
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            etTglPlanOa.setText(dateFormat.format(calendar.time))
+        }
+
+        DatePickerDialog(
+            this,
+            dateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     private fun setupButtonListeners() {
-        // Document upload buttons
+        // Toggle update fields button
+        btnToggleUpdateFields.setOnClickListener {
+            isUpdateFieldsVisible = !isUpdateFieldsVisible
+            cardUpdateFields.visibility = if (isUpdateFieldsVisible) View.VISIBLE else View.GONE
+        }
+
+        // Original document upload buttons
         btnUploadEmailOrder.setOnClickListener { openDocumentPicker("email_order") }
         btnUploadTelkomselPermit.setOnClickListener { openDocumentPicker("telkomsel_permit") }
         btnUploadTelPartner.setOnClickListener { openDocumentPicker("tel_partner") }
@@ -202,6 +283,36 @@ class EditSiteDataActivity : AppCompatActivity() {
                         etLastIssue.setText(parts[1])
                     } else {
                         etLastIssue.setText(lastIssue)
+                    }
+                }
+
+                // Set values for new editable fields
+                site?.get("status")?.toString()?.let {
+                    if (it.isNotEmpty()) {
+                        dropdownStatus.setText(it, false)
+                    }
+                }
+
+                site?.get("kendala")?.toString()?.let {
+                    if (it.isNotEmpty()) {
+                        dropdownKendala.setText(it, false)
+                    }
+                }
+
+                site?.get("tglPlanOa")?.toString()?.let {
+                    if (it.isNotEmpty()) {
+                        etTglPlanOa.setText(it)
+
+                        // Also set the calendar to this date for the date picker
+                        try {
+                            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            val date = dateFormat.parse(it)
+                            if (date != null) {
+                                calendar.time = date
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
 
@@ -296,7 +407,7 @@ class EditSiteDataActivity : AppCompatActivity() {
         try {
             // For images from camera, we need to handle the file:// URI differently
             if (uri.scheme == "file") {
-                val bitmap = android.graphics.BitmapFactory.decodeFile(uri.path)
+                val bitmap = BitmapFactory.decodeFile(uri.path)
                 if (bitmap != null) {
                     imageView.setImageBitmap(bitmap)
                     imageView.visibility = View.VISIBLE
@@ -456,7 +567,7 @@ class EditSiteDataActivity : AppCompatActivity() {
             }
 
             REQUEST_DOCUMENT_PICK -> {
-                // Document selected (keep your existing code)
+                // Document selected
                 data?.data?.let { uri ->
                     // Take a persistent URI permission
                     contentResolver.takePersistableUriPermission(
@@ -514,30 +625,54 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     private fun saveChanges() {
         val lastIssue = etLastIssue.text.toString().trim()
-        if (lastIssue.isEmpty()) {
-            showToast("Please enter the last issue")
-            return
-        }
 
-        // Disable the save button to prevent multiple clicks
-        btnSaveChanges.isEnabled = false
-        showToast("Saving changes...")
-
-        // Update the last issue in Firestore
-        updateLastIssue(lastIssue) {
-            // After updating last issue, upload any files
+        // First update issue history if needed
+        if (lastIssue.isNotEmpty()) {
+            updateLastIssue {
+                // Then update other fields if the update fields are visible
+                if (isUpdateFieldsVisible) {
+                    updateSiteData {
+                        // Finally upload any files
+                        uploadAllFiles {
+                            showToast("All changes saved successfully")
+                            finish()
+                        }
+                    }
+                } else {
+                    // Just upload files if update fields are not visible
+                    uploadAllFiles {
+                        showToast("All changes saved successfully")
+                        finish()
+                    }
+                }
+            }
+        } else if (isUpdateFieldsVisible) {
+            // If no lastIssue but update fields are visible
+            updateSiteData {
+                uploadAllFiles {
+                    showToast("All changes saved successfully")
+                    finish()
+                }
+            }
+        } else {
+            // If no issue update and fields are not visible, just upload files
             uploadAllFiles {
-                // When all operations are complete
                 showToast("All changes saved successfully")
                 finish()
             }
         }
     }
 
-    private fun updateLastIssue(lastIssue: String, onComplete: () -> Unit) {
+    private fun updateLastIssue(onComplete: () -> Unit) {
         if (documentId.isEmpty()) {
             showToast("Error: Site document ID not found")
             btnSaveChanges.isEnabled = true
+            return
+        }
+
+        val lastIssue = etLastIssue.text.toString().trim()
+        if (lastIssue.isEmpty()) {
+            onComplete() // Skip if empty
             return
         }
 
@@ -564,7 +699,7 @@ class EditSiteDataActivity : AppCompatActivity() {
                         )
                     )
                     .addOnSuccessListener {
-                        // Continue with file uploads
+                        // Continue with next step
                         onComplete()
                     }
                     .addOnFailureListener { e ->
@@ -578,7 +713,95 @@ class EditSiteDataActivity : AppCompatActivity() {
             }
     }
 
+    private fun updateSiteData(onComplete: () -> Unit) {
+        if (documentId.isEmpty()) {
+            showToast("Error: Site document ID not found")
+            btnSaveChanges.isEnabled = true
+            return
+        }
+
+        // Get values from new fields
+        val status = dropdownStatus.text.toString().trim()
+        val kendala = dropdownKendala.text.toString().trim()
+        val tglPlanOa = etTglPlanOa.text.toString().trim()
+
+        // Create update map with only non-empty fields
+        val updateMap = mutableMapOf<String, Any>()
+
+        if (status.isNotEmpty()) {
+            updateMap["status"] = status
+        }
+
+        if (kendala.isNotEmpty()) {
+            updateMap["kendala"] = kendala
+        }
+
+        if (tglPlanOa.isNotEmpty()) {
+            updateMap["tglPlanOa"] = tglPlanOa
+
+            // Calculate weekPlanOa from tglPlanOa
+            try {
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val date = dateFormat.parse(tglPlanOa)
+                if (date != null) {
+                    val cal = Calendar.getInstance()
+                    cal.time = date
+
+                    // Get week of year
+                    val weekOfYear = cal.get(Calendar.WEEK_OF_YEAR)
+                    val year = cal.get(Calendar.YEAR)
+                    val weekPlanOa = "W$weekOfYear-$year"
+
+                    updateMap["weekPlanOa"] = weekPlanOa
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            // Calculate sisaHariThdpPlanOa
+            try {
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val planDate = dateFormat.parse(tglPlanOa)
+                val currentDate = Date()
+
+                if (planDate != null) {
+                    val diffInMillis = planDate.time - currentDate.time
+                    val diffInDays = diffInMillis / (24 * 60 * 60 * 1000)
+
+                    updateMap["sisaHariThdpPlanOa"] = diffInDays.toString()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        // If no fields to update, skip to next step
+        if (updateMap.isEmpty()) {
+            onComplete()
+            return
+        }
+
+        // Add updatedAt field
+        val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+        updateMap["updatedAt"] = currentTime
+
+        // Update in Firestore
+        firestore.collection("projects").document(documentId)
+            .update(updateMap)
+            .addOnSuccessListener {
+                // Continue to next step
+                onComplete()
+            }
+            .addOnFailureListener { e ->
+                showToast("Error updating site data: ${e.message}")
+                btnSaveChanges.isEnabled = true
+            }
+    }
+
     private fun uploadAllFiles(onComplete: () -> Unit) {
+        // Disable the save button to prevent multiple clicks
+        btnSaveChanges.isEnabled = false
+
         var pendingUploads = documentUris.size + imageUris.size
 
         // If no files to upload, call completion handler immediately
