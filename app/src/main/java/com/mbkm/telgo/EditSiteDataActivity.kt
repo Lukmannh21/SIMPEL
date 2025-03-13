@@ -32,6 +32,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import android.util.Log
 
 class EditSiteDataActivity : AppCompatActivity() {
 
@@ -648,44 +650,237 @@ class EditSiteDataActivity : AppCompatActivity() {
         return fileName
     }
 
+    // In the saveChanges() method, add the current user tracking
+
     private fun saveChanges() {
+        // Get current user before proceeding
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            showToast("Anda harus login terlebih dahulu")
+            return
+        }
+
+        val userEmail = currentUser.email ?: "unknown"
+
         val lastIssue = etLastIssue.text.toString().trim()
 
         // First update issue history if needed
         if (lastIssue.isNotEmpty()) {
-            updateLastIssue {
+            updateLastIssue(userEmail) {
                 // Then update other fields if the update fields are visible
                 if (isUpdateFieldsVisible) {
-                    updateSiteData {
+                    updateSiteData(userEmail) {
                         // Finally upload any files
                         uploadAllFiles {
-                            showToast("All changes saved successfully")
-                            finish()
+                            // Update user's edit history in their own document
+                            updateUserEditHistory(userEmail, siteId) {
+                                showToast("All changes saved successfully")
+                                finish()
+                            }
                         }
                     }
                 } else {
                     // Just upload files if update fields are not visible
                     uploadAllFiles {
-                        showToast("All changes saved successfully")
-                        finish()
+                        // Update user's edit history in their own document
+                        updateUserEditHistory(userEmail, siteId) {
+                            showToast("All changes saved successfully")
+                            finish()
+                        }
                     }
                 }
             }
         } else if (isUpdateFieldsVisible) {
             // If no lastIssue but update fields are visible
-            updateSiteData {
+            updateSiteData(userEmail) {
                 uploadAllFiles {
-                    showToast("All changes saved successfully")
-                    finish()
+                    // Update user's edit history in their own document
+                    updateUserEditHistory(userEmail, siteId) {
+                        showToast("All changes saved successfully")
+                        finish()
+                    }
                 }
             }
         } else {
             // If no issue update and fields are not visible, just upload files
             uploadAllFiles {
-                showToast("All changes saved successfully")
-                finish()
+                // Update user's edit history in their own document
+                updateUserEditHistory(userEmail, siteId) {
+                    showToast("All changes saved successfully")
+                    finish()
+                }
             }
         }
+    }
+
+    // Modify updateLastIssue to include the user email
+    private fun updateLastIssue(userEmail: String, onComplete: () -> Unit) {
+        if (documentId.isEmpty()) {
+            showToast("Error: Site document ID not found")
+            btnSaveChanges.isEnabled = true
+            return
+        }
+
+        val lastIssue = etLastIssue.text.toString().trim()
+        if (lastIssue.isEmpty()) {
+            onComplete() // Skip if empty
+            return
+        }
+
+        val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+        val issueWithTimestamp = "$currentTime - $lastIssue"
+
+        // Get existing issue history
+        firestore.collection("projects").document(documentId)
+            .get()
+            .addOnSuccessListener { document ->
+                val existingData = document.data
+                val existingIssueHistory = existingData?.get("lastIssueHistory") as? List<String> ?: listOf()
+
+                // Create updated issue history with new issue at the beginning
+                val updatedIssueHistory = mutableListOf(issueWithTimestamp)
+                updatedIssueHistory.addAll(existingIssueHistory)
+
+                // Update in Firestore with the user email
+                firestore.collection("projects").document(documentId)
+                    .update(
+                        mapOf(
+                            "lastIssueHistory" to updatedIssueHistory,
+                            "updatedAt" to currentTime,
+                            "lastUpdatedBy" to userEmail  // Add this line to track who made the update
+                        )
+                    )
+                    .addOnSuccessListener {
+                        // Continue with next step
+                        onComplete()
+                    }
+                    .addOnFailureListener { e ->
+                        showToast("Error updating issue: ${e.message}")
+                        btnSaveChanges.isEnabled = true
+                    }
+            }
+            .addOnFailureListener { e ->
+                showToast("Error retrieving site data: ${e.message}")
+                btnSaveChanges.isEnabled = true
+            }
+    }
+
+    // Modify updateSiteData to include the user email
+    private fun updateSiteData(userEmail: String, onComplete: () -> Unit) {
+        if (documentId.isEmpty()) {
+            showToast("Error: Site document ID not found")
+            btnSaveChanges.isEnabled = true
+            return
+        }
+
+        // Get values from new fields
+        val status = dropdownStatus.text.toString().trim()
+        val kendala = dropdownKendala.text.toString().trim()
+        val tglPlanOa = etTglPlanOa.text.toString().trim()
+
+        // Create update map with only non-empty fields
+        val updateMap = mutableMapOf<String, Any>()
+
+        // Always add the user who made this update
+        updateMap["lastUpdatedBy"] = userEmail
+
+        if (status.isNotEmpty()) {
+            updateMap["status"] = status
+
+            // Ambil data yang diperlukan dari Firestore untuk menghitung ID LOP OLT
+            firestore.collection("projects").document(documentId)
+                .get()
+                .addOnSuccessListener { document ->
+                    val data = document.data
+                    if (data != null) {
+                        // Ambil semua field yang diperlukan untuk perhitungan ID LOP OLT
+                        val platform = data["platform"] as? String
+                        val kontrakPengadaan = data["kontrakPengadaan"] as? String
+                        val kodeSto = data["kodeSto"] as? String
+                        val sizeOlt = data["sizeOlt"] as? String
+                        val jmlModul = data["jmlModul"] as? String
+                        val kodeIhld = data["kodeIhld"] as? String
+
+                        // Hitung ID LOP OLT dengan formula yang benar
+                        val idLopOlt = calculateIdLopOlt(
+                            platform,
+                            kontrakPengadaan,
+                            kodeSto,
+                            sizeOlt,
+                            jmlModul,
+                            siteId,
+                            kodeIhld,
+                            status
+                        )
+
+                        // Tambahkan ke updateMap jika berhasil dihitung
+                        if (idLopOlt.isNotEmpty()) {
+                            updateMap["idLopOlt"] = idLopOlt
+                        }
+
+                        // Lanjutkan dengan kode yang sudah ada
+                        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
+                    } else {
+                        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    showToast("Error retrieving site data: ${e.message}")
+                    btnSaveChanges.isEnabled = true
+                }
+            return // Return early since we're handling in the callback
+        }
+
+        // If status is not updated, continue with other updates
+        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
+    }
+
+    // Add a new function to update the user's edit history
+    private fun updateUserEditHistory(userEmail: String, siteId: String, onComplete: () -> Unit) {
+        // Get user document by email
+        firestore.collection("users")
+            .whereEqualTo("email", userEmail)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    // User document not found, complete anyway
+                    onComplete()
+                    return@addOnSuccessListener
+                }
+
+                val userDoc = documents.documents[0]
+                val userId = userDoc.id
+
+                // Get current list of edited sites or create new one
+                var editedSites = userDoc.get("editedSites") as? MutableList<String> ?: mutableListOf()
+
+                // Check if this site is already in the list
+                if (!editedSites.contains(siteId)) {
+                    // Add site if not already in the list
+                    editedSites.add(siteId)
+
+                    // Update user document with the new list
+                    firestore.collection("users").document(userId)
+                        .update("editedSites", editedSites)
+                        .addOnSuccessListener {
+                            // Continue to next step
+                            onComplete()
+                        }
+                        .addOnFailureListener { e ->
+                            // Log error but continue anyway to not block the flow
+                            Log.e("EditSiteActivity", "Error updating user's edit history: ${e.message}")
+                            onComplete()
+                        }
+                } else {
+                    // Site already in the list, just complete
+                    onComplete()
+                }
+            }
+            .addOnFailureListener { e ->
+                // Log error but continue anyway to not block the flow
+                Log.e("EditSiteActivity", "Error finding user document: ${e.message}")
+                onComplete()
+            }
     }
 
     private fun updateLastIssue(onComplete: () -> Unit) {
