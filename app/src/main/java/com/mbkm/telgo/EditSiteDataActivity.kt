@@ -457,7 +457,7 @@ class EditSiteDataActivity : AppCompatActivity() {
                 imageView.visibility = View.VISIBLE
             }
         } catch (e: Exception) {
-            showToast("Error loading image: ${e.message}")
+//            showToast("Error loading image: ${e.message}")
             e.printStackTrace()
         }
     }
@@ -587,7 +587,8 @@ class EditSiteDataActivity : AppCompatActivity() {
                             val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
                             it.setImageBitmap(bitmap)
                             it.visibility = View.VISIBLE
-                        } catch (e: Exception) {
+                        }
+                        catch (e: Exception) {
                             showToast("Error displaying image: ${e.message}")
                             e.printStackTrace()
                         }
