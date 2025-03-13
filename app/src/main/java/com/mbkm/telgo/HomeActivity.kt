@@ -61,8 +61,9 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             startActivity(intent)
         }
 
+        // Tombol last history
         btnLastHistory.setOnClickListener {
-            val intent = Intent(this, LastHistory::class.java)
+            val intent = Intent(this, LastUpdateActivity::class.java)
             startActivity(intent)
         }
 
