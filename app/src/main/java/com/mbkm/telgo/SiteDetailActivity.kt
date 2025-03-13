@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import java.util.concurrent.atomic.AtomicInteger
 
 class SiteDetailActivity : AppCompatActivity() {
 
@@ -27,6 +28,9 @@ class SiteDetailActivity : AppCompatActivity() {
     private lateinit var btnBack: Button
     private lateinit var rvDocuments: RecyclerView
     private lateinit var rvImages: RecyclerView
+
+    // buat meriksa data telah dimuat apa nggak biar dia gak dobel
+    private var isDataInitialized = false
 
     // Additional UI Components
     private lateinit var tvIdLopOlt: TextView
@@ -112,9 +116,11 @@ class SiteDetailActivity : AppCompatActivity() {
         // Set up RecyclerViews
         setupRecyclerViews()
 
-        // Load site data
-        loadSiteData()
+        // HAPUS pemanggilan loadSiteData() dari sini
+        // loadSiteData() dipisahkan ke onResume() saja
     }
+
+
 
     private fun initializeUI() {
         // Original UI Components
@@ -283,70 +289,85 @@ class SiteDetailActivity : AppCompatActivity() {
             }
     }
 
+    // Ganti method loadDocuments() dengan ini:
     private fun loadDocuments() {
+        // Bersihkan list terlebih dahulu dan beritahu adapter segera
         documentsList.clear()
+        documentsAdapter.notifyDataSetChanged()
 
-        // Define document types to check
+        // Gunakan AtomicInteger untuk melacak proses yang sedang berjalan
+        val pendingChecks = AtomicInteger(4) // 4 jenis dokumen yang akan diperiksa
+
+        // Tentukan jenis-jenis dokumen yang akan diperiksa
         val documentTypes = listOf(
             "email_order" to "Document Email Order",
             "telkomsel_permit" to "Document Telkomsel Permit",
-            "tel_partner" to "Document Tel Partner"
+            "mitra_tel" to "Document Mitra Tel", // Nama yang diperbarui
+            "daftar_mitra" to "Document Daftar Mitra" // Jenis dokumen baru
         )
 
         for ((docType, docName) in documentTypes) {
-            // Check if document exists in Firebase Storage
             val docRef = storage.reference.child("documents/$witel/$siteId/$docType.pdf")
             docRef.metadata
                 .addOnSuccessListener {
-                    // Only update the adapter if the activity is still active
                     if (!isFinishing && !isDestroyed) {
-                        // Document exists
+                        // Dokumen ada
                         documentsList.add(DocumentModel(docName, docType, docRef.path))
-                        documentsAdapter.notifyDataSetChanged()
                     }
                 }
                 .addOnFailureListener {
-                    // Only update the adapter if the activity is still active
                     if (!isFinishing && !isDestroyed) {
-                        // Document doesn't exist (null)
+                        // Dokumen tidak ada (null)
                         documentsList.add(DocumentModel(docName, docType, null))
+                    }
+                }
+                .addOnCompleteListener {
+                    // Update adapter hanya setelah semua pemeriksaan selesai
+                    if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
                         documentsAdapter.notifyDataSetChanged()
                     }
                 }
         }
     }
 
+    // Ganti method loadImages() dengan ini:
     private fun loadImages() {
+        // Bersihkan list terlebih dahulu dan beritahu adapter segera
         imagesList.clear()
+        imagesAdapter.notifyDataSetChanged()
 
-        // Define image types to check
+        // Gunakan AtomicInteger untuk melacak proses yang sedang berjalan
+        val pendingChecks = AtomicInteger(7) // 7 jenis gambar yang akan diperiksa
+
+        // Tentukan jenis-jenis gambar yang akan diperiksa
         val imageTypes = listOf(
             "site_location" to "Image Site Location",
             "foundation_shelter" to "Image Foundation/Shelter",
             "installation_process" to "Image Installation Process",
             "cabinet" to "Image Cabinet",
             "3p_inet" to "Image 3P (INET)",
-            "3p_uctv" to "Image 3P (UCTV)",
+            "3p_useetv" to "Image 3P UseeTV", // Nama yang diperbarui
             "3p_telephone" to "Image 3P (Telephone)"
         )
 
         for ((imageType, imageName) in imageTypes) {
-            // Check if image exists in Firebase Storage
             val imageRef = storage.reference.child("images/$witel/$siteId/$imageType.jpg")
             imageRef.metadata
                 .addOnSuccessListener {
-                    // Only update the adapter if the activity is still active
                     if (!isFinishing && !isDestroyed) {
-                        // Image exists
+                        // Gambar ada
                         imagesList.add(ImageModel(imageName, imageType, imageRef.path))
-                        imagesAdapter.notifyDataSetChanged()
                     }
                 }
                 .addOnFailureListener {
-                    // Only update the adapter if the activity is still active
                     if (!isFinishing && !isDestroyed) {
-                        // Image doesn't exist (null)
+                        // Gambar tidak ada (null)
                         imagesList.add(ImageModel(imageName, imageType, null))
+                    }
+                }
+                .addOnCompleteListener {
+                    // Update adapter hanya setelah semua pemeriksaan selesai
+                    if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
                         imagesAdapter.notifyDataSetChanged()
                     }
                 }
@@ -375,7 +396,7 @@ class SiteDetailActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Reload data when returning from EditSiteDataActivity
+        // Hanya muat data jika belum dimuat atau setelah kembali dari activity lain
         loadSiteData()
     }
 
