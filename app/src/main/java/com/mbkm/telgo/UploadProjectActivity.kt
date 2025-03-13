@@ -82,7 +82,7 @@ class UploadProjectActivity : AppCompatActivity() {
     // Status options
     private val statusOptions = listOf(
         "OA", "MAT DEL", "DONE", "SURVEY", "POWER ON",
-        "DROP", "MOS", "INTEGRASI", "SURVEY"
+        "DROP", "MOS", "INTEGRASI", "DONE SURVEY", "DONE UT"
     )
 
     // New dropdown options
