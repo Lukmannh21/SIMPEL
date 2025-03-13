@@ -91,7 +91,7 @@ class EditSiteDataActivity : AppCompatActivity() {
     // Status and Kendala options
     private val statusOptions = listOf(
         "OA", "MAT DEL", "DONE", "SURVEY", "POWER ON",
-        "DROP", "MOS", "INTEGRASI", "SURVEY"
+        "DROP", "MOS", "INTEGRASI", "DONE SURVEY", "DONE UT"
     )
 
     private val kendalaOptions = listOf(
