@@ -289,7 +289,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tel Partner:"
+                    android:text="Mitra Tel:"
                     android:textStyle="bold"/>
 
                 <Button
@@ -301,6 +301,28 @@
 
                 <TextView
                     android:id="@+id/tvTelPartnerFileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Daftar Mitra:"
+                    android:textStyle="bold"/>
+
+                <Button
+                    android:id="@+id/btnUploadDaftarMitra"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Upload Document"
+                    android:background="@drawable/btn_red"/>
+
+                <TextView
+                    android:id="@+id/tvDaftarMitraFileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="italic"

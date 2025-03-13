@@ -42,6 +42,9 @@ class EditSiteDataActivity : AppCompatActivity() {
     private lateinit var etLastIssue: EditText
     private lateinit var tvKoordinat: TextView
 
+    private lateinit var btnUploadDaftarMitra: Button
+    private lateinit var tvDaftarMitraFileName: TextView
+
     private lateinit var btnUploadEmailOrder: Button
     private lateinit var btnUploadTelkomselPermit: Button
     private lateinit var btnUploadTelPartner: Button
@@ -188,6 +191,9 @@ class EditSiteDataActivity : AppCompatActivity() {
         dropdownStatus = findViewById(R.id.dropdownStatus)
         dropdownKendala = findViewById(R.id.dropdownKendala)
         etTglPlanOa = findViewById(R.id.etTglPlanOa)
+
+        btnUploadDaftarMitra = findViewById(R.id.btnUploadDaftarMitra)
+        tvDaftarMitraFileName = findViewById(R.id.tvDaftarMitraFileName)
     }
 
     private fun setupDropdowns() {
@@ -260,7 +266,8 @@ class EditSiteDataActivity : AppCompatActivity() {
         // Original document upload buttons
         btnUploadEmailOrder.setOnClickListener { openDocumentPicker("email_order") }
         btnUploadTelkomselPermit.setOnClickListener { openDocumentPicker("telkomsel_permit") }
-        btnUploadTelPartner.setOnClickListener { openDocumentPicker("tel_partner") }
+        btnUploadTelPartner.setOnClickListener { openDocumentPicker("mitra_tel") }
+        btnUploadDaftarMitra.setOnClickListener { openDocumentPicker("daftar_mitra") }
 
         // Image capture buttons
         btnCaptureLocation.setOnClickListener { captureImage("site_location") }
@@ -268,7 +275,7 @@ class EditSiteDataActivity : AppCompatActivity() {
         btnCaptureInstallation.setOnClickListener { captureImage("installation_process") }
         btnCaptureCabinet.setOnClickListener { captureImage("cabinet") }
         btnCaptureInet.setOnClickListener { captureImage("3p_inet") }
-        btnCaptureUctv.setOnClickListener { captureImage("3p_uctv") }
+        btnCaptureUctv.setOnClickListener { captureImage("3p_useetv") }
         btnCaptureTelephone.setOnClickListener { captureImage("3p_telephone") }
 
         // Save & Cancel buttons
@@ -354,7 +361,8 @@ class EditSiteDataActivity : AppCompatActivity() {
         val documentTypes = listOf(
             "email_order" to tvEmailOrderFileName,
             "telkomsel_permit" to tvTelkomselPermitFileName,
-            "tel_partner" to tvTelPartnerFileName
+            "mitra_tel" to tvTelPartnerFileName, // Changed from "tel_partner"
+            "daftar_mitra" to tvDaftarMitraFileName // Added new document type
         )
 
         for ((docType, textView) in documentTypes) {
@@ -383,7 +391,7 @@ class EditSiteDataActivity : AppCompatActivity() {
             "installation_process" to ivInstallation,
             "cabinet" to ivCabinet,
             "3p_inet" to ivInet,
-            "3p_uctv" to ivUctv,
+            "3p_useetv" to ivUctv, // Changed from "3p_uctv"
             "3p_telephone" to ivTelephone
         )
 
@@ -406,7 +414,8 @@ class EditSiteDataActivity : AppCompatActivity() {
         val button = when (docType) {
             "email_order" -> btnUploadEmailOrder
             "telkomsel_permit" -> btnUploadTelkomselPermit
-            "tel_partner" -> btnUploadTelPartner
+            "mitra_tel" -> btnUploadTelPartner  // Perbaikan: Menggunakan string baru "mitra_tel"
+            "daftar_mitra" -> btnUploadDaftarMitra  // Penambahan: Support untuk dokumen baru
             else -> return
         }
 
@@ -420,7 +429,7 @@ class EditSiteDataActivity : AppCompatActivity() {
             "installation_process" -> btnCaptureInstallation
             "cabinet" -> btnCaptureCabinet
             "3p_inet" -> btnCaptureInet
-            "3p_uctv" -> btnCaptureUctv
+            "3p_useetv" -> btnCaptureUctv // FIXED: Use the new name
             "3p_telephone" -> btnCaptureTelephone
             else -> return
         }
@@ -565,7 +574,7 @@ class EditSiteDataActivity : AppCompatActivity() {
                         "installation_process" -> ivInstallation
                         "cabinet" -> ivCabinet
                         "3p_inet" -> ivInet
-                        "3p_uctv" -> ivUctv
+                        "3p_useetv" -> ivUctv  // PERBAIKAN: Gunakan string baru "3p_useetv"
                         "3p_telephone" -> ivTelephone
                         else -> null
                     }
@@ -616,9 +625,13 @@ class EditSiteDataActivity : AppCompatActivity() {
                             tvTelkomselPermitFileName.text = fileName
                             tvTelkomselPermitFileName.visibility = View.VISIBLE
                         }
-                        "tel_partner" -> {
+                        "mitra_tel" -> {  // PERBAIKAN: Gunakan string baru "mitra_tel"
                             tvTelPartnerFileName.text = fileName
                             tvTelPartnerFileName.visibility = View.VISIBLE
+                        }
+                        "daftar_mitra" -> {  // TAMBAHAN: Support untuk "daftar_mitra"
+                            tvDaftarMitraFileName.text = fileName
+                            tvDaftarMitraFileName.visibility = View.VISIBLE
                         }
                     }
 
