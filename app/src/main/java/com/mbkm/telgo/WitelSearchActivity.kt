@@ -2,7 +2,6 @@ package com.mbkm.telgo
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -10,14 +9,13 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 /**
  * WitelSearchActivity displays a list of available Witel regions
  *
- * Last Updated: 2025-03-05 07:20:42 UTC
+ * Last Updated: 2025-03-13 07:05:26 UTC
  * Updated By: Lukmannh21
  */
 class WitelSearchActivity : AppCompatActivity() {
@@ -59,6 +57,9 @@ class WitelSearchActivity : AppCompatActivity() {
             // Handle witel item click - navigate to WitelDetailActivity
             val intent = Intent(this, WitelDetailActivity::class.java)
             intent.putExtra("WITEL_NAME", witel.name)
+            // Menambahkan koordinat provinsi ke intent
+            intent.putExtra("PROVINCE_LAT", witel.provinceCoordinates.first)
+            intent.putExtra("PROVINCE_LON", witel.provinceCoordinates.second)
             startActivity(intent)
         }
 
@@ -77,16 +78,56 @@ class WitelSearchActivity : AppCompatActivity() {
 
     private fun initializeWitelList() {
         witelList = arrayListOf(
-            WitelModel("ACEH", "Jl. Sultan Iskandar Muda No.18, Banda Aceh"),
-            WitelModel("BABEL", "Jl. Jenderal Sudirman No.105, Pangkalpinang"),
-            WitelModel("BENGKULU", "Jl. Pembangunan No.38, Bengkulu"),
-            WitelModel("JAMBI", "Jl. Jenderal Sudirman No.55, Jambi"),
-            WitelModel("LAMPUNG", "Jl. Wolter Monginsidi No.12, Bandar Lampung"),
-            WitelModel("RIDAR", "Jl. Jenderal Sudirman No.199, Pekanbaru"),
-            WitelModel("RIKEP", "Jl. Diponegoro No.87, Tanjung Pinang"),
-            WitelModel("SUMBAR", "Jl. Khatib Sulaiman No.1, Padang"),
-            WitelModel("SUMSEL", "Jl. Jenderal Sudirman No.459, Palembang"),
-            WitelModel("SUMUT", "Jl. Prof. HM Yamin No.13, Medan")
+            WitelModel(
+                "ACEH",
+                "Jl. Sultan Iskandar Muda No.18, Banda Aceh",
+                Pair(5.548290, 95.323753) // Koordinat pusat provinsi Aceh
+            ),
+            WitelModel(
+                "BABEL",
+                "Jl. Jenderal Sudirman No.105, Pangkalpinang",
+                Pair(-2.131627, 106.116959) // Koordinat pusat provinsi Bangka Belitung
+            ),
+            WitelModel(
+                "BENGKULU",
+                "Jl. Pembangunan No.38, Bengkulu",
+                Pair(-3.792860, 102.260765) // Koordinat pusat provinsi Bengkulu
+            ),
+            WitelModel(
+                "JAMBI",
+                "Jl. Jenderal Sudirman No.55, Jambi",
+                Pair(-1.609972, 103.607254) // Koordinat pusat provinsi Jambi
+            ),
+            WitelModel(
+                "LAMPUNG",
+                "Jl. Wolter Monginsidi No.12, Bandar Lampung",
+                Pair(-4.558625, 105.406581) // Koordinat pusat provinsi Lampung
+            ),
+            WitelModel(
+                "RIDAR",
+                "Jl. Jenderal Sudirman No.199, Pekanbaru",
+                Pair(0.510440, 101.448311) // Koordinat pusat provinsi Riau Daratan
+            ),
+            WitelModel(
+                "RIKEP",
+                "Jl. Diponegoro No.87, Tanjung Pinang",
+                Pair(3.945308, 108.142090) // Koordinat pusat provinsi Riau Kepulauan
+            ),
+            WitelModel(
+                "SUMBAR",
+                "Jl. Khatib Sulaiman No.1, Padang",
+                Pair(-0.739981, 100.800005) // Koordinat pusat provinsi Sumatera Barat
+            ),
+            WitelModel(
+                "SUMSEL",
+                "Jl. Jenderal Sudirman No.459, Palembang",
+                Pair(-3.319464, 103.914520) // Koordinat pusat provinsi Sumatera Selatan
+            ),
+            WitelModel(
+                "SUMUT",
+                "Jl. Prof. HM Yamin No.13, Medan",
+                Pair(2.192862, 99.378546) // Koordinat pusat provinsi Sumatera Utara
+            )
         )
     }
 

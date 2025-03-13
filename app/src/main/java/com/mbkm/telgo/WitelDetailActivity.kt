@@ -35,6 +35,11 @@ class WitelDetailActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private var witelName: String = ""
 
+    // Tambahkan variabel untuk koordinat provinsi
+    private var provinceLat: Double = 0.0
+    private var provinceLon: Double = 0.0
+    private var hasProvinceCoordinates = false
+
     // MapBox related properties
     private lateinit var mapView: MapView
     private lateinit var mapboxMap: MapboxMap
@@ -57,6 +62,12 @@ class WitelDetailActivity : AppCompatActivity() {
 
         // Get witel name from intent
         witelName = intent.getStringExtra("WITEL_NAME") ?: ""
+
+        // Tambahkan kode untuk mendapatkan koordinat provinsi dari intent
+        provinceLat = intent.getDoubleExtra("PROVINCE_LAT", 0.0)
+        provinceLon = intent.getDoubleExtra("PROVINCE_LON", 0.0)
+        hasProvinceCoordinates = provinceLat != 0.0 && provinceLon != 0.0
+
         if (witelName.isEmpty()) {
             showToast("Witel not specified")
             finish()
@@ -105,9 +116,49 @@ class WitelDetailActivity : AppCompatActivity() {
             // Initialize point annotation manager for markers
             initializePointAnnotationManager()
 
+            // Tambahkan: Tampilkan peta dengan koordinat provinsi jika tersedia
+            if (hasProvinceCoordinates) {
+                setInitialMapView()
+            }
+
             // Load site data for the selected witel
             loadSitesForWitel()
         }
+    }
+
+    // Tambahkan method untuk menampilkan koordinat provinsi
+    private fun setInitialMapView() {
+        val point = Point.fromLngLat(provinceLon, provinceLat) // Note the order: lng, lat
+        val cameraOptions = CameraOptions.Builder()
+            .center(point)
+            .zoom(6.0)  // Nilai zoom yang lebih kecil (1-22, di mana 1 paling jauh dan 22 paling dekat)
+            .pitch(0.0)
+            .bearing(0.0)
+            .build()
+
+        mapboxMap.setCamera(cameraOptions)
+
+        // Opsional: tambahkan marker untuk menandai pusat provinsi
+//        addProvinceMarker(point)
+    }
+
+    // Tambahkan method untuk menambahkan marker provinsi
+    private fun addProvinceMarker(point: Point) {
+        // Buat marker dengan warna khusus untuk provinsi (beda dari marker site)
+        val provinceMarkerColor = Color.rgb(128, 0, 128) // Ungu
+        val markerIcon = createMarkerBitmap(provinceMarkerColor)
+
+        val pointAnnotationOptions = PointAnnotationOptions()
+            .withPoint(point)
+            .withIconImage(markerIcon)
+            .withTextField("Provinsi")
+            .withTextSize(14.0)
+            .withTextOffset(listOf(0.0, 2.5))
+            .withTextColor(Color.BLACK)
+            .withTextHaloColor(Color.WHITE)
+            .withTextHaloWidth(2.0)
+
+        pointAnnotationManager.create(pointAnnotationOptions)
     }
 
     private fun initializePointAnnotationManager() {
@@ -159,9 +210,9 @@ class WitelDetailActivity : AppCompatActivity() {
                 tvSiteCount.text = "Total Sites: ${siteList.size}"
                 siteAdapter.notifyDataSetChanged()
 
-                // Focus map to show all markers if we have any
-                if (sitePoints.isNotEmpty()) {
-                    // You could focus on first site or calculate bounds to show all sites
+                // Focus map to show all markers if we have any and no province coordinates
+                if (sitePoints.isNotEmpty() && !hasProvinceCoordinates) {
+                    // Hanya fokus ke site pertama jika tidak ada koordinat provinsi
                     focusMapOnSite(siteList[0])
                 }
 
@@ -240,7 +291,7 @@ class WitelDetailActivity : AppCompatActivity() {
         val point = Point.fromLngLat(coords.second, coords.first) // Note the order: lng, lat
         val cameraOptions = CameraOptions.Builder()
             .center(point)
-            .zoom(14.0)
+            .zoom(1.0)
             .pitch(0.0)
             .bearing(0.0)
             .build()
