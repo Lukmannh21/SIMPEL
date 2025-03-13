@@ -5,5 +5,7 @@ data class SiteModelLastUpdate(
     val witel: String,
     val status: String,
     val lastIssue: String,
-    val koordinat: String
+    val koordinat: String,
+    val updatedBy: String = "Unknown",
+    val updatedAt: String = "Unknown"
 )

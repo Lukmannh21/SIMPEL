@@ -23,6 +23,14 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvWitel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Witel"
+            android:textColor="#2196F3"
+            android:layout_marginTop="4dp" />
+
+        <TextView
             android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,5 +51,15 @@
             android:layout_height="wrap_content"
             android:text="Koordinat"
             android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tvUpdatedAt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Last updated: Unknown"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:layout_marginTop="8dp"
+            android:gravity="end" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
