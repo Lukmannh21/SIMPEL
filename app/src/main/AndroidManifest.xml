@@ -5,9 +5,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Include only if your app benefits from precise location access. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
+        <activity
+            android:name=".LastHistory"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -80,6 +82,5 @@
             android:exported="false"
             android:theme="@style/MaterialAppTheme" />
     </application>
-
 
 </manifest>
