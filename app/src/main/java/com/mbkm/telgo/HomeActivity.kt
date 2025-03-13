@@ -26,6 +26,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var btnUploadProject: Button
     private lateinit var btnWitelSearch: Button
     private lateinit var btnDownload: Button
+    private lateinit var btnLastHistory: Button
     private lateinit var recyclerViewDashboard: RecyclerView
     private lateinit var projectAdapter: ProjectAdapter
 
@@ -39,6 +40,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         btnUploadProject = findViewById(R.id.btnUploadProject)
         btnWitelSearch = findViewById(R.id.btnWitelSearch)
         btnDownload = findViewById(R.id.btnDownload)
+        btnLastHistory = findViewById(R.id.btnLastHistory)
         recyclerViewDashboard = findViewById(R.id.recyclerViewDashboard)
 
         // Set listener navigasi bawah
@@ -56,6 +58,11 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         // Tombol upload proyek
         btnUploadProject.setOnClickListener {
             val intent = Intent(this, UploadProjectActivity::class.java)
+            startActivity(intent)
+        }
+
+        btnLastHistory.setOnClickListener {
+            val intent = Intent(this, LastHistory::class.java)
             startActivity(intent)
         }
 
