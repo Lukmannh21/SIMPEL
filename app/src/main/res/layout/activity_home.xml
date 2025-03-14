@@ -107,7 +107,7 @@
                     android:drawableTop="@drawable/u2"
                     android:drawablePadding="8dp"
                     android:gravity="center"
-                    android:text="Upload Project"
+                    android:text="Add LOP"
                     android:textColor="@android:color/black"
                     android:textSize="14sp"
                     android:textStyle="bold" />
