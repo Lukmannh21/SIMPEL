@@ -1,15 +1,12 @@
 package com.mbkm.telgo
 
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -146,37 +143,11 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 fileOut.close()
                 wb.close()
 
-                Toast.makeText(this, "Data berhasil diunduh: ${filePath.absolutePath}", Toast.LENGTH_LONG).show()
-
-                // Open the file
-                openFile(filePath)
+                Toast.makeText(this, "Data berhasil diunduh ke folder Download: ${filePath.absolutePath}", Toast.LENGTH_LONG).show()
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Gagal mengunduh data: ${exception.message}", Toast.LENGTH_LONG).show()
             }
-    }
-
-    private fun openFile(file: File) {
-        val fileUri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(
-                this,
-                "$packageName.provider",
-                file
-            )
-        } else {
-            Uri.fromFile(file)
-        }
-
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(fileUri, "application/vnd.ms-excel")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        try {
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(this, "Tidak ada aplikasi yang dapat membuka file ini", Toast.LENGTH_LONG).show()
-        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
