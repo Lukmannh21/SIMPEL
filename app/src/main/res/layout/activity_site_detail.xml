@@ -484,7 +484,8 @@
                     android:text="Documents"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="8dp"
+                    android:textColor="#000000"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvDocuments"
@@ -516,7 +517,8 @@
                     android:text="Images"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="8dp"
+                    android:textColor="#000000"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvImages"
