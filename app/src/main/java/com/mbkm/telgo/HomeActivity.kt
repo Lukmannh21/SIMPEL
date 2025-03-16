@@ -156,13 +156,14 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 // Header row
                 val header: Row = sheet.createRow(0)
                 header.createCell(0).setCellValue("Witel")
-                header.createCell(1).setCellValue("IHLD ID")
-                header.createCell(2).setCellValue("Port")
-                header.createCell(3).setCellValue("Site Provider")
-                header.createCell(4).setCellValue("Last Issue")
-                header.createCell(5).setCellValue("Status")
-                header.createCell(6).setCellValue("Kendala")
-                header.createCell(7).setCellValue("Tgl Plan OA")
+                header.createCell(1).setCellValue("Site ID")
+                header.createCell(2).setCellValue("IHLD ID")
+                header.createCell(3).setCellValue("Port")
+                header.createCell(4).setCellValue("Site Provider")
+                header.createCell(5).setCellValue("Last Issue")
+                header.createCell(6).setCellValue("Status")
+                header.createCell(7).setCellValue("Kendala")
+                header.createCell(8).setCellValue("Tgl Plan OA")
 
                 // Data rows
                 var rowIndex = 1
@@ -170,24 +171,36 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     val project = document.toObject(ProjectModel::class.java)
                     val row: Row = sheet.createRow(rowIndex++)
                     row.createCell(0).setCellValue(project.witel)
-                    row.createCell(1).setCellValue(project.kodeIhld)
-                    row.createCell(2).setCellValue(project.port)
-                    row.createCell(3).setCellValue(project.siteProvider)
-                    row.createCell(4).setCellValue(project.lastIssueHistory.joinToString("\n"))
-                    row.createCell(5).setCellValue(project.status)
-                    row.createCell(6).setCellValue(project.kendala)
-                    row.createCell(7).setCellValue(project.tglPlanOa)
+                    row.createCell(1).setCellValue(project.siteId)
+                    row.createCell(2).setCellValue(project.kodeIhld)
+                    row.createCell(3).setCellValue(project.port)
+                    row.createCell(4).setCellValue(project.siteProvider)
+                    row.createCell(5).setCellValue(project.lastIssueHistory.joinToString("\n"))
+                    row.createCell(6).setCellValue(project.status)
+                    row.createCell(7).setCellValue(project.kendala)
+                    row.createCell(8).setCellValue(project.tglPlanOa)
                 }
 
                 // Write to file
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val filePath = File(downloadsDir, "Dashboard.xls")
-                val fileOut = FileOutputStream(filePath)
-                wb.write(fileOut)
-                fileOut.close()
-                wb.close()
+                var filePath = File(downloadsDir, "Download Dashboard.xls")
+                var counter = 1
 
-                Toast.makeText(this, "Data berhasil diunduh ke folder Download: ${filePath.absolutePath}", Toast.LENGTH_LONG).show()
+                // Check if file exists and create a new file name if it does
+                while (filePath.exists()) {
+                    filePath = File(downloadsDir, "Download Dashboard($counter).xls")
+                    counter++
+                }
+
+                try {
+                    val fileOut = FileOutputStream(filePath)
+                    wb.write(fileOut)
+                    fileOut.close()
+                    wb.close()
+                    Toast.makeText(this, "Data berhasil diunduh ke folder Download: ${filePath.absolutePath}", Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Gagal menyimpan file: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Gagal mengunduh data: ${exception.message}", Toast.LENGTH_LONG).show()

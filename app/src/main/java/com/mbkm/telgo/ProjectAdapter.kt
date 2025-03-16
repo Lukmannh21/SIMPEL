@@ -22,6 +22,7 @@ class ProjectAdapter(private val projectList: List<ProjectModel>) : RecyclerView
 
     class ProjectViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val txtWitel: TextView = view.findViewById(R.id.txtWitel)
+        private val txtSiteId: TextView = view.findViewById(R.id.txtSiteId)
         private val txtKodeIhld: TextView = view.findViewById(R.id.txtKodeIhld)
         private val txtPort: TextView = view.findViewById(R.id.txtPort)
         private val txtSiteProvider: TextView = view.findViewById(R.id.txtSiteProvider)
@@ -32,6 +33,7 @@ class ProjectAdapter(private val projectList: List<ProjectModel>) : RecyclerView
 
         fun bind(project: ProjectModel) {
             txtWitel.text = project.witel
+            txtSiteId.text = project.siteId
             txtKodeIhld.text = project.kodeIhld
             txtPort.text = project.port
             txtSiteProvider.text = project.siteProvider
