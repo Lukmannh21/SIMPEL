@@ -150,13 +150,15 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="12dp">
 
-                <TextView
-                    android:layout_width="0dp"
+
+
+                <Spinner
+                    android:id="@+id/spinnerStatus"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Dashboard"
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
+                    android:entries="@array/status_options"
+                    android:background="@android:drawable/btn_dropdown"
+                    android:layout_marginEnd="8dp"/>
 
                 <Button
                     android:id="@+id/btnDownload"

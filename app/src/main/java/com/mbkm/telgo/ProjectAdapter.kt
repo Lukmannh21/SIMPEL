@@ -6,15 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder>() {
-
-    private val projectList = mutableListOf<ProjectModel>()
-
-    fun setProjects(projects: List<ProjectModel>) {
-        projectList.clear()
-        projectList.addAll(projects)
-        notifyDataSetChanged()
-    }
+class ProjectAdapter(private val projectList: List<ProjectModel>) : RecyclerView.Adapter<ProjectAdapter.ProjectViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_project, parent, false)

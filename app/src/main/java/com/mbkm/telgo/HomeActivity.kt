@@ -4,7 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +30,10 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var btnLastHistory: Button
     private lateinit var recyclerViewDashboard: RecyclerView
     private lateinit var projectAdapter: ProjectAdapter
+    private lateinit var spinnerStatus: Spinner
+
+    private val projectList = mutableListOf<ProjectModel>()
+    private val filteredProjectList = mutableListOf<ProjectModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +47,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         btnDownload = findViewById(R.id.btnDownload)
         btnLastHistory = findViewById(R.id.btnLastHistory)
         recyclerViewDashboard = findViewById(R.id.recyclerViewDashboard)
+        spinnerStatus = findViewById(R.id.spinnerStatus)
 
         // Set listener navigasi bawah
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
@@ -77,8 +86,29 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         // Setup RecyclerView untuk daftar proyek
         recyclerViewDashboard.layoutManager = LinearLayoutManager(this)
-        projectAdapter = ProjectAdapter()
+        projectAdapter = ProjectAdapter(filteredProjectList)
         recyclerViewDashboard.adapter = projectAdapter
+
+        // Setup Spinner untuk filter status
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.status_options,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerStatus.adapter = adapter
+        }
+
+        spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedStatus = parent.getItemAtPosition(position).toString()
+                filterProjectsByStatus(selectedStatus)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }
 
         // Load data proyek dari Firestore
         loadProjects()
@@ -89,16 +119,30 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         db.collection("projects")
             .get()
             .addOnSuccessListener { result ->
-                val projectList = mutableListOf<ProjectModel>()
+                projectList.clear()
                 for (document in result) {
                     val project = document.toObject(ProjectModel::class.java)
                     projectList.add(project)
                 }
-                projectAdapter.setProjects(projectList)
+                filterProjectsByStatus(spinnerStatus.selectedItem.toString())
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Gagal memuat data: ${exception.message}", Toast.LENGTH_LONG).show()
             }
+    }
+
+    private fun filterProjectsByStatus(status: String) {
+        filteredProjectList.clear()
+        if (status == "Pilih Status") {
+            filteredProjectList.addAll(projectList)
+        } else {
+            for (project in projectList) {
+                if (project.status == status) {
+                    filteredProjectList.add(project)
+                }
+            }
+        }
+        projectAdapter.notifyDataSetChanged()
     }
 
     private fun downloadProjectsAsExcel() {
@@ -137,7 +181,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
                 // Write to file
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val filePath = File(downloadsDir, "Projects.xls")
+                val filePath = File(downloadsDir, "Dashboard.xls")
                 val fileOut = FileOutputStream(filePath)
                 wb.write(fileOut)
                 fileOut.close()

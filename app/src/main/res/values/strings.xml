@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">TelGO</string>
+
+    <string name="pilih_status">Pilih Status</string>
+
+    <string-array name="status_options">
+        <item>Pilih Status</item>
+        <item>DROP</item>
+        <item>SURVEY</item>
+        <item>DONE SURVEY</item>
+        <item>MAT DEL</item>
+        <item>MOS</item>
+        <item>INSTAL RACK</item>
+        <item>POWER ON</item>
+        <item>INTEGRASI</item>
+        <item>OA</item>
+        <item>DONE UT</item>
+    </string-array>
 </resources>
