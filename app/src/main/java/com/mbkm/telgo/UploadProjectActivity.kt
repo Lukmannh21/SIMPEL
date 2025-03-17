@@ -82,7 +82,7 @@ class UploadProjectActivity : AppCompatActivity() {
     )
 
     private val sizeOltOptions = listOf(
-        "Big XGSPON", "MINI XGSPON", "SUB RACK ONLY"
+        "Big XGSPON", "MINI XGSPON", "INSERT CARD"
     )
 
     private val platformOptions = listOf("HW", "ZTE")
@@ -104,8 +104,8 @@ class UploadProjectActivity : AppCompatActivity() {
         "DMT", "DMT - Bifurcation", "DMT- Reseller", "IBS", "NO NEED SITAC",
         "NOT READY", "PROTELINDO", "PT Centratama Menara Indonesia",
         "PT Gihon Telekomunikasi Indonesia", "PT Quattro International",
-        "PT.Era Bangun Towerindo", "PT.Protelindo", "READY", "STO Room",
-        "STP", "TBG", "TELKOM", "Telkomsel", "TSEL"
+        "PT.Era Bangun Towerindo", "PT.Protelindo", "READY", "STO ROOM",
+        "STP", "TBG", "TELKOM", "TELKOMSEL", "TSEL"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
