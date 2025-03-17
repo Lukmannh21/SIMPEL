@@ -4,5 +4,6 @@ package com.mbkm.telgo
 data class WitelModel(
     val name: String,
     val address: String,
-    val provinceCoordinates: Pair<Double, Double> // latitude, longitude
+    val provinceCoordinates: Pair<Double, Double>, // latitude, longitude
+    val imageResId: Int // ID dari drawable
 )

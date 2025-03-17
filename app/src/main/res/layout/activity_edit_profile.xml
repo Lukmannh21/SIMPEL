@@ -77,6 +77,21 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="NIK"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etNIK"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:inputType="number"
+                        android:hint="Enter your NIK" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Gender"
                         android:textStyle="bold" />
 
@@ -143,17 +158,47 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Site ID"
+                        android:text="Company Name"
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/etSiteId"
+                        android:id="@+id/etCompanyName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="16dp"
                         android:inputType="text"
-                        android:hint="Enter Site ID" />
+                        android:hint="Enter Company Name" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unit"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etUnit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:inputType="text"
+                        android:hint="Enter Unit" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Position"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etPosition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:inputType="text"
+                        android:hint="Enter Position" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

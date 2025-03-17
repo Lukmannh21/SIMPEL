@@ -13,12 +13,15 @@ import java.util.*
 
 class EditProfileActivity : AppCompatActivity() {
     private lateinit var etFullName: EditText
+    private lateinit var etNIK: EditText
     private lateinit var rgGender: RadioGroup
     private lateinit var rbMan: RadioButton
     private lateinit var rbWoman: RadioButton
     private lateinit var etBirthDate: EditText
     private lateinit var witelRegionDropdown: MaterialAutoCompleteTextView
-    private lateinit var etSiteId: EditText
+    private lateinit var etCompanyName: EditText
+    private lateinit var etUnit: EditText
+    private lateinit var etPosition: EditText
     private lateinit var etPhone: EditText
     private lateinit var btnSave: Button
     private lateinit var btnCancel: Button
@@ -43,12 +46,15 @@ class EditProfileActivity : AppCompatActivity() {
 
         // Initialize UI components
         etFullName = findViewById(R.id.etFullName)
+        etNIK = findViewById(R.id.etNIK)
         rgGender = findViewById(R.id.rgGender)
         rbMan = findViewById(R.id.rbMan)
         rbWoman = findViewById(R.id.rbWoman)
         etBirthDate = findViewById(R.id.etBirthDate)
         witelRegionDropdown = findViewById(R.id.witelRegionDropdown)
-        etSiteId = findViewById(R.id.etSiteId)
+        etCompanyName = findViewById(R.id.etCompanyName)
+        etUnit = findViewById(R.id.etUnit)
+        etPosition = findViewById(R.id.etPosition)
         etPhone = findViewById(R.id.etPhone)
         btnSave = findViewById(R.id.btnSave)
         btnCancel = findViewById(R.id.btnCancel)
@@ -84,16 +90,23 @@ class EditProfileActivity : AppCompatActivity() {
                     if (document != null && document.exists()) {
                         // Set fields with existing data
                         val fullName = document.getString("fullName") ?: ""
+                        val nik = document.getString("nik") ?: ""
                         val gender = document.getString("gender") ?: ""
                         val birthDate = document.getString("birthDate") ?: ""
                         val witelRegion = document.getString("witelRegion") ?: ""
                         val siteId = document.getString("siteId") ?: ""
+                        val companyName = document.getString("companyName") ?: ""
+                        val unit = document.getString("unit") ?: ""
+                        val position = document.getString("position") ?: ""
                         val phone = document.getString("phone") ?: ""
 
                         etFullName.setText(fullName)
+                        etNIK.setText(nik)
                         etBirthDate.setText(birthDate)
                         witelRegionDropdown.setText(witelRegion)
-                        etSiteId.setText(siteId)
+                        etCompanyName.setText(companyName)
+                        etUnit.setText(unit)
+                        etPosition.setText(position)
                         etPhone.setText(phone)
 
                         when (gender) {
@@ -140,6 +153,7 @@ class EditProfileActivity : AppCompatActivity() {
         if (currentUser != null) {
             val userId = currentUser.uid
             val fullName = etFullName.text.toString().trim()
+            val nik = etNIK.text.toString().trim()
             val gender = when (rgGender.checkedRadioButtonId) {
                 R.id.rbMan -> "Man"
                 R.id.rbWoman -> "Woman"
@@ -147,18 +161,23 @@ class EditProfileActivity : AppCompatActivity() {
             }
             val birthDate = etBirthDate.text.toString().trim()
             val witelRegion = witelRegionDropdown.text.toString().trim()
-            val siteId = etSiteId.text.toString().trim()
+            val companyName = etCompanyName.text.toString().trim()
+            val unit = etUnit.text.toString().trim()
+            val position = etPosition.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
             // Create user data hashmap
             val userData = hashMapOf(
                 "fullName" to fullName,
+                "nik" to nik,
                 "gender" to gender,
                 "birthDate" to birthDate,
                 "witelRegion" to witelRegion,
-                "siteId" to siteId,
+                "companyName" to companyName,
+                "unit" to unit,
+                "position" to position,
                 "phone" to phone,
-                "updatedAt" to "2025-03-07 01:54:39" // Use the provided current date/time
+                "updatedAt" to "2025-03-17 02:37:40" // Use the provided current date/time
             )
 
             // Save to Firestore

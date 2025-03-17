@@ -5,6 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.widget.ImageView
+
+
 
 /**
  * Adapter for displaying Witel items in a RecyclerView
@@ -18,12 +21,14 @@ class WitelAdapter(
 ) : RecyclerView.Adapter<WitelAdapter.WitelViewHolder>() {
 
     inner class WitelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val witelImageView: ImageView = itemView.findViewById(R.id.imgWitelLogo)
         val witelNameTextView: TextView = itemView.findViewById(R.id.tvWitelName)
         val witelAddressTextView: TextView = itemView.findViewById(R.id.tvWitelAddress)
 
         fun bind(witel: WitelModel) {
             witelNameTextView.text = witel.name
             witelAddressTextView.text = witel.address
+            witelImageView.setImageResource(witel.imageResId) // Set gambar dari drawable
 
             itemView.setOnClickListener {
                 onItemClick(witel)

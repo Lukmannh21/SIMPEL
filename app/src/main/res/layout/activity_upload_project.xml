@@ -26,6 +26,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Size OLT Dropdown -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sizeOltInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Size OLT (I)"
+            app:layout_constraintTop_toBottomOf="@id/tvFormTitle">
+
+            <AutoCompleteTextView
+                android:id="@+id/sizeOltDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Status Dropdown -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/statusInputLayout"
@@ -34,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Pilih Status (B)"
-            app:layout_constraintTop_toBottomOf="@id/tvFormTitle">
+            app:layout_constraintTop_toBottomOf="@id/sizeOltInputLayout">
 
             <AutoCompleteTextView
                 android:id="@+id/statusDropdown"
@@ -145,23 +162,6 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Size OLT Dropdown -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/sizeOltInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Size OLT (I)"
-            app:layout_constraintTop_toBottomOf="@id/hostnameInputLayout">
-
-            <AutoCompleteTextView
-                android:id="@+id/sizeOltDropdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
-
         <!-- Platform Dropdown -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/platformInputLayout"
@@ -170,7 +170,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Platform (J)"
-            app:layout_constraintTop_toBottomOf="@id/sizeOltInputLayout">
+            app:layout_constraintTop_toBottomOf="@id/hostnameInputLayout">
 
             <AutoCompleteTextView
                 android:id="@+id/platformDropdown"
@@ -257,21 +257,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/koordinatInputLayout" />
 
-        <!-- Site Provider -->
+        <!-- Site Provider - DIUBAH JADI DROPDOWN -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/siteProviderInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Site Provider (O)"
             app:layout_constraintTop_toBottomOf="@id/btnCurrentLocation">
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/siteProviderInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Kecamatan Lokasi OLT -->
@@ -452,7 +452,7 @@
                 android:clickable="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Week Plan OA -->
+        <!-- Week Plan OA - DIUBAH MENJADI READ-ONLY -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/weekPlanOaInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -466,7 +466,8 @@
                 android:id="@+id/weekPlanOaInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="none"
+                android:focusable="false" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- ODP -->
