@@ -35,7 +35,7 @@ import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
 import android.util.Log
 import android.webkit.MimeTypeMap
-
+import java.util.concurrent.atomic.AtomicInteger
 
 
 class EditSiteDataActivity : AppCompatActivity() {
@@ -1328,17 +1328,60 @@ class EditSiteDataActivity : AppCompatActivity() {
         val mimeType = contentResolver.getType(uri) ?: "application/pdf"
         val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "pdf"
 
-        val storageRef = storage.reference.child("documents/$witel/$siteId/$docType.$extension")
+        // Hapus dulu semua kemungkinan file lama dengan format berbeda
+        val potentialExtensions = listOf("pdf", "docx", "doc", "xlsx", "xls")
+        val deleteCounter = AtomicInteger(potentialExtensions.size)
 
-        storageRef.putFile(uri)
-            .addOnSuccessListener {
-                showToast("Document $docType uploaded successfully")
-                onComplete()
-            }
-            .addOnFailureListener { e ->
-                showToast("Error uploading document $docType: ${e.message}")
-                onComplete() // Still call complete to ensure we don't block the process
-            }
+        // Fungsi untuk melanjutkan setelah semua penghapusan selesai
+        val continueWithUpload = {
+            // Buat referensi ke file baru dengan ekstensi yang benar
+            val storageRef = storage.reference.child("documents/$witel/$siteId/$docType.$extension")
+
+            // Unggah file baru
+            storageRef.putFile(uri)
+                .addOnSuccessListener {
+                    // Update TextView untuk menampilkan nama file dan ekstensi baru
+                    val textView = when (docType) {
+                        "email_order" -> tvEmailOrderFileName
+                        "telkomsel_permit" -> tvTelkomselPermitFileName
+                        "mitra_tel" -> tvTelPartnerFileName
+                        "daftar_mitra" -> tvDaftarMitraFileName
+                        else -> null
+                    }
+
+                    // Update nama file di UI dengan ekstensi baru
+                    textView?.let {
+                        val fileName = getFileNameFromUri(uri)
+                        it.text = "$fileName (.$extension)"
+                        it.visibility = View.VISIBLE
+                    }
+
+                    showToast("Document $docType uploaded successfully")
+                    onComplete()
+                }
+                .addOnFailureListener { e ->
+                    showToast("Error uploading document $docType: ${e.message}")
+                    onComplete() // Still call complete to ensure we don't block the process
+                }
+        }
+
+        // Hapus semua kemungkinan file lama dengan ekstensi berbeda
+        for (ext in potentialExtensions) {
+            val oldFileRef = storage.reference.child("documents/$witel/$siteId/$docType.$ext")
+            oldFileRef.delete()
+                .addOnSuccessListener {
+                    // File dihapus atau tidak ada
+                    if (deleteCounter.decrementAndGet() == 0) {
+                        continueWithUpload()
+                    }
+                }
+                .addOnFailureListener {
+                    // File tidak ada atau gagal dihapus, lanjutkan saja
+                    if (deleteCounter.decrementAndGet() == 0) {
+                        continueWithUpload()
+                    }
+                }
+        }
     }
 
     private fun uploadImage(imageType: String, uri: Uri, onComplete: () -> Unit) {
