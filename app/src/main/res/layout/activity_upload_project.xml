@@ -11,31 +11,20 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/red"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Upload Project"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </androidx.appcompat.widget.Toolbar>
-
         <TextView
             android:id="@+id/tvFormTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="160dp"
             android:layout_marginTop="16dp"
-            android:text="Form Upload Project"
-            android:textSize="18sp"
+            android:layout_marginEnd="130dp"
+            android:text="Input LOP"
+            android:textColor="#000000"
+            android:textSize="23sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Status Dropdown -->
         <com.google.android.material.textfield.TextInputLayout
@@ -517,28 +506,33 @@
         <!-- Add Data Button -->
         <Button
             android:id="@+id/btnAddData"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="15dp"
+            android:minHeight="51dp"
+            android:background="@drawable/btn_red"
             android:text="Add Data"
             android:textAllCaps="false"
-            app:layout_constraintTop_toBottomOf="@id/portInputLayout"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/portInputLayout" />
 
         <!-- Back Button -->
         <Button
             android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
             android:text="Back"
+            android:textSize="20sp"
             android:textAllCaps="false"
+            android:background="@drawable/btn_red"
             app:layout_constraintTop_toBottomOf="@id/btnAddData"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
