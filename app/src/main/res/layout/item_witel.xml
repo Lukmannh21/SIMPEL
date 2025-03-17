@@ -1,10 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#E90606"> <!-- Mengubah warna CardView menjadi merah -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,16 +35,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Witel Name"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvWitelAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Witel Address"
-                android:layout_marginTop="4dp" />
+                android:textColor="@android:color/white"
+            android:layout_marginTop="4dp" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
