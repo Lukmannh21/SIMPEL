@@ -34,6 +34,9 @@ import java.util.Date
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
 import android.util.Log
+import android.webkit.MimeTypeMap
+
+
 
 class EditSiteDataActivity : AppCompatActivity() {
 
@@ -118,6 +121,15 @@ class EditSiteDataActivity : AppCompatActivity() {
     // Calendar for date picker
     private val calendar = Calendar.getInstance()
 
+    // Tambahkan variabel untuk menyimpan nilai awal field
+    private var initialStatus = ""
+    private var initialKendala = ""
+    private var initialLastIssue = ""
+    private var initialTglPlanOa = ""
+
+    // Tambahkan variable untuk menandai jika pernah menekan toggle
+    private var hasToggledUpdateFields = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_site_data)
@@ -150,6 +162,13 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         // Load site data
         loadSiteData()
+
+        // Set up button listeners
+        setupButtonListeners()
+
+        // Load site data
+        loadSiteData()
+
     }
 
     private fun initializeViews() {
@@ -246,7 +265,8 @@ class EditSiteDataActivity : AppCompatActivity() {
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            etTglPlanOa.setText(dateFormat.format(calendar.time))
+            val dateStr = dateFormat.format(calendar.time)
+            etTglPlanOa.setText(dateStr)
         }
 
         DatePickerDialog(
@@ -259,6 +279,13 @@ class EditSiteDataActivity : AppCompatActivity() {
     }
 
     private fun setupButtonListeners() {
+        // Tambahkan logika untuk mencatat jika toggle ditekan
+        btnToggleUpdateFields.setOnClickListener {
+            isUpdateFieldsVisible = !isUpdateFieldsVisible
+            hasToggledUpdateFields = true
+            cardUpdateFields.visibility = if (isUpdateFieldsVisible) View.VISIBLE else View.GONE
+        }
+
         // Toggle update fields button
         btnToggleUpdateFields.setOnClickListener {
             isUpdateFieldsVisible = !isUpdateFieldsVisible
@@ -308,32 +335,50 @@ class EditSiteDataActivity : AppCompatActivity() {
                 tvKoordinat.text = site?.get("koordinat").toString()
 
                 // Set last issue if available
-                val lastIssueHistory = site?.get("lastIssueHistory") as? List<String>
-                if (!lastIssueHistory.isNullOrEmpty()) {
-                    // Extract just the content part after the timestamp
-                    val lastIssue = lastIssueHistory[0]
-                    val parts = lastIssue.split(" - ", limit = 2)
-                    if (parts.size > 1) {
-                        etLastIssue.setText(parts[1])
-                    } else {
-                        etLastIssue.setText(lastIssue)
-                    }
-                }
+//                val lastIssueHistory = site?.get("lastIssueHistory") as? List<String>
+//                if (!lastIssueHistory.isNullOrEmpty()) {
+//                    // Extract just the content part after the timestamp
+//                    val lastIssue = lastIssueHistory[0]
+//                    val parts = lastIssue.split(" - ", limit = 2)
+//                    if (parts.size > 1) {
+//                        etLastIssue.setText(parts[1])
+//                    } else {
+//                        etLastIssue.setText(lastIssue)
+//                    }
+//                }
 
                 // Set values for new editable fields
+                // Simpan nilai awal dari field-field yang bisa diubah
                 site?.get("status")?.toString()?.let {
+                    initialStatus = it
                     if (it.isNotEmpty()) {
                         dropdownStatus.setText(it, false)
                     }
                 }
 
                 site?.get("kendala")?.toString()?.let {
+                    initialKendala = it
                     if (it.isNotEmpty()) {
                         dropdownKendala.setText(it, false)
                     }
                 }
 
+                val lastIssueHistory = site?.get("lastIssueHistory") as? List<String>
+                if (!lastIssueHistory.isNullOrEmpty()) {
+                    // Extract just the content part after the timestamp
+                    val lastIssue = lastIssueHistory[0]
+                    val parts = lastIssue.split(" - ", limit = 2)
+                    if (parts.size > 1) {
+                        initialLastIssue = parts[1]
+                        etLastIssue.setText(parts[1])
+                    } else {
+                        initialLastIssue = lastIssue
+                        etLastIssue.setText(lastIssue)
+                    }
+                }
+
                 site?.get("tglPlanOa")?.toString()?.let {
+                    initialTglPlanOa = it
                     if (it.isNotEmpty()) {
                         etTglPlanOa.setText(it)
 
@@ -357,6 +402,50 @@ class EditSiteDataActivity : AppCompatActivity() {
                 showToast("Error loading site: ${e.message}")
             }
     }
+
+    private fun updateWeekPlanOa(dateStr: String): String {
+        try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = dateFormat.parse(dateStr)
+            if (date != null) {
+                val calendar = Calendar.getInstance()
+                calendar.time = date
+
+                val month = when (calendar.get(Calendar.MONTH)) {
+                    Calendar.JANUARY -> "Jan"
+                    Calendar.FEBRUARY -> "Feb"
+                    Calendar.MARCH -> "Mar"
+                    Calendar.APRIL -> "Apr"
+                    Calendar.MAY -> "May"
+                    Calendar.JUNE -> "Jun"
+                    Calendar.JULY -> "Jul"
+                    Calendar.AUGUST -> "Aug"
+                    Calendar.SEPTEMBER -> "Sep"
+                    Calendar.OCTOBER -> "Oct"
+                    Calendar.NOVEMBER -> "Nov"
+                    Calendar.DECEMBER -> "Dec"
+                    else -> ""
+                }
+
+                // Calculate week of month (W1, W2, W3, W4, W5)
+                val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+                val weekOfMonth = when {
+                    dayOfMonth <= 7 -> "W1"
+                    dayOfMonth <= 14 -> "W2"
+                    dayOfMonth <= 21 -> "W3"
+                    dayOfMonth <= 28 -> "W4"
+                    else -> "W5"
+                }
+
+                // Format "Mar W2"
+                return "$month $weekOfMonth"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return ""
+    }
+
 
     private fun loadExistingFiles() {
         // Load existing documents
@@ -465,7 +554,15 @@ class EditSiteDataActivity : AppCompatActivity() {
     private fun openDocumentPicker(docType: String) {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            type = "application/pdf"
+            // Support untuk PDF, Word, dan Excel
+            type = "*/*"
+            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(
+                "application/pdf",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/vnd.ms-excel",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ))
         }
 
         // Store the document type to use when handling the result
@@ -615,8 +712,9 @@ class EditSiteDataActivity : AppCompatActivity() {
                     // Store the URI for later upload
                     documentUris[currentImageType] = uri
 
-                    // Get the filename from the URI
+                    // Get the filename and mime type from the URI
                     val fileName = getFileNameFromUri(uri)
+                    val mimeType = contentResolver.getType(uri) ?: "application/pdf"
 
                     // Update the corresponding TextView based on the document type
                     when (currentImageType) {
@@ -628,11 +726,11 @@ class EditSiteDataActivity : AppCompatActivity() {
                             tvTelkomselPermitFileName.text = fileName
                             tvTelkomselPermitFileName.visibility = View.VISIBLE
                         }
-                        "mitra_tel" -> {  // PERBAIKAN: Gunakan string baru "mitra_tel"
+                        "mitra_tel" -> {
                             tvTelPartnerFileName.text = fileName
                             tvTelPartnerFileName.visibility = View.VISIBLE
                         }
-                        "daftar_mitra" -> {  // TAMBAHAN: Support untuk "daftar_mitra"
+                        "daftar_mitra" -> {
                             tvDaftarMitraFileName.text = fileName
                             tvDaftarMitraFileName.visibility = View.VISIBLE
                         }
@@ -675,57 +773,182 @@ class EditSiteDataActivity : AppCompatActivity() {
         }
 
         val userEmail = currentUser.email ?: "unknown"
-
         val lastIssue = etLastIssue.text.toString().trim()
 
-        // First update issue history if needed
-        if (lastIssue.isNotEmpty()) {
-            updateLastIssue(userEmail) {
-                // Then update other fields if the update fields are visible
-                if (isUpdateFieldsVisible) {
-                    updateSiteData(userEmail) {
-                        // Finally upload any files
-                        uploadAllFiles {
-                            // Update user's edit history in their own document
-                            updateUserEditHistory(userEmail, siteId) {
-                                showToast("All changes saved successfully")
-                                finish()
-                            }
-                        }
+        // Check if fields are updated
+        val currentStatus = dropdownStatus.text.toString().trim()
+        val currentKendala = dropdownKendala.text.toString().trim()
+        val currentTglPlanOa = etTglPlanOa.text.toString().trim()
+
+        val isStatusChanged = currentStatus.isNotEmpty() && currentStatus != initialStatus
+        val isKendalaChanged = currentKendala.isNotEmpty() && currentKendala != initialKendala
+        val isTglPlanOaChanged = currentTglPlanOa.isNotEmpty() && currentTglPlanOa != initialTglPlanOa
+        val isIssueUpdated = lastIssue.isNotEmpty() && lastIssue != initialLastIssue
+
+        // PERBAIKAN: Cek apakah ada field yang berubah (tanpa mempertimbangkan toggle)
+        val anyFieldsChanged = isStatusChanged || isKendalaChanged || isTglPlanOaChanged || isIssueUpdated
+
+        // Disable save button to prevent multiple clicks
+        btnSaveChanges.isEnabled = false
+
+        // PERBAIKAN: Jika ada field yang berubah, lakukan update untuk semua field
+        if (anyFieldsChanged) {
+            // Membuat Map untuk update data
+            val updateMap = mutableMapOf<String, Any>()
+            val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+
+            // Tambahkan nilai yang berubah ke updateMap
+            if (isStatusChanged) {
+                updateMap["status"] = currentStatus
+            }
+
+            if (isKendalaChanged) {
+                updateMap["kendala"] = currentKendala
+            }
+
+            if (isTglPlanOaChanged) {
+                updateMap["tglPlanOa"] = currentTglPlanOa
+
+                // Calculate weekPlanOa from tglPlanOa
+                val weekPlanOa = updateWeekPlanOa(currentTglPlanOa)
+                if (weekPlanOa.isNotEmpty()) {
+                    updateMap["weekPlanOa"] = weekPlanOa
+                }
+
+                // Calculate sisaHariThdpPlanOa
+                try {
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val planDate = dateFormat.parse(currentTglPlanOa)
+                    val currentDate = Date()
+
+                    if (planDate != null) {
+                        val diffInMillis = planDate.time - currentDate.time
+                        val diffInDays = diffInMillis / (24 * 60 * 60 * 1000)
+
+                        updateMap["sisaHariThdpPlanOa"] = diffInDays.toString()
                     }
-                } else {
-                    // Just upload files if update fields are not visible
-                    uploadAllFiles {
-                        // Update user's edit history in their own document
-                        updateUserEditHistory(userEmail, siteId) {
-                            showToast("All changes saved successfully")
-                            finish()
-                        }
-                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
-        } else if (isUpdateFieldsVisible) {
-            // If no lastIssue but update fields are visible
-            updateSiteData(userEmail) {
+
+            // Tambahkan metadata update
+            updateMap["updatedAt"] = currentTime
+            updateMap["lastUpdatedBy"] = userEmail
+
+            // Jika status berubah, perbarui idLopOlt
+            if (isStatusChanged) {
+                firestore.collection("projects").document(documentId)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        val data = document.data
+                        if (data != null) {
+                            // Ambil semua field yang diperlukan untuk perhitungan ID LOP OLT
+                            val platform = data["platform"] as? String
+                            val kontrakPengadaan = data["kontrakPengadaan"] as? String
+                            val kodeSto = data["kodeSto"] as? String
+                            val sizeOlt = data["sizeOlt"] as? String
+                            val jmlModul = data["jmlModul"] as? String
+                            val kodeIhld = data["kodeIhld"] as? String
+
+                            // Hitung ID LOP OLT
+                            val idLopOlt = calculateIdLopOlt(
+                                platform,
+                                kontrakPengadaan,
+                                kodeSto,
+                                sizeOlt,
+                                jmlModul,
+                                siteId,
+                                kodeIhld,
+                                currentStatus
+                            )
+
+                            // Tambahkan ke updateMap jika berhasil dihitung
+                            if (idLopOlt.isNotEmpty()) {
+                                updateMap["idLopOlt"] = idLopOlt
+                            }
+
+                            // Lanjutkan dengan updateLastIssue dan finalisasi
+                            continueWithUpdates(userEmail, lastIssue, updateMap, isIssueUpdated)
+                        } else {
+                            // Lanjutkan tanpa mengupdate idLopOlt
+                            continueWithUpdates(userEmail, lastIssue, updateMap, isIssueUpdated)
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        showToast("Error retrieving site data: ${e.message}")
+                        btnSaveChanges.isEnabled = true
+                    }
+            } else {
+                // Tidak perlu mengambil data untuk idLopOlt
+                continueWithUpdates(userEmail, lastIssue, updateMap, isIssueUpdated)
+            }
+        } else {
+            // Jika tidak ada field yang berubah, cukup upload file
+            uploadAllFiles {
+                // Update user's edit history
+                updateUserEditHistory(userEmail, siteId) {
+                    showToast("No data changes detected. Files uploaded successfully")
+                    finish()
+                }
+            }
+        }
+    }
+
+    // TAMBAHAN: Metode baru untuk melanjutkan update setelah idLopOlt diproses
+    private fun continueWithUpdates(userEmail: String, lastIssue: String, updateMap: MutableMap<String, Any>, isIssueUpdated: Boolean) {
+        if (isIssueUpdated) {
+            // Update lastIssue dan sisanya dalam satu operasi
+            val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+            val issueWithTimestamp = "$currentTime - $lastIssue"
+
+            // Get existing issue history
+            firestore.collection("projects").document(documentId)
+                .get()
+                .addOnSuccessListener { document ->
+                    val existingData = document.data
+                    val existingIssueHistory = existingData?.get("lastIssueHistory") as? List<String> ?: listOf()
+
+                    // Create updated issue history with new issue at the beginning
+                    val updatedIssueHistory = mutableListOf(issueWithTimestamp)
+                    updatedIssueHistory.addAll(existingIssueHistory)
+
+                    // Tambahkan lastIssueHistory ke updateMap
+                    updateMap["lastIssueHistory"] = updatedIssueHistory
+
+                    // Update semua data sekaligus
+                    updateAllData(userEmail, updateMap)
+                }
+                .addOnFailureListener { e ->
+                    showToast("Error retrieving site data: ${e.message}")
+                    btnSaveChanges.isEnabled = true
+                }
+        } else {
+            // Tidak ada perubahan issue, langsung update data lainnya
+            updateAllData(userEmail, updateMap)
+        }
+    }
+
+    // TAMBAHAN: Metode untuk update semua data sekaligus
+    private fun updateAllData(userEmail: String, updateMap: MutableMap<String, Any>) {
+        // Update in Firestore
+        firestore.collection("projects").document(documentId)
+            .update(updateMap)
+            .addOnSuccessListener {
+                // Upload file dan update history
                 uploadAllFiles {
-                    // Update user's edit history in their own document
                     updateUserEditHistory(userEmail, siteId) {
                         showToast("All changes saved successfully")
                         finish()
                     }
                 }
             }
-        } else {
-            // If no issue update and fields are not visible, just upload files
-            uploadAllFiles {
-                // Update user's edit history in their own document
-                updateUserEditHistory(userEmail, siteId) {
-                    showToast("All changes saved successfully")
-                    finish()
-                }
+            .addOnFailureListener { e ->
+                showToast("Error updating site data: ${e.message}")
+                btnSaveChanges.isEnabled = true
             }
-        }
     }
+
 
     // Modify updateLastIssue to include the user email
     private fun updateLastIssue(userEmail: String, onComplete: () -> Unit) {
@@ -798,7 +1021,7 @@ class EditSiteDataActivity : AppCompatActivity() {
         // Always add the user who made this update
         updateMap["lastUpdatedBy"] = userEmail
 
-        if (status.isNotEmpty()) {
+        if (status.isNotEmpty() && status != initialStatus) {
             updateMap["status"] = status
 
             // Ambil data yang diperlukan dari Firestore untuk menghitung ID LOP OLT
@@ -1015,32 +1238,19 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     // Helper method to complete the update process
     private fun completeUpdateProcess(updateMap: MutableMap<String, Any>, kendala: String, tglPlanOa: String, onComplete: () -> Unit) {
-        // Add kendala if not empty
-        if (kendala.isNotEmpty()) {
+        // Add kendala if not empty and changed
+        if (kendala.isNotEmpty() && kendala != initialKendala) {
             updateMap["kendala"] = kendala
         }
 
         // Process tglPlanOa
-        if (tglPlanOa.isNotEmpty()) {
+        if (tglPlanOa.isNotEmpty() && tglPlanOa != initialTglPlanOa) {
             updateMap["tglPlanOa"] = tglPlanOa
 
-            // Calculate weekPlanOa from tglPlanOa
-            try {
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val date = dateFormat.parse(tglPlanOa)
-                if (date != null) {
-                    val cal = Calendar.getInstance()
-                    cal.time = date
-
-                    // Get week of year
-                    val weekOfYear = cal.get(Calendar.WEEK_OF_YEAR)
-                    val year = cal.get(Calendar.YEAR)
-                    val weekPlanOa = "W$weekOfYear-$year"
-
-                    updateMap["weekPlanOa"] = weekPlanOa
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            // Calculate weekPlanOa from tglPlanOa using our new function
+            val weekPlanOa = updateWeekPlanOa(tglPlanOa)
+            if (weekPlanOa.isNotEmpty()) {
+                updateMap["weekPlanOa"] = weekPlanOa
             }
 
             // Calculate sisaHariThdpPlanOa
@@ -1061,7 +1271,7 @@ class EditSiteDataActivity : AppCompatActivity() {
         }
 
         // If no fields to update, skip to next step
-        if (updateMap.isEmpty()) {
+        if (updateMap.isEmpty() || updateMap.size == 1 && updateMap.containsKey("lastUpdatedBy")) {
             onComplete()
             return
         }
@@ -1114,7 +1324,11 @@ class EditSiteDataActivity : AppCompatActivity() {
     }
 
     private fun uploadDocument(docType: String, uri: Uri, onComplete: () -> Unit) {
-        val storageRef = storage.reference.child("documents/$witel/$siteId/$docType.pdf")
+        val contentResolver = applicationContext.contentResolver
+        val mimeType = contentResolver.getType(uri) ?: "application/pdf"
+        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "pdf"
+
+        val storageRef = storage.reference.child("documents/$witel/$siteId/$docType.$extension")
 
         storageRef.putFile(uri)
             .addOnSuccessListener {

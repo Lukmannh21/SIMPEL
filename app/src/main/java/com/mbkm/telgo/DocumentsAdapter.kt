@@ -1,7 +1,6 @@
 package com.mbkm.telgo
 
 import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +8,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.storage.FirebaseStorage
+import java.util.Locale
 
 class DocumentsAdapter(
     private val documentsList: ArrayList<DocumentModel>
@@ -19,31 +19,36 @@ class DocumentsAdapter(
         val viewDocumentButton: Button = itemView.findViewById(R.id.btnViewDocument)
 
         fun bind(document: DocumentModel) {
-            documentNameTextView.text = document.name
+            // Tambahkan informasi format jika tersedia
+            if (document.extension != null) {
+                documentNameTextView.text = "${document.name} (${document.extension.toUpperCase(Locale.ROOT)})"
+            } else {
+                documentNameTextView.text = document.name
+            }
 
             // If document is null, disable the view button
             if (document.path == null) {
                 viewDocumentButton.text = "Not Available"
                 viewDocumentButton.isEnabled = false
             } else {
-                viewDocumentButton.text = "View PDF"
+                viewDocumentButton.text = "View Document"
                 viewDocumentButton.isEnabled = true
 
                 viewDocumentButton.setOnClickListener {
-                    // Get download URL from Firebase Storage and open PDF
+                    // Get download URL from Firebase Storage and open document
                     val storage = FirebaseStorage.getInstance()
                     val documentRef = storage.reference.child(document.path)
 
                     documentRef.downloadUrl.addOnSuccessListener { uri ->
                         val intent = Intent(Intent.ACTION_VIEW).apply {
-                            setDataAndType(uri, "application/pdf")
+                            setDataAndType(uri, document.mimeType ?: "application/pdf")
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         }
 
                         try {
                             itemView.context.startActivity(intent)
                         } catch (e: Exception) {
-                            showToast(itemView.context, "No PDF viewer app found")
+                            showToast(itemView.context, "No suitable app found to open this document")
                         }
                     }.addOnFailureListener { e ->
                         showToast(itemView.context, "Error loading document: ${e.message}")
@@ -58,12 +63,14 @@ class DocumentsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_document, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_document, parent, false)
         return DocumentViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: DocumentViewHolder, position: Int) {
-        holder.bind(documentsList[position])
+        val document = documentsList[position]
+        holder.bind(document)
     }
 
     override fun getItemCount(): Int {
