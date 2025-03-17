@@ -11,10 +11,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var tvFullName: TextView
+    private lateinit var tvNIK: TextView
     private lateinit var tvGender: TextView
     private lateinit var tvBirthDate: TextView
     private lateinit var tvWitelRegion: TextView
-    private lateinit var tvSiteId: TextView
+    private lateinit var tvCompanyName: TextView
+    private lateinit var tvUnit: TextView
+    private lateinit var tvPosition: TextView
     private lateinit var tvEmail: TextView
     private lateinit var tvPhone: TextView
     private lateinit var btnEditProfile: Button
@@ -32,10 +35,13 @@ class ProfileActivity : AppCompatActivity() {
 
         // Initialize UI components
         tvFullName = findViewById(R.id.tvFullName)
+        tvNIK = findViewById(R.id.tvNIK)
         tvGender = findViewById(R.id.tvGender)
         tvBirthDate = findViewById(R.id.tvBirthDate)
         tvWitelRegion = findViewById(R.id.tvWitelRegion)
-        tvSiteId = findViewById(R.id.tvSiteId)
+        tvCompanyName = findViewById(R.id.tvCompanyName)
+        tvUnit = findViewById(R.id.tvUnit)
+        tvPosition = findViewById(R.id.tvPosition)
         tvEmail = findViewById(R.id.tvEmail)
         tvPhone = findViewById(R.id.tvPhone)
         btnEditProfile = findViewById(R.id.btnEditProfile)
@@ -70,17 +76,24 @@ class ProfileActivity : AppCompatActivity() {
                     if (document != null && document.exists()) {
                         // Set user data from Firestore
                         val fullName = document.getString("fullName") ?: ""
+                        val nik = document.getString("nik") ?: ""
                         val gender = document.getString("gender") ?: ""
                         val birthDate = document.getString("birthDate") ?: ""
                         val witelRegion = document.getString("witelRegion") ?: ""
                         val siteId = document.getString("siteId") ?: ""
+                        val companyName = document.getString("companyName") ?: ""
+                        val unit = document.getString("unit") ?: ""
+                        val position = document.getString("position") ?: ""
                         val phone = document.getString("phone") ?: ""
 
                         tvFullName.text = if (fullName.isNotEmpty()) fullName else "Not set"
+                        tvNIK.text = if (nik.isNotEmpty()) nik else "Not set"
                         tvGender.text = if (gender.isNotEmpty()) gender else "Not set"
                         tvBirthDate.text = if (birthDate.isNotEmpty()) birthDate else "Not set"
                         tvWitelRegion.text = if (witelRegion.isNotEmpty()) witelRegion else "Not set"
-                        tvSiteId.text = if (siteId.isNotEmpty()) siteId else "Not set"
+                        tvCompanyName.text = if (companyName.isNotEmpty()) companyName else "Not set"
+                        tvUnit.text = if (unit.isNotEmpty()) unit else "Not set"
+                        tvPosition.text = if (position.isNotEmpty()) position else "Not set"
                         tvPhone.text = if (phone.isNotEmpty()) phone else "Not set"
                     } else {
                         // No document found
@@ -101,10 +114,13 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun setDefaultValues() {
         tvFullName.text = "Not set"
+        tvNIK.text = "Not set"
         tvGender.text = "Not set"
         tvBirthDate.text = "Not set"
         tvWitelRegion.text = "Not set"
-        tvSiteId.text = "Not set"
+        tvCompanyName.text = "Not set"
+        tvUnit.text = "Not set"
+        tvPosition.text = "Not set"
         tvPhone.text = "Not set"
     }
 }

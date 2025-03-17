@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -75,6 +74,19 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="NIK"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvNIK"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        tools:text="1234567890" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Gender"
                         android:textStyle="bold" />
 
@@ -114,14 +126,40 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Site ID"
+                        android:text="Company Name"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tvSiteId"
+                        android:id="@+id/tvCompanyName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="ACH001" />
+                        android:layout_marginBottom="12dp"
+                        tools:text="Company ABC" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Unit"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvUnit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        tools:text="Unit XYZ" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Position"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvPosition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:text="Manager" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
