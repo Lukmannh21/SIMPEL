@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.concurrent.atomic.AtomicInteger
+import android.webkit.MimeTypeMap
+import java.io.File
+import java.util.Locale
 
 class SiteDetailActivity : AppCompatActivity() {
 
@@ -120,8 +123,6 @@ class SiteDetailActivity : AppCompatActivity() {
         // loadSiteData() dipisahkan ke onResume() saja
     }
 
-
-
     private fun initializeUI() {
         // Original UI Components
         tvSiteId = findViewById(R.id.tvSiteId)
@@ -164,7 +165,6 @@ class SiteDetailActivity : AppCompatActivity() {
         tvSisaHariThdpToc = findViewById(R.id.tvSisaHariThdpToc)
     }
 
-    // Existing methods remain unchanged
     private fun checkAndRequestStoragePermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // On Android 10 and above, we don't need to ask for storage permission
@@ -289,7 +289,58 @@ class SiteDetailActivity : AppCompatActivity() {
             }
     }
 
-    // Ganti method loadDocuments() dengan ini:
+    // Tambahkan fungsi checkDocumentExists yang sebelumnya belum ditambahkan
+    private fun checkDocumentExists(docType: String, docName: String, pendingChecks: AtomicInteger) {
+        val formats = listOf(
+            "pdf" to "application/pdf",
+            "docx" to "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "doc" to "application/msword",
+            "xlsx" to "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "xls" to "application/vnd.ms-excel"
+        )
+
+        val checkQueue = AtomicInteger(formats.size)
+        var documentFound = false
+
+        for ((ext, mimeType) in formats) {
+            val docRef = storage.reference.child("documents/$witel/$siteId/$docType.$ext")
+            docRef.metadata
+                .addOnSuccessListener {
+                    if (!documentFound && !isFinishing && !isDestroyed) {
+                        // Dokumen ditemukan, tambahkan ke list dengan format yang benar
+                        documentFound = true
+                        documentsList.add(DocumentModel(docName, docType, docRef.path, ext, mimeType))
+
+                        // Jika dokumen ditemukan dalam format ini, tidak perlu menunggu pengecekan format lain
+                        // untuk jenis dokumen ini, update adapter jika semua jenis dokumen selesai dicek
+                        if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
+                            documentsAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+                .addOnFailureListener {
+                    // Format ini tidak ditemukan, lanjutkan ke format berikutnya
+                }
+                .addOnCompleteListener {
+                    // Kurangi counter format yang sudah dicek
+                    // Kurangi counter format yang sudah dicek
+                    if (checkQueue.decrementAndGet() == 0 && !documentFound) {
+                        // Semua format sudah dicek dan tidak ada dokumen yang ditemukan
+                        if (!isFinishing && !isDestroyed) {
+                            // Tambahkan dengan nilai null untuk menandakan dokumen tidak ada
+                            documentsList.add(DocumentModel(docName, docType, null, null, null))
+                        }
+
+                        // Kurangi counter untuk jenis dokumen
+                        if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
+                            // Semua jenis dokumen sudah dicek, update adapter
+                            documentsAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+        }
+    }
+
     private fun loadDocuments() {
         // Bersihkan list terlebih dahulu dan beritahu adapter segera
         documentsList.clear()
@@ -302,35 +353,16 @@ class SiteDetailActivity : AppCompatActivity() {
         val documentTypes = listOf(
             "email_order" to "Document Email Order",
             "telkomsel_permit" to "Document Telkomsel Permit",
-            "mitra_tel" to "Document Mitra Tel", // Nama yang diperbarui
-            "daftar_mitra" to "Document Daftar Mitra" // Jenis dokumen baru
+            "mitra_tel" to "Document Mitra Tel",
+            "daftar_mitra" to "Document Daftar Mitra"
         )
 
         for ((docType, docName) in documentTypes) {
-            val docRef = storage.reference.child("documents/$witel/$siteId/$docType.pdf")
-            docRef.metadata
-                .addOnSuccessListener {
-                    if (!isFinishing && !isDestroyed) {
-                        // Dokumen ada
-                        documentsList.add(DocumentModel(docName, docType, docRef.path))
-                    }
-                }
-                .addOnFailureListener {
-                    if (!isFinishing && !isDestroyed) {
-                        // Dokumen tidak ada (null)
-                        documentsList.add(DocumentModel(docName, docType, null))
-                    }
-                }
-                .addOnCompleteListener {
-                    // Update adapter hanya setelah semua pemeriksaan selesai
-                    if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
-                        documentsAdapter.notifyDataSetChanged()
-                    }
-                }
+            // Check untuk berbagai format (PDF, Word, Excel)
+            checkDocumentExists(docType, docName, pendingChecks)
         }
     }
 
-    // Ganti method loadImages() dengan ini:
     private fun loadImages() {
         // Bersihkan list terlebih dahulu dan beritahu adapter segera
         imagesList.clear()
@@ -412,3 +444,5 @@ class SiteDetailActivity : AppCompatActivity() {
         super.onDestroy()
     }
 }
+
+//
