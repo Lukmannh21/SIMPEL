@@ -7,7 +7,7 @@
     <item
         android:id="@+id/navigation_Upload"
         android:icon="@android:drawable/ic_menu_upload"
-        android:title="Upload" />
+        android:title="Add LOP" />
     <item
         android:id="@+id/navigation_history"
         android:icon="@android:drawable/ic_menu_recent_history"

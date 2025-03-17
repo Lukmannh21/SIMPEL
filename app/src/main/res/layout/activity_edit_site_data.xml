@@ -228,108 +228,120 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="16dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
                     android:text="Documents"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Email Order:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/btnUploadEmailOrder"
-                    android:layout_width="match_parent"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/btn_red"
                     android:text="Upload Document"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/tvEmailOrderFileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="italic"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
                     android:layout_marginBottom="8dp"
-                    android:visibility="gone"/>
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Telkomsel Permit:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnUploadTelkomselPermit"
-                    android:layout_width="match_parent"
+                    android:layout_width="323dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/btn_red"
                     android:text="Upload Document"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/tvTelkomselPermitFileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="italic"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
                     android:layout_marginBottom="8dp"
-                    android:visibility="gone"/>
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Mitra Tel:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnUploadTelPartner"
-                    android:layout_width="match_parent"
+                    android:layout_width="324dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/btn_red"
                     android:text="Upload Document"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/tvTelPartnerFileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="italic"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
                     android:layout_marginBottom="16dp"
-                    android:visibility="gone"/>
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Daftar Mitra:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnUploadDaftarMitra"
-                    android:layout_width="match_parent"
+                    android:layout_width="323dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/btn_red"
                     android:text="Upload Document"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/tvDaftarMitraFileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="italic"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
                     android:layout_marginBottom="16dp"
-                    android:visibility="gone"/>
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -362,14 +374,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Site Location:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/btnCaptureLocation"
-                    android:layout_width="match_parent"
+                    android:layout_width="321dp"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_red"
                     android:text="Capture Image"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal" />
 
                 <ImageView
                     android:id="@+id/ivLocation"
@@ -384,14 +398,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Foundation/Shelter:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnCaptureFoundation"
-                    android:layout_width="match_parent"
+                    android:layout_width="321dp"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_red"
                     android:text="Capture Image"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal" />
 
                 <ImageView
                     android:id="@+id/ivFoundation"
@@ -406,14 +423,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Installation Process:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnCaptureInstallation"
-                    android:layout_width="match_parent"
+                    android:layout_width="318dp"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_red"
                     android:text="Capture Image"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal" />
 
                 <ImageView
                     android:id="@+id/ivInstallation"
@@ -428,14 +448,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Cabinet:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnCaptureCabinet"
-                    android:layout_width="match_parent"
+                    android:layout_width="319dp"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_red"
                     android:text="Capture Image"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal" />
 
                 <ImageView
                     android:id="@+id/ivCabinet"
@@ -450,14 +473,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="3P (INET):"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnCaptureInet"
-                    android:layout_width="match_parent"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_red"
                     android:text="Capture Image"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal" />
 
                 <ImageView
                     android:id="@+id/ivInet"
@@ -472,14 +498,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="3P UseeTV:"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnCaptureUctv"
-                    android:layout_width="match_parent"
+                    android:layout_width="321dp"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_red"
                     android:text="Capture Image"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal" />
 
                 <ImageView
                     android:id="@+id/ivUctv"
@@ -494,14 +523,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="3P (Telephone):"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
 
                 <Button
                     android:id="@+id/btnCaptureTelephone"
-                    android:layout_width="match_parent"
+                    android:layout_width="321dp"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/btn_red"
                     android:text="Capture Image"
-                    android:background="@drawable/btn_red"/>
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center_horizontal" />
 
                 <ImageView
                     android:id="@+id/ivTelephone"
