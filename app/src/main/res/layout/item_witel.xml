@@ -5,28 +5,47 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#E90606"> <!-- Mengubah warna CardView menjadi merah -->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvWitelName"
-            android:layout_width="match_parent"
+        <!-- Gambar Witel -->
+        <ImageView
+            android:id="@+id/imgWitelLogo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user"
+            android:layout_marginEnd="12dp"/>
+
+        <!-- Layout untuk nama dan alamat -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Witel Name"
-            android:textColor="@android:color/black"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvWitelName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Witel Name"
+                android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvWitelAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Witel Address"
+            <TextView
+                android:id="@+id/tvWitelAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Witel Address"
+                android:textColor="@android:color/white"
             android:layout_marginTop="4dp" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
