@@ -164,8 +164,9 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 header.createCell(4).setCellValue("Site Provider")
                 header.createCell(5).setCellValue("Last Issue")
                 header.createCell(6).setCellValue("Status")
-                header.createCell(7).setCellValue("Kendala")
-                header.createCell(8).setCellValue("Tgl Plan OA")
+                header.createCell(7).setCellValue("Size OLT")
+                header.createCell(8).setCellValue("Kendala")
+                header.createCell(9).setCellValue("Tgl Plan OA")
 
                 // Data rows
                 var rowIndex = 1
@@ -179,8 +180,9 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     row.createCell(4).setCellValue(project.siteProvider)
                     row.createCell(5).setCellValue(project.lastIssueHistory.joinToString("\n"))
                     row.createCell(6).setCellValue(project.status)
-                    row.createCell(7).setCellValue(project.kendala)
-                    row.createCell(8).setCellValue(project.tglPlanOa)
+                    row.createCell(7).setCellValue(project.sizeOlt)
+                    row.createCell(8).setCellValue(project.kendala)
+                    row.createCell(9).setCellValue(project.tglPlanOa)
                 }
 
                 // Write to file

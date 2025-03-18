@@ -1,11 +1,8 @@
 package com.mbkm.telgo
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
-import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -14,27 +11,15 @@ import java.util.*
 class EditProfileActivity : AppCompatActivity() {
     private lateinit var etFullName: EditText
     private lateinit var etNIK: EditText
-    private lateinit var rgGender: RadioGroup
-    private lateinit var rbMan: RadioButton
-    private lateinit var rbWoman: RadioButton
-    private lateinit var etBirthDate: EditText
-    private lateinit var witelRegionDropdown: MaterialAutoCompleteTextView
     private lateinit var etCompanyName: EditText
     private lateinit var etUnit: EditText
     private lateinit var etPosition: EditText
     private lateinit var etPhone: EditText
     private lateinit var btnSave: Button
-    private lateinit var btnCancel: Button
+    private lateinit var btnBack: Button
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
-    private val calendar = Calendar.getInstance()
-
-    // Witel options
-    private val witelOptions = listOf(
-        "ACEH", "BABEL", "BENGKULU", "JAMBI", "LAMPUNG",
-        "RIDAR", "RIKEP", "SUMBAR", "SUMSEL", "SUMUT"
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,36 +30,24 @@ class EditProfileActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         // Initialize UI components
+        btnBack = findViewById(R.id.btnBack)
         etFullName = findViewById(R.id.etFullName)
         etNIK = findViewById(R.id.etNIK)
-        rgGender = findViewById(R.id.rgGender)
-        rbMan = findViewById(R.id.rbMan)
-        rbWoman = findViewById(R.id.rbWoman)
-        etBirthDate = findViewById(R.id.etBirthDate)
-        witelRegionDropdown = findViewById(R.id.witelRegionDropdown)
         etCompanyName = findViewById(R.id.etCompanyName)
         etUnit = findViewById(R.id.etUnit)
         etPosition = findViewById(R.id.etPosition)
         etPhone = findViewById(R.id.etPhone)
         btnSave = findViewById(R.id.btnSave)
-        btnCancel = findViewById(R.id.btnCancel)
-
-        // Set up dropdown for Witel Region
-        val adapter = ArrayAdapter(this, R.layout.dropdown_item, witelOptions)
-        witelRegionDropdown.setAdapter(adapter)
 
         // Load current user data
         loadUserData()
-
-        // Setup date picker
-        setupDatePicker()
 
         // Setup button click listeners
         btnSave.setOnClickListener {
             saveUserData()
         }
 
-        btnCancel.setOnClickListener {
+        btnBack.setOnClickListener {
             finish()
         }
     }
@@ -91,10 +64,6 @@ class EditProfileActivity : AppCompatActivity() {
                         // Set fields with existing data
                         val fullName = document.getString("fullName") ?: ""
                         val nik = document.getString("nik") ?: ""
-                        val gender = document.getString("gender") ?: ""
-                        val birthDate = document.getString("birthDate") ?: ""
-                        val witelRegion = document.getString("witelRegion") ?: ""
-                        val siteId = document.getString("siteId") ?: ""
                         val companyName = document.getString("companyName") ?: ""
                         val unit = document.getString("unit") ?: ""
                         val position = document.getString("position") ?: ""
@@ -102,17 +71,10 @@ class EditProfileActivity : AppCompatActivity() {
 
                         etFullName.setText(fullName)
                         etNIK.setText(nik)
-                        etBirthDate.setText(birthDate)
-                        witelRegionDropdown.setText(witelRegion)
                         etCompanyName.setText(companyName)
                         etUnit.setText(unit)
                         etPosition.setText(position)
                         etPhone.setText(phone)
-
-                        when (gender) {
-                            "Man" -> rbMan.isChecked = true
-                            "Woman" -> rbWoman.isChecked = true
-                        }
                     }
                 }
                 .addOnFailureListener { e ->
@@ -124,43 +86,12 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupDatePicker() {
-        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-            calendar.set(Calendar.YEAR, year)
-            calendar.set(Calendar.MONTH, monthOfYear)
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            updateDateInView()
-        }
-
-        etBirthDate.setOnClickListener {
-            DatePickerDialog(
-                this, dateSetListener,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-    }
-
-    private fun updateDateInView() {
-        val format = "dd/MM/yyyy"
-        val sdf = SimpleDateFormat(format, Locale.getDefault())
-        etBirthDate.setText(sdf.format(calendar.time))
-    }
-
     private fun saveUserData() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val userId = currentUser.uid
             val fullName = etFullName.text.toString().trim()
             val nik = etNIK.text.toString().trim()
-            val gender = when (rgGender.checkedRadioButtonId) {
-                R.id.rbMan -> "Man"
-                R.id.rbWoman -> "Woman"
-                else -> ""
-            }
-            val birthDate = etBirthDate.text.toString().trim()
-            val witelRegion = witelRegionDropdown.text.toString().trim()
             val companyName = etCompanyName.text.toString().trim()
             val unit = etUnit.text.toString().trim()
             val position = etPosition.text.toString().trim()
@@ -170,14 +101,11 @@ class EditProfileActivity : AppCompatActivity() {
             val userData = hashMapOf(
                 "fullName" to fullName,
                 "nik" to nik,
-                "gender" to gender,
-                "birthDate" to birthDate,
-                "witelRegion" to witelRegion,
                 "companyName" to companyName,
                 "unit" to unit,
                 "position" to position,
                 "phone" to phone,
-                "updatedAt" to "2025-03-17 02:37:40" // Use the provided current date/time
+                "updatedAt" to getCurrentDateTime()
             )
 
             // Save to Firestore
@@ -191,5 +119,10 @@ class EditProfileActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error updating profile: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
+    }
+
+    private fun getCurrentDateTime(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return sdf.format(Date())
     }
 }

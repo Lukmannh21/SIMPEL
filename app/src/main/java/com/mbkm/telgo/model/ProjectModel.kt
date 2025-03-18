@@ -12,5 +12,6 @@ data class ProjectModel(
     val port: String = "",
     val siteProvider: String = "",
     val kendala: String = "",
-    val tglPlanOa: String = ""
+    val tglPlanOa: String = "",
+    val sizeOlt: String = "" // Tambahkan properti sizeOlt
 )

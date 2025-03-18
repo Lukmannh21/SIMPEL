@@ -150,8 +150,6 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="12dp">
 
-
-
                 <Spinner
                     android:id="@+id/spinnerStatus"
                     android:layout_width="wrap_content"
@@ -160,13 +158,22 @@
                     android:background="@android:drawable/btn_dropdown"
                     android:layout_marginEnd="8dp"/>
 
+                <Spinner
+                    android:id="@+id/spinnerSizeOlt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/size_olt_options"
+                    android:background="@android:drawable/btn_dropdown"
+                    android:layout_marginEnd="8dp"/>
+
                 <Button
                     android:id="@+id/btnDownload"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
                     android:text="Download"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:textSize="10sp"
+                    android:drawablePadding="8dp"/>
             </LinearLayout>
 
             <HorizontalScrollView
