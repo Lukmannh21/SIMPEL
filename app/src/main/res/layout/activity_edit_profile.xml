@@ -1,279 +1,247 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".EditProfileActivity">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/tvEditProfileTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit Profile"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/buttonsLayout"
-        app:layout_constraintTop_toBottomOf="@id/tvEditProfileTitle">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardPersonalInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Personal Information"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="#DDDDDD" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Full Name"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etFullName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="textPersonName"
-                        android:hint="Enter your full name" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="NIK"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etNIK"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="number"
-                        android:hint="Enter your NIK" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Gender"
-                        android:textStyle="bold" />
-
-                    <RadioGroup
-                        android:id="@+id/rgGender"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:orientation="horizontal">
-
-                        <RadioButton
-                            android:id="@+id/rbMan"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
-                            android:text="Man" />
-
-                        <RadioButton
-                            android:id="@+id/rbWoman"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Woman" />
-                    </RadioGroup>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Birth Date"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etBirthDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="none"
-                        android:focusable="false"
-                        android:hint="dd/mm/yyyy"
-                        android:clickable="true" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Witel Region"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp">
-
-                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                            android:id="@+id/witelRegionDropdown"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="none"
-                            android:hint="Select Witel Region" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Company Name"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etCompanyName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="text"
-                        android:hint="Enter Company Name" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Unit"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etUnit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="text"
-                        android:hint="Enter Unit" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Position"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etPosition"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="text"
-                        android:hint="Enter Position" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardAccountDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Account Details"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="#DDDDDD" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Telephone"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/etPhone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"
-                        android:inputType="phone"
-                        android:hint="Enter your phone number" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-    </ScrollView>
 
     <LinearLayout
-        android:id="@+id/buttonsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="#F1F6FB"
+        tools:context=".RegisterActivity">
 
+
+        <!-- Back Button -->
         <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="Cancel"
-            android:backgroundTint="@android:color/darker_gray" />
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start"
+            android:layout_marginEnd="16dp"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/back"
+            android:text="@string/back"
+            android:textColor="@android:color/white"/>
 
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile Information"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            tools:ignore="HardcodedText" />
+
+
+        <!-- Account Identity -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Account Identity"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="5dp"
+            tools:ignore="HardcodedText"
+            android:layout_marginStart="16dp"/>
+
+
+        <!-- Full Name -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/full_name"
+            android:textColor="#333333"
+            android:textSize="13sp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="16dp"/>
+
+
+        <EditText
+            android:id="@+id/etFullName"
+            android:layout_width="350dp"
+            android:layout_height="48dp"
+            android:maxWidth="488dp"
+            android:layout_gravity="center_horizontal"
+            android:autofillHints=""
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:hint="@string/enter_your_full_name"
+            android:inputType="text"/>
+
+
+        <!-- NIK -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nik"
+            android:textColor="#333333"
+            android:textSize="13sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="16dp"/>
+
+
+        <EditText
+            android:id="@+id/etNIK"
+            android:layout_width="350dp"
+            android:layout_height="48dp"
+            android:maxWidth="488dp"
+            android:layout_gravity="center_horizontal"
+            android:autofillHints=""
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:hint="@string/enter_your_nik"
+            android:maxLength="16"
+            android:inputType="number"/>
+
+
+        <!-- Company Name -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/company_name"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="16dp"/>
+
+
+        <EditText
+            android:id="@+id/etCompanyName"
+            android:layout_width="350dp"
+            android:layout_height="48dp"
+            android:maxWidth="488dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/input_bg"
+            android:hint="@string/enter_your_company_name"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:autofillHints="companyName"/>
+
+
+        <!-- Unit -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/unit"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="16dp"/>
+
+
+        <EditText
+            android:id="@+id/etUnit"
+            android:layout_width="350dp"
+            android:layout_height="48dp"
+            android:maxWidth="488dp"
+            android:layout_gravity="center_horizontal"
+            android:autofillHints=""
+            android:background="@drawable/input_bg"
+            android:hint="@string/enter_your_unit"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+
+        <!-- Position -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/position"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="16dp"/>
+
+
+        <EditText
+            android:id="@+id/etPosition"
+            android:layout_width="350dp"
+            android:layout_height="48dp"
+            android:maxWidth="488dp"
+            android:layout_gravity="center_horizontal"
+            android:autofillHints=""
+            android:background="@drawable/input_bg"
+            android:hint="@string/enter_your_position"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textSize="14sp" />
+
+
+        <!-- Detail Info -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/detail_info"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="16dp"/>
+
+
+
+
+        <!-- Phone -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/phone"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="16dp"/>
+
+
+        <EditText
+            android:id="@+id/etPhone"
+            android:layout_width="350dp"
+            android:layout_height="48dp"
+            android:maxWidth="488dp"
+            android:layout_gravity="center_horizontal"
+            android:autofillHints=""
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:textSize="14sp"
+            android:inputType="phone"
+            android:digits="0123456789"
+            android:maxLength="15"
+            android:hint="@string/enter_your_phone_number"/>
+
+
+        <!-- Save Button -->
         <Button
             android:id="@+id/btnSave"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="Save"
-            android:backgroundTint="@color/design_default_color_primary" />
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:text="@string/save_button"
+            android:textSize="15sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:backgroundTint="@color/red"
+            android:background="@drawable/btn_red"
+            android:textAllCaps="false"/>
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -41,7 +41,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:background="#AFC0E2FF"> <!-- Perubahan Warna Background -->
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -84,44 +85,6 @@
                         android:layout_marginBottom="12dp"
                         tools:text="1234567890" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Gender"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvGender"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        tools:text="Man" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Birth of Date"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvBirthDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        tools:text="01/01/1990" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Witel Region"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvWitelRegion"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        tools:text="ACEH" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -175,7 +138,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:background="#AFC0E2FF"> <!-- Perubahan Warna Background -->
 
                     <TextView
                         android:layout_width="wrap_content"

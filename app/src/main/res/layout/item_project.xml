@@ -44,6 +44,14 @@
                 android:textColor="@color/white"/>
 
             <TextView
+                android:id="@+id/txtCluster"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:gravity="center"
+                android:textColor="@color/white"/>
+
+            <TextView
                 android:id="@+id/txtPort"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
@@ -69,6 +77,14 @@
 
             <TextView
                 android:id="@+id/txtStatus"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:gravity="center"
+                android:textColor="@color/white"/>
+
+            <TextView
+                android:id="@+id/txtSizeOlt"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:padding="8dp"

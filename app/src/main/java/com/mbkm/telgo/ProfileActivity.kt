@@ -36,9 +36,7 @@ class ProfileActivity : AppCompatActivity() {
         // Initialize UI components
         tvFullName = findViewById(R.id.tvFullName)
         tvNIK = findViewById(R.id.tvNIK)
-        tvGender = findViewById(R.id.tvGender)
-        tvBirthDate = findViewById(R.id.tvBirthDate)
-        tvWitelRegion = findViewById(R.id.tvWitelRegion)
+
         tvCompanyName = findViewById(R.id.tvCompanyName)
         tvUnit = findViewById(R.id.tvUnit)
         tvPosition = findViewById(R.id.tvPosition)
@@ -77,10 +75,9 @@ class ProfileActivity : AppCompatActivity() {
                         // Set user data from Firestore
                         val fullName = document.getString("fullName") ?: ""
                         val nik = document.getString("nik") ?: ""
-                        val gender = document.getString("gender") ?: ""
-                        val birthDate = document.getString("birthDate") ?: ""
-                        val witelRegion = document.getString("witelRegion") ?: ""
-                        val siteId = document.getString("siteId") ?: ""
+
+
+
                         val companyName = document.getString("companyName") ?: ""
                         val unit = document.getString("unit") ?: ""
                         val position = document.getString("position") ?: ""
@@ -88,9 +85,9 @@ class ProfileActivity : AppCompatActivity() {
 
                         tvFullName.text = if (fullName.isNotEmpty()) fullName else "Not set"
                         tvNIK.text = if (nik.isNotEmpty()) nik else "Not set"
-                        tvGender.text = if (gender.isNotEmpty()) gender else "Not set"
-                        tvBirthDate.text = if (birthDate.isNotEmpty()) birthDate else "Not set"
-                        tvWitelRegion.text = if (witelRegion.isNotEmpty()) witelRegion else "Not set"
+
+
+
                         tvCompanyName.text = if (companyName.isNotEmpty()) companyName else "Not set"
                         tvUnit.text = if (unit.isNotEmpty()) unit else "Not set"
                         tvPosition.text = if (position.isNotEmpty()) position else "Not set"
@@ -115,9 +112,9 @@ class ProfileActivity : AppCompatActivity() {
     private fun setDefaultValues() {
         tvFullName.text = "Not set"
         tvNIK.text = "Not set"
-        tvGender.text = "Not set"
-        tvBirthDate.text = "Not set"
-        tvWitelRegion.text = "Not set"
+
+
+
         tvCompanyName.text = "Not set"
         tvUnit.text = "Not set"
         tvPosition.text = "Not set"
