@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".LastUpdateDetailActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header dengan tombol Back -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Site Detail"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textAlignment="center" />
+
+            <!-- Tidak ada tombol Edit di sini -->
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp" />
+
+        </LinearLayout>
+
+        <!-- Detail Site Info Panel -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Basic Information"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Site ID -->
+                <TextView
+                    android:id="@+id/tvSiteId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Site ID"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Witel -->
+                <TextView
+                    android:id="@+id/tvWitel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Witel"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Status -->
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Status"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Last Issue -->
+                <TextView
+                    android:id="@+id/tvLastIssue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Last Issue"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Koordinat -->
+                <TextView
+                    android:id="@+id/tvKoordinat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Koordinat"
+                    android:layout_marginBottom="4dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Detail Informasi Tambahan -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Technical Information"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- ID Lop OLT -->
+                <TextView
+                    android:id="@+id/tvIdLopOlt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ID Lop OLT"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Kode STO -->
+                <TextView
+                    android:id="@+id/tvKodeSto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kode STO"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Nama STO -->
+                <TextView
+                    android:id="@+id/tvNamaSto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nama STO"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Port Metro -->
+                <TextView
+                    android:id="@+id/tvPortMetro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Port Metro"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- SFP -->
+                <TextView
+                    android:id="@+id/tvSfp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SFP"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Hostname -->
+                <TextView
+                    android:id="@+id/tvHostname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Hostname"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Size OLT -->
+                <TextView
+                    android:id="@+id/tvSizeOlt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Size OLT"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Platform -->
+                <TextView
+                    android:id="@+id/tvPlatform"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Platform"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Type -->
+                <TextView
+                    android:id="@+id/tvType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Type"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Jumlah Modul -->
+                <TextView
+                    android:id="@+id/tvJmlModul"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jumlah Modul"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Site Provider -->
+                <TextView
+                    android:id="@+id/tvSiteProvider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Site Provider"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Kecamatan Lokasi -->
+                <TextView
+                    android:id="@+id/tvKecamatanLokasi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kecamatan Lokasi"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Kode IHLD -->
+                <TextView
+                    android:id="@+id/tvKodeIhld"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kode IHLD"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Lop Downlink -->
+                <TextView
+                    android:id="@+id/tvLopDownlink"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Lop Downlink"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Kontrak Pengadaan -->
+                <TextView
+                    android:id="@+id/tvKontrakPengadaan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kontrak Pengadaan"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- TOC -->
+                <TextView
+                    android:id="@+id/tvToc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TOC"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Start Project -->
+                <TextView
+                    android:id="@+id/tvStartProject"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Start Project"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Catuan AC -->
+                <TextView
+                    android:id="@+id/tvCatuanAc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Catuan AC"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Kendala -->
+                <TextView
+                    android:id="@+id/tvKendala"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kendala"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Tanggal Plan OA -->
+                <TextView
+                    android:id="@+id/tvTglPlanOa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tanggal Plan OA"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Week Plan OA -->
+                <TextView
+                    android:id="@+id/tvWeekPlanOa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Week Plan OA"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Durasi Pekerjaan -->
+                <TextView
+                    android:id="@+id/tvDurasiPekerjaan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Durasi Pekerjaan"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- ODP -->
+                <TextView
+                    android:id="@+id/tvOdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ODP"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Port -->
+                <TextView
+                    android:id="@+id/tvPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Port"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Sisa Hari Terhadap Plan OA -->
+                <TextView
+                    android:id="@+id/tvSisaHariThdpPlanOa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sisa Hari Terhadap Plan OA"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Sisa Hari Terhadap TOC -->
+                <TextView
+                    android:id="@+id/tvSisaHariThdpToc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sisa Hari Terhadap TOC"
+                    android:layout_marginBottom="4dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Documents Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Documents"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="8dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDocuments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Images Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Images"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="8dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvImages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</ScrollView>
