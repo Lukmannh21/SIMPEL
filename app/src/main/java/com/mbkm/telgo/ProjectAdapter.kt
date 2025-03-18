@@ -24,6 +24,7 @@ class ProjectAdapter(private val projectList: List<ProjectModel>) : RecyclerView
         private val txtWitel: TextView = view.findViewById(R.id.txtWitel)
         private val txtSiteId: TextView = view.findViewById(R.id.txtSiteId)
         private val txtKodeIhld: TextView = view.findViewById(R.id.txtKodeIhld)
+        private val txtCluster: TextView = view.findViewById(R.id.txtCluster)
         private val txtPort: TextView = view.findViewById(R.id.txtPort)
         private val txtSiteProvider: TextView = view.findViewById(R.id.txtSiteProvider)
         private val txtLastIssue: TextView = view.findViewById(R.id.txtLastIssue)
@@ -36,6 +37,7 @@ class ProjectAdapter(private val projectList: List<ProjectModel>) : RecyclerView
             txtWitel.text = project.witel
             txtSiteId.text = project.siteId
             txtKodeIhld.text = project.kodeIhld
+            txtCluster.text = project.lopDownlink // Data LOP Downlink sebagai Cluster
             txtPort.text = project.port
             txtSiteProvider.text = project.siteProvider
             txtLastIssue.text = project.lastIssueHistory.joinToString("\n")

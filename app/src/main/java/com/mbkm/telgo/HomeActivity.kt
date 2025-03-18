@@ -182,13 +182,14 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 header.createCell(0).setCellValue("Witel")
                 header.createCell(1).setCellValue("Site ID")
                 header.createCell(2).setCellValue("IHLD ID")
-                header.createCell(3).setCellValue("Port")
-                header.createCell(4).setCellValue("Site Provider")
-                header.createCell(5).setCellValue("Last Issue")
-                header.createCell(6).setCellValue("Status")
-                header.createCell(7).setCellValue("Size OLT")
-                header.createCell(8).setCellValue("Kendala")
-                header.createCell(9).setCellValue("Tgl Plan OA")
+                header.createCell(3).setCellValue("Cluster") // Ganti LOP Downlink menjadi Cluster
+                header.createCell(4).setCellValue("Port")
+                header.createCell(5).setCellValue("Site Provider")
+                header.createCell(6).setCellValue("Last Issue")
+                header.createCell(7).setCellValue("Status")
+                header.createCell(8).setCellValue("Size OLT")
+                header.createCell(9).setCellValue("Kendala")
+                header.createCell(10).setCellValue("Tgl Plan OA")
 
                 // Data rows
                 var rowIndex = 1
@@ -198,13 +199,14 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     row.createCell(0).setCellValue(project.witel)
                     row.createCell(1).setCellValue(project.siteId)
                     row.createCell(2).setCellValue(project.kodeIhld)
-                    row.createCell(3).setCellValue(project.port)
-                    row.createCell(4).setCellValue(project.siteProvider)
-                    row.createCell(5).setCellValue(project.lastIssueHistory.joinToString("\n"))
-                    row.createCell(6).setCellValue(project.status)
-                    row.createCell(7).setCellValue(project.sizeOlt)
-                    row.createCell(8).setCellValue(project.kendala)
-                    row.createCell(9).setCellValue(project.tglPlanOa)
+                    row.createCell(3).setCellValue(project.lopDownlink) // Data LOP Downlink sebagai Cluster
+                    row.createCell(4).setCellValue(project.port)
+                    row.createCell(5).setCellValue(project.siteProvider)
+                    row.createCell(6).setCellValue(project.lastIssueHistory.joinToString("\n"))
+                    row.createCell(7).setCellValue(project.status)
+                    row.createCell(8).setCellValue(project.sizeOlt)
+                    row.createCell(9).setCellValue(project.kendala)
+                    row.createCell(10).setCellValue(project.tglPlanOa)
                 }
 
                 // Write to file
