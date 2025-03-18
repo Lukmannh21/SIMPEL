@@ -410,10 +410,10 @@
             <EditText
                 android:id="@+id/lastIssueInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="61dp"
+                android:gravity="top|start"
                 android:inputType="textMultiLine"
-                android:minLines="3"
-                android:gravity="top|start" />
+                android:minLines="3" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Kendala Dropdown -->
