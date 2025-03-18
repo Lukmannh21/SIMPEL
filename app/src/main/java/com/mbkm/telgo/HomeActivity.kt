@@ -53,6 +53,8 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         bottomNavigationView.selectedItemId = R.id.navigation_home
 
+
+
         // Tombol logout
         btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
@@ -209,8 +211,20 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.navigation_home -> return true
-            R.id.navigation_history -> return true
+            R.id.navigation_home -> {
+                // We're already in HomeActivity, no need to start a new activity
+                return true
+            }
+            R.id.navigation_Upload -> {
+                val intent = Intent(this, UploadProjectActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.navigation_history -> {
+                val intent = Intent(this, LastUpdateActivity::class.java)
+                startActivity(intent)
+                return true
+            }
             R.id.navigation_account -> {
                 val intent = Intent(this, ProfileActivity::class.java)
                 startActivity(intent)
