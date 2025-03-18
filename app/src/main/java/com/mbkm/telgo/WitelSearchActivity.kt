@@ -24,7 +24,7 @@ class WitelSearchActivity : AppCompatActivity() {
     private lateinit var rvWitels: RecyclerView
     private lateinit var etSearch: EditText
     private lateinit var btnSearch: ImageButton
-    private lateinit var btnBackToHome: Button
+    private lateinit var btnBackToHome: ImageButton
     private lateinit var tvNoResults: TextView
 
     // Adapter and Data
@@ -40,7 +40,7 @@ class WitelSearchActivity : AppCompatActivity() {
         rvWitels = findViewById(R.id.rvWitels)
         etSearch = findViewById(R.id.etSearch)
         btnSearch = findViewById(R.id.btnSearch)
-        btnBackToHome = findViewById(R.id.btnBackToHome)
+        btnBackToHome = findViewById<ImageButton>(R.id.btnBackToHome)
         tvNoResults = findViewById(R.id.tvNoResults)
 
         // Set up back button
