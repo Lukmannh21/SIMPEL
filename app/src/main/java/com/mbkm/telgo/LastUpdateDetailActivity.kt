@@ -1,7 +1,6 @@
 package com.mbkm.telgo
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -15,11 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.concurrent.atomic.AtomicInteger
-import android.webkit.MimeTypeMap
-import java.io.File
-import java.util.Locale
 
-class SiteDetailActivity : AppCompatActivity() {
+class LastUpdateDetailActivity : AppCompatActivity() {
 
     // UI Components - Original
     private lateinit var tvSiteId: TextView
@@ -27,7 +23,6 @@ class SiteDetailActivity : AppCompatActivity() {
     private lateinit var tvStatus: TextView
     private lateinit var tvLastIssue: TextView
     private lateinit var tvKoordinat: TextView
-    private lateinit var btnEditData: Button
     private lateinit var btnBack: Button
     private lateinit var rvDocuments: RecyclerView
     private lateinit var rvImages: RecyclerView
@@ -81,7 +76,7 @@ class SiteDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_site_detail)
+        setContentView(R.layout.activity_last_update_detail)
 
         // Get data from intent
         siteId = intent.getStringExtra("SITE_ID") ?: ""
@@ -105,14 +100,6 @@ class SiteDetailActivity : AppCompatActivity() {
             finish()
         }
 
-        // Set up edit data button
-        btnEditData.setOnClickListener {
-            val intent = Intent(this, EditSiteDataActivity::class.java)
-            intent.putExtra("SITE_ID", siteId)
-            intent.putExtra("WITEL", witel)
-            startActivity(intent)
-        }
-
         // Check and request storage permissions
         checkAndRequestStoragePermission()
 
@@ -127,11 +114,9 @@ class SiteDetailActivity : AppCompatActivity() {
         // Original UI Components
         tvSiteId = findViewById(R.id.tvSiteId)
         tvWitel = findViewById(R.id.tvWitel)
-
         tvStatus = findViewById(R.id.tvStatus)
         tvLastIssue = findViewById(R.id.tvLastIssue)
         tvKoordinat = findViewById(R.id.tvKoordinat)
-        btnEditData = findViewById(R.id.btnEditData)
         btnBack = findViewById(R.id.btnBack)
         rvDocuments = findViewById(R.id.rvDocuments)
         rvImages = findViewById(R.id.rvImages)
@@ -289,7 +274,6 @@ class SiteDetailActivity : AppCompatActivity() {
             }
     }
 
-    // Tambahkan fungsi checkDocumentExists yang sebelumnya belum ditambahkan
     private fun checkDocumentExists(docType: String, docName: String, pendingChecks: AtomicInteger) {
         val formats = listOf(
             "pdf" to "application/pdf",
@@ -322,7 +306,6 @@ class SiteDetailActivity : AppCompatActivity() {
                     // Format ini tidak ditemukan, lanjutkan ke format berikutnya
                 }
                 .addOnCompleteListener {
-                    // Kurangi counter format yang sudah dicek
                     // Kurangi counter format yang sudah dicek
                     if (checkQueue.decrementAndGet() == 0 && !documentFound) {
                         // Semua format sudah dicek dan tidak ada dokumen yang ditemukan
@@ -378,7 +361,7 @@ class SiteDetailActivity : AppCompatActivity() {
             "installation_process" to "Image Installation Process",
             "cabinet" to "Image Cabinet",
             "3p_inet" to "Image 3P (INET)",
-            "3p_useetv" to "Image 3P UseeTV", // Nama yang diperbarui
+            "3p_useetv" to "Image 3P UseeTV",
             "3p_telephone" to "Image 3P (Telephone)"
         )
 
@@ -444,5 +427,3 @@ class SiteDetailActivity : AppCompatActivity() {
         super.onDestroy()
     }
 }
-
-//

@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Include this permission to grab user's general location -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- Include only if your app benefits from precise location access. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Include only if your app benefits from precise location access. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -20,11 +19,15 @@
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
         <activity
-            android:name=".LastUpdateActivity"
+            android:name=".LastUpdateDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".LastHistory"
+            android:name=".ResetPasswordActivity"
             android:exported="false" />
+        <activity
+            android:name=".LastUpdateActivity"
+            android:exported="false" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -80,8 +83,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.TelGO" />
-        <!-- Add the UploadProjectActivity we created earlier -->
+            android:theme="@style/Theme.TelGO" /> <!-- Add the UploadProjectActivity we created earlier -->
         <activity
             android:name=".UploadProjectActivity"
             android:exported="false"
