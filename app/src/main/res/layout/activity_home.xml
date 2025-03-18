@@ -165,16 +165,18 @@
                     android:entries="@array/size_olt_options"
                     android:background="@android:drawable/btn_dropdown"
                     android:layout_marginEnd="8dp"/>
-
-                <Button
-                    android:id="@+id/btnDownload"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Download"
-                    android:textColor="@android:color/black"
-                    android:textSize="10sp"
-                    android:drawablePadding="8dp"/>
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btnDownload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Download"
+                android:textColor="@android:color/black"
+
+                android:drawablePadding="8dp"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"/>
 
             <HorizontalScrollView
                 android:layout_width="match_parent"

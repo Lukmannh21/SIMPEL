@@ -31,6 +31,7 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var recyclerViewDashboard: RecyclerView
     private lateinit var projectAdapter: ProjectAdapter
     private lateinit var spinnerStatus: Spinner
+    private lateinit var spinnerSizeOlt: Spinner
 
     private val projectList = mutableListOf<ProjectModel>()
     private val filteredProjectList = mutableListOf<ProjectModel>()
@@ -48,12 +49,11 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         btnLastHistory = findViewById(R.id.btnLastHistory)
         recyclerViewDashboard = findViewById(R.id.recyclerViewDashboard)
         spinnerStatus = findViewById(R.id.spinnerStatus)
+        spinnerSizeOlt = findViewById(R.id.spinnerSizeOlt)
 
         // Set listener navigasi bawah
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         bottomNavigationView.selectedItemId = R.id.navigation_home
-
-
 
         // Tombol logout
         btnLogout.setOnClickListener {
@@ -103,8 +103,27 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedStatus = parent.getItemAtPosition(position).toString()
-                filterProjectsByStatus(selectedStatus)
+                filterProjects()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }
+
+        // Setup Spinner untuk filter Size OLT
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.size_olt_options,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerSizeOlt.adapter = adapter
+        }
+
+        spinnerSizeOlt.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                filterProjects()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -126,24 +145,27 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     val project = document.toObject(ProjectModel::class.java)
                     projectList.add(project)
                 }
-                filterProjectsByStatus(spinnerStatus.selectedItem.toString())
+                filterProjects()
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Gagal memuat data: ${exception.message}", Toast.LENGTH_LONG).show()
             }
     }
 
-    private fun filterProjectsByStatus(status: String) {
+    private fun filterProjects() {
         filteredProjectList.clear()
-        if (status == "Pilih Status") {
-            filteredProjectList.addAll(projectList)
-        } else {
-            for (project in projectList) {
-                if (project.status == status) {
-                    filteredProjectList.add(project)
-                }
+        val selectedStatus = spinnerStatus.selectedItem.toString()
+        val selectedSizeOlt = spinnerSizeOlt.selectedItem.toString()
+
+        for (project in projectList) {
+            val statusMatch = selectedStatus == "Pilih Status" || project.status == selectedStatus
+            val sizeOltMatch = selectedSizeOlt == "Pilih Size OLT" || project.sizeOlt == selectedSizeOlt
+
+            if (statusMatch && sizeOltMatch) {
+                filteredProjectList.add(project)
             }
         }
+
         projectAdapter.notifyDataSetChanged()
     }
 
