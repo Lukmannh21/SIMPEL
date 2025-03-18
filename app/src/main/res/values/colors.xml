@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#E90606</color>
     <color name="gray">#B0B0B0</color>
+    <color name="navigation_item_selected">#FF0000</color>
+    <color name="navigation_item_unselected">#757575</color>
 </resources>
