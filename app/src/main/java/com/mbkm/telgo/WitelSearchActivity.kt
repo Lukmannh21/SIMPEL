@@ -82,61 +82,61 @@ class WitelSearchActivity : AppCompatActivity() {
                 "ACEH",
                 "Jl. Sultan Iskandar Muda No.18, Banda Aceh",
                 Pair(5.548290, 95.323753), // Koordinat pusat provinsi Aceh
-                R.drawable.logo
+                R.drawable.witel_aceh
             ),
             WitelModel(
                 "BABEL",
                 "Jl. Jenderal Sudirman No.105, Pangkalpinang",
                 Pair(-2.131627, 106.116959), // Koordinat pusat provinsi Bangka Belitung
-                R.drawable.logo
+                R.drawable.witel_babel
             ),
             WitelModel(
                 "BENGKULU",
                 "Jl. Pembangunan No.38, Bengkulu",
                 Pair(-3.792860, 102.260765), // Koordinat pusat provinsi Bengkulu
-                R.drawable.logo
+                R.drawable.witel_bengkulu
             ),
             WitelModel(
                 "JAMBI",
                 "Jl. Jenderal Sudirman No.55, Jambi",
                 Pair(-1.609972, 103.607254), // Koordinat pusat provinsi Jambi
-                R.drawable.logo
+                R.drawable.witel_jambi
             ),
             WitelModel(
                 "LAMPUNG",
                 "Jl. Wolter Monginsidi No.12, Bandar Lampung",
                 Pair(-4.558625, 105.406581), // Koordinat pusat provinsi Lampung
-                R.drawable.logo
+                R.drawable.witel_lampung
             ),
             WitelModel(
                 "RIDAR",
                 "Jl. Jenderal Sudirman No.199, Pekanbaru",
                 Pair(0.510440, 101.448311), // Koordinat pusat provinsi Riau Daratan
-                R.drawable.logo
+                R.drawable.witel_ridar
             ),
             WitelModel(
                 "RIKEP",
                 "Jl. Diponegoro No.87, Tanjung Pinang",
                 Pair(3.945308, 108.142090), // Koordinat pusat provinsi Riau Kepulauan
-                R.drawable.logo
+                R.drawable.witel_rikep
             ),
             WitelModel(
                 "SUMBAR",
                 "Jl. Khatib Sulaiman No.1, Padang",
                 Pair(-0.739981, 100.800005), // Koordinat pusat provinsi Sumatera Barat
-                R.drawable.logo
+                R.drawable.witel_sumbar
             ),
             WitelModel(
                 "SUMSEL",
                 "Jl. Jenderal Sudirman No.459, Palembang",
                 Pair(-3.319464, 103.914520), // Koordinat pusat provinsi Sumatera Selatan
-                R.drawable.logo
+                R.drawable.witel_sumsel
             ),
             WitelModel(
                 "SUMUT",
                 "Jl. Prof. HM Yamin No.13, Medan",
                 Pair(2.192862, 99.378546), // Koordinat pusat provinsi Sumatera Utara
-                R.drawable.logo
+                R.drawable.witel_sumut
             )
         )
     }

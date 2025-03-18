@@ -58,11 +58,10 @@ class LastUpdateActivity : AppCompatActivity() {
             finish()
         }
 
-        // Initialize site list
         siteList = arrayListOf()
         siteAdapter = SiteAdapter(siteList) { site ->
             // Handle item click
-            val intent = Intent(this, SiteDetailActivity::class.java)
+            val intent = Intent(this, LastUpdateDetailActivity::class.java) // Ganti SiteDetailActivity menjadi LastUpdateDetailActivity
             intent.putExtra("SITE_ID", site.siteId)
             intent.putExtra("WITEL", site.witel)
             startActivity(intent)
