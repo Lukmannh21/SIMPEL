@@ -12,36 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header dengan tombol Back -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-
-            <Button
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Back" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Site Detail"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textAlignment="center" />
-
-            <!-- Tidak ada tombol Edit di sini -->
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp" />
-
-        </LinearLayout>
-
         <!-- Detail Site Info Panel -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -396,5 +366,20 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="Back"
+            android:textSize="20sp"
+            android:textAllCaps="false"
+            android:background="@drawable/btn_red"
+            app:layout_constraintTop_toBottomOf="@id/btnAddData"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
     </LinearLayout>
 </ScrollView>
