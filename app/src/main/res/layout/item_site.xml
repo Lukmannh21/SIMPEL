@@ -1,48 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_margin="25dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp"
+    app:cardBackgroundColor="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/red"> <!-- Tambahkan warna merah di sini -->
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/tvSiteId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Site ID"
+            android:text="AC 2"
             android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp" />
 
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Status"
-            android:textColor="#FF9C22"
+            android:text="Status: SURVEY"
+            android:textColor="#B00020"
             android:layout_marginTop="4dp" />
 
         <TextView
             android:id="@+id/tvLastIssue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Last Issue"
+            android:text="Last Issue: 2025-03-11 13:24:08 - tes"
+            android:textColor="#666666"
             android:layout_marginTop="4dp" />
 
         <TextView
             android:id="@+id/tvKoordinat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Koordinat"
-            android:layout_marginTop="4dp" />
+            android:text="Coordinate: 3.587838, 98.687492"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

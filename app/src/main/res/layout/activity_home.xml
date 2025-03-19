@@ -7,134 +7,12 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <!-- Button Logout -->
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="348dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:drawableTop="@drawable/logout2"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        android:text="logout"
-        android:textColor="@android:color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Teks Selamat Datang -->
-    <TextView
-        android:id="@+id/welcome_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Hi, Welcome To"
-        android:textColor="@android:color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Logo -->
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Logo TelGo"
-        android:src="@drawable/logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/welcome_text" />
-
-    <!-- CardView untuk TelGO Services -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="6dp"
-        app:layout_constraintTop_toBottomOf="@id/logo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/telgo_services_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="TelGO Services"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnWitelSearch"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="@drawable/search2"
-                    android:drawablePadding="8dp"
-                    android:gravity="center"
-                    android:text="Witel Search"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnUploadProject"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="@drawable/u2"
-                    android:drawablePadding="8dp"
-                    android:gravity="center"
-                    android:text="Add LOP"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnLastHistory"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="@drawable/history"
-                    android:drawablePadding="8dp"
-                    android:gravity="center"
-                    android:text="Last Update"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- Dashboard Section -->
+    <!-- Bungkus seluruh layout dengan ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/cardView"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation">
 
         <LinearLayout
@@ -143,61 +21,185 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Layout horizontal untuk tombol logout & teks welcome -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:paddingBottom="8dp">
 
-                <Spinner
-                    android:id="@+id/spinnerStatus"
-                    android:layout_width="wrap_content"
+                <!-- Teks Selamat Datang -->
+                <TextView
+                    android:id="@+id/welcome_text"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:entries="@array/status_options"
-                    android:background="@android:drawable/btn_dropdown"
-                    android:layout_marginEnd="8dp"/>
+                    android:text="Hi, Welcome To"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp"
+                    android:textStyle="bold"/>
 
-                <Spinner
-                    android:id="@+id/spinnerSizeOlt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/size_olt_options"
-                    android:background="@android:drawable/btn_dropdown"
-                    android:layout_marginEnd="8dp"/>
+                <!-- Button Logout -->
+                <Button
+                    android:id="@+id/btnLogout"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:drawableTop="@drawable/logout2"
+                    android:text="logout"
+                    android:textColor="@android:color/white"/>
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btnDownload"
+
+
+            <!-- Logo -->
+            <ImageView
+                android:id="@+id/logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Download"
-                android:textColor="@android:color/black"
+                android:contentDescription="Logo TelGo"
+                android:src="@drawable/logo"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp" />
 
-                android:drawablePadding="8dp"
-                android:gravity="center_horizontal"
-                android:layout_gravity="center_horizontal"/>
-
-            <HorizontalScrollView
+            <!-- CardView untuk TelGO Services -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fillViewport="true"
-                android:scrollbars="horizontal">
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="6dp">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <include layout="@layout/header_project"/>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerViewDashboard"
+                    <TextView
+                        android:id="@+id/telgo_services_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"/>
+                        android:layout_marginBottom="12dp"
+                        android:text="TelGO Services"
+                        android:textColor="@android:color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnWitelSearch"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:drawableTop="@drawable/search2"
+                            android:drawablePadding="8dp"
+                            android:text="Witel Search"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/btnUploadProject"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:drawableTop="@drawable/u2"
+                            android:drawablePadding="8dp"
+                            android:text="Add LOP"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/btnLastHistory"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:drawableTop="@drawable/history"
+                            android:drawablePadding="8dp"
+                            android:text="Last Update"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </LinearLayout>
-            </HorizontalScrollView>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Dashboard Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <Spinner
+                        android:id="@+id/spinnerStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/status_options"
+                        android:background="@android:drawable/btn_dropdown"
+                        android:layout_marginEnd="8dp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerSizeOlt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/size_olt_options"
+                        android:background="@android:drawable/btn_dropdown"
+                        android:layout_marginEnd="8dp"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnDownload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Download"
+                    android:textColor="@android:color/black"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal"/>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fillViewport="true"
+                    android:scrollbars="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <include layout="@layout/header_project"/>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerViewDashboard"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp"/>
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
@@ -207,6 +209,7 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginBottom="4dp"
+        android:background="@android:color/white"
         app:itemIconTint="@color/navigation_color_item"
         app:itemTextColor="@color/navigation_color_item"
         app:labelVisibilityMode="labeled"
