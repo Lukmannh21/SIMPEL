@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,6 +24,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import java.util.Locale
 
 class WitelDetailActivity : AppCompatActivity() {
 
@@ -30,10 +32,15 @@ class WitelDetailActivity : AppCompatActivity() {
     private lateinit var btnBack: Button
     private lateinit var tvWitelTitle: TextView
     private lateinit var tvSiteCount: TextView
+    private lateinit var searchView: SearchView
     private lateinit var siteAdapter: SiteAdapter
     private lateinit var siteList: ArrayList<SiteModel>
+    private lateinit var filteredSiteList: ArrayList<SiteModel>
     private lateinit var firestore: FirebaseFirestore
     private var witelName: String = ""
+
+    // Add variable for the original site list
+    private lateinit var originalSiteList: ArrayList<SiteModel>
 
     // Tambahkan variabel untuk koordinat provinsi
     private var provinceLat: Double = 0.0
@@ -79,6 +86,7 @@ class WitelDetailActivity : AppCompatActivity() {
         btnBack = findViewById(R.id.btnBack)
         tvWitelTitle = findViewById(R.id.tvWitelTitle)
         tvSiteCount = findViewById(R.id.tvSiteCount)
+        searchView = findViewById(R.id.searchView)
 
         // Initialize MapBox
         mapView = findViewById(R.id.mapView)
@@ -95,9 +103,12 @@ class WitelDetailActivity : AppCompatActivity() {
         // Initialize Firestore
         firestore = FirebaseFirestore.getInstance()
 
-        // Initialize site list with click listener to focus map on selected site
+        // Initialize site lists
         siteList = arrayListOf()
-        siteAdapter = SiteAdapter(siteList) { site ->
+        originalSiteList = arrayListOf()
+        filteredSiteList = arrayListOf()
+
+        siteAdapter = SiteAdapter(filteredSiteList) { site ->
             // When a site is clicked, either focus the map or navigate to detail view
             focusMapOnSite(site)
 
@@ -111,6 +122,9 @@ class WitelDetailActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = siteAdapter
 
+        // Setup search functionality
+        setupSearchView()
+
         // Initialize MapBox style
         mapboxMap.loadStyleUri(Style.MAPBOX_STREETS) { style ->
             // Initialize point annotation manager for markers
@@ -123,6 +137,70 @@ class WitelDetailActivity : AppCompatActivity() {
 
             // Load site data for the selected witel
             loadSitesForWitel()
+        }
+    }
+
+    private fun setupSearchView() {
+        searchView.queryHint = "Search by Site ID or Status..."
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterSites(newText)
+                return true
+            }
+        })
+    }
+
+    private fun filterSites(query: String?) {
+        filteredSiteList.clear()
+
+        if (query.isNullOrBlank()) {
+            // If search query is empty, show all sites
+            filteredSiteList.addAll(originalSiteList)
+            updateMapMarkers(filteredSiteList)
+        } else {
+            // Filter sites based on query
+            val searchQuery = query.lowercase(Locale.getDefault())
+
+            for (site in originalSiteList) {
+                if (site.siteId.lowercase(Locale.getDefault()).contains(searchQuery) ||
+                    site.status.lowercase(Locale.getDefault()).contains(searchQuery) ||
+                    site.lastIssue.lowercase(Locale.getDefault()).contains(searchQuery)) {
+                    filteredSiteList.add(site)
+                }
+            }
+
+            // Update map markers to show only filtered sites
+            updateMapMarkers(filteredSiteList)
+        }
+
+        // Update site count to show filtered count
+        tvSiteCount.text = "Total Sites: ${filteredSiteList.size}"
+
+        // Notify adapter about the data change
+        siteAdapter.notifyDataSetChanged()
+    }
+
+    private fun updateMapMarkers(sitesToShow: List<SiteModel>) {
+        // Clear existing markers
+        pointAnnotationManager.deleteAll()
+
+        // Add markers for the filtered sites
+        for (site in sitesToShow) {
+            try {
+                val coords = parseCoordinates(site.koordinat)
+                if (coords != null) {
+                    val point = Point.fromLngLat(coords.second, coords.first) // Note the order: lng, lat
+                    addMarkerToMap(site, point)
+                }
+            } catch (e: Exception) {
+                // Handle invalid coordinates
+                e.printStackTrace()
+            }
         }
     }
 
@@ -171,7 +249,9 @@ class WitelDetailActivity : AppCompatActivity() {
             .whereEqualTo("witel", witelName)
             .get()
             .addOnSuccessListener { documents ->
+                originalSiteList.clear()
                 siteList.clear()
+                filteredSiteList.clear()
                 val sitePoints = mutableListOf<Point>()
 
                 for (document in documents) {
@@ -190,6 +270,7 @@ class WitelDetailActivity : AppCompatActivity() {
                         koordinat = koordinat
                     )
 
+                    originalSiteList.add(site)
                     siteList.add(site)
 
                     // Add marker for this site on the map
@@ -206,18 +287,21 @@ class WitelDetailActivity : AppCompatActivity() {
                     }
                 }
 
+                // Initialize the filtered list with all sites
+                filteredSiteList.addAll(originalSiteList)
+
                 // Update site count and refresh adapter
-                tvSiteCount.text = "Total Sites: ${siteList.size}"
+                tvSiteCount.text = "Total Sites: ${filteredSiteList.size}"
                 siteAdapter.notifyDataSetChanged()
 
                 // Focus map to show all markers if we have any and no province coordinates
                 if (sitePoints.isNotEmpty() && !hasProvinceCoordinates) {
                     // Hanya fokus ke site pertama jika tidak ada koordinat provinsi
-                    focusMapOnSite(siteList[0])
+                    focusMapOnSite(filteredSiteList[0])
                 }
 
                 // Show message if no sites found
-                if (siteList.isEmpty()) {
+                if (filteredSiteList.isEmpty()) {
                     showToast("No sites found for $witelName")
                 }
             }
@@ -291,7 +375,7 @@ class WitelDetailActivity : AppCompatActivity() {
         val point = Point.fromLngLat(coords.second, coords.first) // Note the order: lng, lat
         val cameraOptions = CameraOptions.Builder()
             .center(point)
-            .zoom(1.0)
+            .zoom(14.0)  // Increased zoom level to focus on the specific site
             .pitch(0.0)
             .bearing(0.0)
             .build()
