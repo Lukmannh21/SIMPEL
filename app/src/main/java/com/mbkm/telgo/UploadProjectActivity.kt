@@ -297,7 +297,7 @@ class UploadProjectActivity : AppCompatActivity() {
         val platform = platformDropdown.text.toString()
         val type = typeDropdown.text.toString()
         val jmlModul = jmlModulInput.text.toString().trim()
-        val siteProvider = siteProviderInput.text.toString() // Updated to match XML ID
+        val siteProvider = siteProviderInput.text.toString()
         val kecamatanLokasi = kecamatanLokasiInput.text.toString().trim()
         val kodeIhld = kodeIhldInput.text.toString().trim()
         val lopDownlink = lopDownlinkInput.text.toString().trim()
@@ -311,75 +311,13 @@ class UploadProjectActivity : AppCompatActivity() {
         val odp = odpInput.text.toString().trim()
         val port = portInput.text.toString().trim()
 
-        // Validate required inputs
-        if (witel.isEmpty() || !witelOptions.contains(witel)) {
-            showToast("Silakan pilih Witel")
-            return
-        }
-
+        // Validasi hanya untuk siteId (wajib diisi)
         if (siteId.isEmpty()) {
             showToast("Site ID Location tidak boleh kosong")
             return
         }
 
-        if (status.isEmpty() || !statusOptions.contains(status)) {
-            showToast("Silakan pilih Status")
-            return
-        }
-
-        if (lastIssue.isEmpty()) {
-            showToast("Last Issue tidak boleh kosong")
-            return
-        }
-
-        if (koordinat.isEmpty()) {
-            showToast("Koordinat tidak boleh kosong")
-            return
-        }
-
-        // Additional validation for new required fields
-        if (kodeSto.isEmpty()) {
-            showToast("Kode STO tidak boleh kosong")
-            return
-        }
-
-        if (platform.isEmpty() || !platformOptions.contains(platform)) {
-            showToast("Silakan pilih Platform")
-            return
-        }
-
-        if (sizeOlt.isEmpty() || !sizeOltOptions.contains(sizeOlt)) {
-            showToast("Silakan pilih Size OLT")
-            return
-        }
-
-        if (jmlModul.isEmpty()) {
-            showToast("Jumlah Modul tidak boleh kosong")
-            return
-        }
-
-        if (kodeIhld.isEmpty()) {
-            showToast("Kode IHLD tidak boleh kosong")
-            return
-        }
-
-        if (toc.isEmpty()) {
-            showToast("TOC tidak boleh kosong")
-            return
-        }
-
-        if (startProject.isEmpty()) {
-            showToast("Start Project tidak boleh kosong")
-            return
-        }
-
-        // Validation for site provider using the correct field name
-        if (siteProvider.isEmpty() || !siteProviderOptions.contains(siteProvider)) {
-            showToast("Silakan pilih Site Provider")
-            return
-        }
-
-        // Check if site ID already exists in database
+        // Langsung lanjut ke pengecekan Site ID di database
         checkSiteIdExists(siteId, witel, status, lastIssue, koordinat, kodeSto, namaSto,
             portMetro, sfp, hostname, sizeOlt, platform, type, jmlModul,
             siteProvider, kecamatanLokasi, kodeIhld, lopDownlink, kontrakPengadaan,
