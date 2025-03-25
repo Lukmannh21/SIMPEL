@@ -43,7 +43,7 @@
             android:id="@+id/logoImageView"
             android:layout_width="158dp"
             android:layout_height="152dp"
-            android:src="@drawable/logo"
+            android:src="@drawable/tiger"
             android:contentDescription="App Logo"
             android:layout_marginBottom="16dp"/>
 

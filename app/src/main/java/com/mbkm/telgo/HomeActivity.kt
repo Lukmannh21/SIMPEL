@@ -158,8 +158,8 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val selectedSizeOlt = spinnerSizeOlt.selectedItem.toString()
 
         for (project in projectList) {
-            val statusMatch = selectedStatus == "Pilih Status" || project.status == selectedStatus
-            val sizeOltMatch = selectedSizeOlt == "Pilih Size OLT" || project.sizeOlt == selectedSizeOlt
+            val statusMatch = selectedStatus == "Status" || project.status == selectedStatus
+            val sizeOltMatch = selectedSizeOlt == "Size" || project.sizeOlt == selectedSizeOlt
 
             if (statusMatch && sizeOltMatch) {
                 filteredProjectList.add(project)

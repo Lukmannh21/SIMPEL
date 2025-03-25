@@ -87,7 +87,7 @@
         <activity
             android:name=".UploadProjectActivity"
             android:exported="false"
-            android:theme="@style/MaterialAppTheme" />
+            android:theme="@style/Theme.TelGO" />
     </application>
 
 </manifest>

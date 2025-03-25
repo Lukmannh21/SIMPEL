@@ -8,19 +8,19 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="39dp"
         android:padding="16dp">
 
         <TextView
             android:id="@+id/tvFormTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="140dp"
+            android:layout_marginStart="110dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="120dp"
-            android:text="Input LOP"
+            android:text="INPUT LOP"
             android:textColor="#000000"
-            android:textSize="23sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,13 +34,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Size OLT (I)"
-            app:layout_constraintTop_toBottomOf="@id/tvFormTitle">
+            app:layout_constraintTop_toBottomOf="@id/tvFormTitle"
+            android:textSize="10sp">
 
             <AutoCompleteTextView
                 android:id="@+id/sizeOltDropdown"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="45dp"
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Status Dropdown -->
@@ -56,8 +58,9 @@
             <AutoCompleteTextView
                 android:id="@+id/statusDropdown"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="45dp"
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Witel Dropdown -->
@@ -73,8 +76,9 @@
             <AutoCompleteTextView
                 android:id="@+id/witelDropdown"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="45dp"
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Kode STO -->
@@ -90,8 +94,9 @@
             <EditText
                 android:id="@+id/kodeStoInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Nama STO Catuan Uplink -->
@@ -107,8 +112,9 @@
             <EditText
                 android:id="@+id/namaStoInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Port Metro -->
@@ -124,8 +130,9 @@
             <EditText
                 android:id="@+id/portMetroInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- SFP -->
@@ -141,8 +148,9 @@
             <EditText
                 android:id="@+id/sfpInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Hostname -->
@@ -158,8 +166,9 @@
             <EditText
                 android:id="@+id/hostnameInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Platform Dropdown -->
@@ -175,8 +184,9 @@
             <AutoCompleteTextView
                 android:id="@+id/platformDropdown"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="45dp"
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Type Dropdown -->
@@ -192,8 +202,9 @@
             <AutoCompleteTextView
                 android:id="@+id/typeDropdown"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="45dp"
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Jumlah Modul -->
@@ -209,8 +220,9 @@
             <EditText
                 android:id="@+id/jmlModulInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:layout_height="45dp"
+                android:inputType="number"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Site ID Location -->
@@ -226,8 +238,9 @@
             <EditText
                 android:id="@+id/siteIdInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Koordinat -->
@@ -243,8 +256,9 @@
             <EditText
                 android:id="@+id/koordinatInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Current Location Button -->
@@ -270,8 +284,9 @@
             <AutoCompleteTextView
                 android:id="@+id/siteProviderInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="45dp"
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Kecamatan Lokasi OLT -->
@@ -287,8 +302,9 @@
             <EditText
                 android:id="@+id/kecamatanLokasiInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Kode IHLD -->
@@ -304,8 +320,9 @@
             <EditText
                 android:id="@+id/kodeIhldInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- LOP Downlink -->
@@ -321,8 +338,9 @@
             <EditText
                 android:id="@+id/lopDownlinkInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Kontrak Pengadaan -->
@@ -338,8 +356,9 @@
             <EditText
                 android:id="@+id/kontrakPengadaanInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_height="45dp"
+                android:inputType="text"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- TOC (Date) -->
@@ -355,10 +374,11 @@
             <EditText
                 android:id="@+id/tocInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
+                android:layout_height="45dp"
+                android:clickable="true"
                 android:focusable="false"
-                android:clickable="true"/>
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Start Project (Date) -->
@@ -374,10 +394,11 @@
             <EditText
                 android:id="@+id/startProjectInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
+                android:layout_height="45dp"
+                android:clickable="true"
                 android:focusable="false"
-                android:clickable="true"/>
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Catuan AC Dropdown -->
@@ -393,8 +414,9 @@
             <AutoCompleteTextView
                 android:id="@+id/catuanAcDropdown"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="45dp"
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Last Issue -->
@@ -410,10 +432,11 @@
             <EditText
                 android:id="@+id/lastIssueInput"
                 android:layout_width="match_parent"
-                android:layout_height="61dp"
+                android:layout_height="45dp"
                 android:gravity="top|start"
                 android:inputType="textMultiLine"
-                android:minLines="3" />
+                android:minLines="3"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Kendala Dropdown -->
@@ -429,8 +452,9 @@
             <AutoCompleteTextView
                 android:id="@+id/kendalaDropdown"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:layout_height="45dp"
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Tgl Plan OA (Date) -->
@@ -446,10 +470,11 @@
             <EditText
                 android:id="@+id/tglPlanOaInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
+                android:layout_height="45dp"
+                android:clickable="true"
                 android:focusable="false"
-                android:clickable="true"/>
+                android:inputType="none"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Week Plan OA - DIUBAH MENJADI READ-ONLY -->
@@ -465,9 +490,10 @@
             <EditText
                 android:id="@+id/weekPlanOaInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
+                android:focusable="false"
                 android:inputType="none"
-                android:focusable="false" />
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- ODP -->
@@ -483,8 +509,9 @@
             <EditText
                 android:id="@+id/odpInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:layout_height="45dp"
+                android:inputType="number"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Port -->
@@ -500,21 +527,22 @@
             <EditText
                 android:id="@+id/portInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:layout_height="45dp"
+                android:inputType="number"
+                android:textSize="11sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Add Data Button -->
         <Button
             android:id="@+id/btnAddData"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
             android:layout_marginTop="15dp"
-            android:minHeight="51dp"
             android:background="@drawable/btn_red"
+            android:minHeight="51dp"
             android:text="Add Data"
             android:textAllCaps="false"
-            android:textSize="20sp"
+            android:textSize="19sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/portInputLayout" />
@@ -522,18 +550,18 @@
         <!-- Back Button -->
         <Button
             android:id="@+id/btnBack"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            android:text="Back"
-            android:textSize="20sp"
-            android:textAllCaps="false"
             android:background="@drawable/btn_red"
-            app:layout_constraintTop_toBottomOf="@id/btnAddData"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="Back"
+            android:textAllCaps="false"
+            android:textSize="19sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnAddData" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

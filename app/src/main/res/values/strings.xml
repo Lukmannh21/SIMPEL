@@ -4,7 +4,7 @@
     <string name="pilih_status">Pilih Status</string>
 
     <string-array name="status_options">
-        <item>Pilih Status</item>
+        <item>Status</item>
         <item>DROP</item>
         <item>SURVEY</item>
         <item>DONE SURVEY</item>
@@ -20,7 +20,7 @@
     <string name="pilih_size_olt">Pilih Size OLT</string>
 
     <string-array name="size_olt_options">
-        <item>Pilih Size OLT</item>
+        <item>Size</item>
         <item>Big XGSPON</item>
         <item>MINI XGSPON</item>
         <item>INSERT CARD</item>

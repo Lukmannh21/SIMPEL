@@ -80,6 +80,26 @@
         app:layout_constraintTop_toBottomOf="@id/tvSiteCount"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Search View -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/searchCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvLastUpdated"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:iconifiedByDefault="false"
+            app:queryHint="Search sites by ID or status..." />
+    </androidx.cardview.widget.CardView>
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -88,9 +108,9 @@
         android:layout_height="0dp"
         android:layout_margin="20dp"
         android:background="#D6E4F0"
-        app:layout_constraintTop_toBottomOf="@+id/tvLastUpdated"
+        app:layout_constraintTop_toBottomOf="@+id/searchCardView"
         app:layout_constraintBottom_toTopOf="@+id/mapCardView"
-        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintHeight_percent="0.35"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="List of Sites"/>
