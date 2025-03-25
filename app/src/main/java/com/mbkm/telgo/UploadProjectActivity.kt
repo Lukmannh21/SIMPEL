@@ -78,7 +78,7 @@ class UploadProjectActivity : AppCompatActivity() {
 
     private val statusOptions = listOf(
         "OA", "MAT DEL", "DONE", "SURVEY", "POWER ON",
-        "DROP", "MOS", "INTEGRASI", "DONE SURVEY", "DONE UT"
+        "DROP", "MOS", "INTEGRASI", "DONE SURVEY", "DONE UT", "INSTALL RACK"
     )
 
     private val sizeOltOptions = listOf(
@@ -97,7 +97,7 @@ class UploadProjectActivity : AppCompatActivity() {
 
     private val kendalaOptions = listOf(
         "COMMCASE", "NEW PLN", "NO ISSUE", "PERMIT", "PONDASI",
-        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK"
+        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK","L2SWITCH","MIGRASI","UPGRADE PLN"
     )
 
     private val siteProviderOptions = listOf(
