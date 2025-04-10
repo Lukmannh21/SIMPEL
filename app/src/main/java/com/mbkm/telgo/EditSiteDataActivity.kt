@@ -1,6 +1,9 @@
 package com.mbkm.telgo
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -11,32 +14,25 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.ViewGroup
+import android.webkit.MimeTypeMap
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import com.google.firebase.auth.FirebaseAuth
-import android.util.Log
-import android.webkit.MimeTypeMap
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
-
 
 class EditSiteDataActivity : AppCompatActivity() {
 
@@ -47,21 +43,22 @@ class EditSiteDataActivity : AppCompatActivity() {
     private lateinit var etLastIssue: EditText
     private lateinit var tvKoordinat: TextView
 
-    private lateinit var btnUploadDaftarMitra: Button
+    private lateinit var btnUploadDaftarMitra: MaterialButton
     private lateinit var tvDaftarMitraFileName: TextView
 
-    private lateinit var btnUploadEmailOrder: Button
-    private lateinit var btnUploadTelkomselPermit: Button
-    private lateinit var btnUploadTelPartner: Button
+    private lateinit var btnUploadEmailOrder: MaterialButton
+    private lateinit var btnUploadTelkomselPermit: MaterialButton
+    private lateinit var btnUploadTelPartner: MaterialButton
 
-    private lateinit var btnCaptureLocation: Button
-    private lateinit var btnCaptureFoundation: Button
-    private lateinit var btnCaptureInstallation: Button
-    private lateinit var btnCaptureCabinet: Button
-    private lateinit var btnCaptureInet: Button
-    private lateinit var btnCaptureUctv: Button
-    private lateinit var btnCaptureTelephone: Button
+    private lateinit var btnCaptureLocation: MaterialButton
+    private lateinit var btnCaptureFoundation: MaterialButton
+    private lateinit var btnCaptureInstallation: MaterialButton
+    private lateinit var btnCaptureCabinet: MaterialButton
+    private lateinit var btnCaptureInet: MaterialButton
+    private lateinit var btnCaptureUctv: MaterialButton
+    private lateinit var btnCaptureTelephone: MaterialButton
 
+    // Menggunakan ImageView standar
     private lateinit var ivLocation: ImageView
     private lateinit var ivFoundation: ImageView
     private lateinit var ivInstallation: ImageView
@@ -70,19 +67,34 @@ class EditSiteDataActivity : AppCompatActivity() {
     private lateinit var ivUctv: ImageView
     private lateinit var ivTelephone: ImageView
 
-    private lateinit var btnSaveChanges: Button
-    private lateinit var btnCancel: Button
+    private lateinit var btnSaveChanges: MaterialButton
+    private lateinit var btnCancel: MaterialButton
+    private lateinit var btnBack: Button
 
     private lateinit var tvEmailOrderFileName: TextView
     private lateinit var tvTelkomselPermitFileName: TextView
     private lateinit var tvTelPartnerFileName: TextView
 
+    // Progress bars untuk upload
+    private lateinit var progressEmailOrder: ProgressBar
+    private lateinit var progressTelkomselPermit: ProgressBar
+    private lateinit var progressTelPartner: ProgressBar
+    private lateinit var progressDaftarMitra: ProgressBar
+
     // New UI Components
-    private lateinit var btnToggleUpdateFields: Button
+    private lateinit var btnToggleUpdateFields: MaterialButton
     private lateinit var cardUpdateFields: CardView
     private lateinit var dropdownStatus: AutoCompleteTextView
     private lateinit var dropdownKendala: AutoCompleteTextView
     private lateinit var etTglPlanOa: TextInputEditText
+
+    // Expandable section components
+    private lateinit var headerDocuments: View
+    private lateinit var contentDocuments: View
+    private lateinit var iconDocuments: ImageView
+    private lateinit var headerPhotos: View
+    private lateinit var contentPhotos: View
+    private lateinit var iconPhotos: ImageView
 
     // Firebase
     private lateinit var firestore: FirebaseFirestore
@@ -102,7 +114,7 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     private val kendalaOptions = listOf(
         "COMMCASE", "NEW PLN", "NO ISSUE", "PERMIT", "PONDASI",
-        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK","L2SWITCH","MIGRASI","UPGRADE PLN"
+        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK", "L2SWITCH", "MIGRASI", "UPGRADE PLN"
     )
 
     // Request codes
@@ -151,6 +163,9 @@ class EditSiteDataActivity : AppCompatActivity() {
         // Initialize UI components
         initializeViews()
 
+        // Setup expandable sections
+        setupExpandableSections()
+
         // Set up adapters for dropdowns
         setupDropdowns()
 
@@ -162,30 +177,21 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         // Load site data
         loadSiteData()
-
-        // Set up button listeners
-        setupButtonListeners()
-
-        // Load site data
-        loadSiteData()
-
     }
 
     private fun initializeViews() {
-        // Original views
+        // Original views - dengan penyesuaian tipe untuk Material Components
         tvSiteId = findViewById(R.id.tvSiteId)
         tvWitel = findViewById(R.id.tvWitel)
         tvStatus = findViewById(R.id.tvStatus)
         etLastIssue = findViewById(R.id.etLastIssue)
         tvKoordinat = findViewById(R.id.tvKoordinat)
 
+        // Buttons sebagai MaterialButton
         btnUploadEmailOrder = findViewById(R.id.btnUploadEmailOrder)
         btnUploadTelkomselPermit = findViewById(R.id.btnUploadTelkomselPermit)
         btnUploadTelPartner = findViewById(R.id.btnUploadTelPartner)
-
-        tvEmailOrderFileName = findViewById(R.id.tvEmailOrderFileName)
-        tvTelkomselPermitFileName = findViewById(R.id.tvTelkomselPermitFileName)
-        tvTelPartnerFileName = findViewById(R.id.tvTelPartnerFileName)
+        btnUploadDaftarMitra = findViewById(R.id.btnUploadDaftarMitra)
 
         btnCaptureLocation = findViewById(R.id.btnCaptureLocation)
         btnCaptureFoundation = findViewById(R.id.btnCaptureFoundation)
@@ -195,6 +201,7 @@ class EditSiteDataActivity : AppCompatActivity() {
         btnCaptureUctv = findViewById(R.id.btnCaptureUctv)
         btnCaptureTelephone = findViewById(R.id.btnCaptureTelephone)
 
+        // ImageView standar
         ivLocation = findViewById(R.id.ivLocation)
         ivFoundation = findViewById(R.id.ivFoundation)
         ivInstallation = findViewById(R.id.ivInstallation)
@@ -205,6 +212,18 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         btnSaveChanges = findViewById(R.id.btnSaveChanges)
         btnCancel = findViewById(R.id.btnCancel)
+        btnBack = findViewById(R.id.btnBack)
+
+        tvEmailOrderFileName = findViewById(R.id.tvEmailOrderFileName)
+        tvTelkomselPermitFileName = findViewById(R.id.tvTelkomselPermitFileName)
+        tvTelPartnerFileName = findViewById(R.id.tvTelPartnerFileName)
+        tvDaftarMitraFileName = findViewById(R.id.tvDaftarMitraFileName)
+
+        // Progress bars untuk feedback visual saat upload
+        progressEmailOrder = findViewById(R.id.progressEmailOrder)
+        progressTelkomselPermit = findViewById(R.id.progressTelkomselPermit)
+        progressTelPartner = findViewById(R.id.progressTelPartner)
+        progressDaftarMitra = findViewById(R.id.progressDaftarMitra)
 
         // New views
         btnToggleUpdateFields = findViewById(R.id.btnToggleUpdateFields)
@@ -213,8 +232,97 @@ class EditSiteDataActivity : AppCompatActivity() {
         dropdownKendala = findViewById(R.id.dropdownKendala)
         etTglPlanOa = findViewById(R.id.etTglPlanOa)
 
-        btnUploadDaftarMitra = findViewById(R.id.btnUploadDaftarMitra)
-        tvDaftarMitraFileName = findViewById(R.id.tvDaftarMitraFileName)
+        // Expandable section components
+        headerDocuments = findViewById(R.id.headerDocuments)
+        contentDocuments = findViewById(R.id.contentDocuments)
+        iconDocuments = findViewById(R.id.expandDocumentsIcon)
+        headerPhotos = findViewById(R.id.headerPhotos)
+        contentPhotos = findViewById(R.id.contentPhotos)
+        iconPhotos = findViewById(R.id.expandPhotosIcon)
+    }
+
+    /**
+     * Setup expandable sections untuk dokumen dan foto
+     */
+    private fun setupExpandableSections() {
+        // Setup Documents Section
+        // Default content sections to visible
+        contentDocuments.visibility = View.VISIBLE
+
+        headerDocuments.setOnClickListener {
+            toggleSectionVisibility(contentDocuments, iconDocuments)
+        }
+
+        // Setup Photos Section
+        // Default content sections to visible
+        contentPhotos.visibility = View.VISIBLE
+
+        headerPhotos.setOnClickListener {
+            toggleSectionVisibility(contentPhotos, iconPhotos)
+        }
+    }
+
+    /**
+     * Fungsi helper untuk melakukan toggle visibility dengan animasi
+     */
+    private fun toggleSectionVisibility(contentView: View, iconView: ImageView) {
+        val isVisible = contentView.visibility == View.VISIBLE
+
+        if (isVisible) {
+            // Animate collapsing
+            val initialHeight = contentView.height
+            val valueAnimator = ValueAnimator.ofInt(initialHeight, 0)
+            valueAnimator.duration = 300
+
+            valueAnimator.addUpdateListener { animator ->
+                contentView.layoutParams.height = animator.animatedValue as Int
+                contentView.requestLayout()
+            }
+
+            valueAnimator.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    contentView.visibility = View.GONE
+                    contentView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+            })
+
+            valueAnimator.start()
+
+            // Rotate icon
+            iconView.animate()
+                .rotation(0f)
+                .setDuration(300)
+                .start()
+        } else {
+            // Prepare for expanding animation
+            contentView.visibility = View.VISIBLE
+            contentView.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            val targetHeight = contentView.measuredHeight
+            contentView.layoutParams.height = 0
+
+            // Animate expanding
+            val valueAnimator = ValueAnimator.ofInt(0, targetHeight)
+            valueAnimator.duration = 300
+
+            valueAnimator.addUpdateListener { animator ->
+                contentView.layoutParams.height = animator.animatedValue as Int
+                contentView.requestLayout()
+            }
+
+            valueAnimator.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    contentView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+            })
+
+            valueAnimator.start()
+
+            // Rotate icon
+            iconView.animate()
+                .rotation(180f)
+                .setDuration(300)
+                .start()
+        }
     }
 
     private fun setupDropdowns() {
@@ -279,37 +387,110 @@ class EditSiteDataActivity : AppCompatActivity() {
     }
 
     private fun setupButtonListeners() {
+        // Back button
+        btnBack.setOnClickListener {
+            finish()
+        }
+
         // Tambahkan logika untuk mencatat jika toggle ditekan
         btnToggleUpdateFields.setOnClickListener {
             isUpdateFieldsVisible = !isUpdateFieldsVisible
             hasToggledUpdateFields = true
-            cardUpdateFields.visibility = if (isUpdateFieldsVisible) View.VISIBLE else View.GONE
-        }
 
-        // Toggle update fields button
-        btnToggleUpdateFields.setOnClickListener {
-            isUpdateFieldsVisible = !isUpdateFieldsVisible
-            cardUpdateFields.visibility = if (isUpdateFieldsVisible) View.VISIBLE else View.GONE
+            // Animate card visibility
+            if (isUpdateFieldsVisible) {
+                cardUpdateFields.visibility = View.VISIBLE
+                cardUpdateFields.alpha = 0f
+                cardUpdateFields.animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .start()
+            } else {
+                cardUpdateFields.animate()
+                    .alpha(0f)
+                    .setDuration(300)
+                    .withEndAction {
+                        cardUpdateFields.visibility = View.GONE
+                    }
+                    .start()
+            }
         }
 
         // Original document upload buttons
-        btnUploadEmailOrder.setOnClickListener { openDocumentPicker("email_order") }
-        btnUploadTelkomselPermit.setOnClickListener { openDocumentPicker("telkomsel_permit") }
-        btnUploadTelPartner.setOnClickListener { openDocumentPicker("mitra_tel") }
-        btnUploadDaftarMitra.setOnClickListener { openDocumentPicker("daftar_mitra") }
+        btnUploadEmailOrder.setOnClickListener {
+            openDocumentPicker("email_order")
+            animateButtonClick(btnUploadEmailOrder)
+        }
+        btnUploadTelkomselPermit.setOnClickListener {
+            openDocumentPicker("telkomsel_permit")
+            animateButtonClick(btnUploadTelkomselPermit)
+        }
+        btnUploadTelPartner.setOnClickListener {
+            openDocumentPicker("mitra_tel")
+            animateButtonClick(btnUploadTelPartner)
+        }
+        btnUploadDaftarMitra.setOnClickListener {
+            openDocumentPicker("daftar_mitra")
+            animateButtonClick(btnUploadDaftarMitra)
+        }
 
         // Image capture buttons
-        btnCaptureLocation.setOnClickListener { captureImage("site_location") }
-        btnCaptureFoundation.setOnClickListener { captureImage("foundation_shelter") }
-        btnCaptureInstallation.setOnClickListener { captureImage("installation_process") }
-        btnCaptureCabinet.setOnClickListener { captureImage("cabinet") }
-        btnCaptureInet.setOnClickListener { captureImage("3p_inet") }
-        btnCaptureUctv.setOnClickListener { captureImage("3p_useetv") }
-        btnCaptureTelephone.setOnClickListener { captureImage("3p_telephone") }
+        btnCaptureLocation.setOnClickListener {
+            captureImage("site_location")
+            animateButtonClick(btnCaptureLocation)
+        }
+        btnCaptureFoundation.setOnClickListener {
+            captureImage("foundation_shelter")
+            animateButtonClick(btnCaptureFoundation)
+        }
+        btnCaptureInstallation.setOnClickListener {
+            captureImage("installation_process")
+            animateButtonClick(btnCaptureInstallation)
+        }
+        btnCaptureCabinet.setOnClickListener {
+            captureImage("cabinet")
+            animateButtonClick(btnCaptureCabinet)
+        }
+        btnCaptureInet.setOnClickListener {
+            captureImage("3p_inet")
+            animateButtonClick(btnCaptureInet)
+        }
+        btnCaptureUctv.setOnClickListener {
+            captureImage("3p_useetv")
+            animateButtonClick(btnCaptureUctv)
+        }
+        btnCaptureTelephone.setOnClickListener {
+            captureImage("3p_telephone")
+            animateButtonClick(btnCaptureTelephone)
+        }
 
         // Save & Cancel buttons
-        btnSaveChanges.setOnClickListener { saveChanges() }
-        btnCancel.setOnClickListener { finish() }
+        btnSaveChanges.setOnClickListener {
+            animateButtonClick(btnSaveChanges)
+            saveChanges()
+        }
+        btnCancel.setOnClickListener {
+            animateButtonClick(btnCancel)
+            finish()
+        }
+    }
+
+    /**
+     * Fungsi untuk memberikan animasi saat button diklik
+     */
+    private fun animateButtonClick(button: View) {
+        button.animate()
+            .scaleX(0.95f)
+            .scaleY(0.95f)
+            .setDuration(100)
+            .withEndAction {
+                button.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(100)
+                    .start()
+            }
+            .start()
     }
 
     private fun loadSiteData() {
@@ -333,19 +514,6 @@ class EditSiteDataActivity : AppCompatActivity() {
                 tvWitel.text = witel
                 tvStatus.text = site?.get("status").toString()
                 tvKoordinat.text = site?.get("koordinat").toString()
-
-                // Set last issue if available
-//                val lastIssueHistory = site?.get("lastIssueHistory") as? List<String>
-//                if (!lastIssueHistory.isNullOrEmpty()) {
-//                    // Extract just the content part after the timestamp
-//                    val lastIssue = lastIssueHistory[0]
-//                    val parts = lastIssue.split(" - ", limit = 2)
-//                    if (parts.size > 1) {
-//                        etLastIssue.setText(parts[1])
-//                    } else {
-//                        etLastIssue.setText(lastIssue)
-//                    }
-//                }
 
                 // Set values for new editable fields
                 // Simpan nilai awal dari field-field yang bisa diubah
@@ -446,32 +614,42 @@ class EditSiteDataActivity : AppCompatActivity() {
         return ""
     }
 
-
     private fun loadExistingFiles() {
         // Load existing documents
         val documentTypes = listOf(
-            "email_order" to tvEmailOrderFileName,
-            "telkomsel_permit" to tvTelkomselPermitFileName,
-            "mitra_tel" to tvTelPartnerFileName, // Changed from "tel_partner"
-            "daftar_mitra" to tvDaftarMitraFileName // Added new document type
+            "email_order" to tvEmailOrderFileName to progressEmailOrder,
+            "telkomsel_permit" to tvTelkomselPermitFileName to progressTelkomselPermit,
+            "mitra_tel" to tvTelPartnerFileName to progressTelPartner,
+            "daftar_mitra" to tvDaftarMitraFileName to progressDaftarMitra
         )
 
-        for ((docType, textView) in documentTypes) {
+        for ((docInfo, progressBar) in documentTypes) {
+            val (docType, textView) = docInfo
             val docRef = storage.reference.child("documents/$witel/$siteId/$docType.pdf")
+
+            // Tampilkan progress bar saat loading
+            progressBar.visibility = View.VISIBLE
+
             docRef.downloadUrl
                 .addOnSuccessListener { uri ->
                     // Mark document as existing
                     updateDocumentButtonStatus(docType, true)
 
-                    // Display filename (using the document type as a fallback)
+                    // Display filename dengan icon dan styling yang lebih baik
                     val fileName = "$docType.pdf"
                     textView.text = fileName
                     textView.visibility = View.VISIBLE
+
+                    // Sembunyikan progress bar
+                    progressBar.visibility = View.GONE
                 }
                 .addOnFailureListener {
                     // Document doesn't exist
                     updateDocumentButtonStatus(docType, false)
                     textView.visibility = View.GONE
+
+                    // Sembunyikan progress bar
+                    progressBar.visibility = View.GONE
                 }
         }
 
@@ -482,7 +660,7 @@ class EditSiteDataActivity : AppCompatActivity() {
             "installation_process" to ivInstallation,
             "cabinet" to ivCabinet,
             "3p_inet" to ivInet,
-            "3p_useetv" to ivUctv, // Changed from "3p_uctv"
+            "3p_useetv" to ivUctv,
             "3p_telephone" to ivTelephone
         )
 
@@ -505,12 +683,16 @@ class EditSiteDataActivity : AppCompatActivity() {
         val button = when (docType) {
             "email_order" -> btnUploadEmailOrder
             "telkomsel_permit" -> btnUploadTelkomselPermit
-            "mitra_tel" -> btnUploadTelPartner  // Perbaikan: Menggunakan string baru "mitra_tel"
-            "daftar_mitra" -> btnUploadDaftarMitra  // Penambahan: Support untuk dokumen baru
+            "mitra_tel" -> btnUploadTelPartner
+            "daftar_mitra" -> btnUploadDaftarMitra
             else -> return
         }
 
         button.text = if (exists) "Replace Document" else "Upload Document"
+
+        // Update icon juga
+        val icon = if (exists) R.drawable.ic_replace else R.drawable.ic_upload
+        button.setIconResource(icon)
     }
 
     private fun updateImageButtonStatus(imageType: String, exists: Boolean) {
@@ -520,12 +702,16 @@ class EditSiteDataActivity : AppCompatActivity() {
             "installation_process" -> btnCaptureInstallation
             "cabinet" -> btnCaptureCabinet
             "3p_inet" -> btnCaptureInet
-            "3p_useetv" -> btnCaptureUctv // FIXED: Use the new name
+            "3p_useetv" -> btnCaptureUctv
             "3p_telephone" -> btnCaptureTelephone
             else -> return
         }
 
         button.text = if (exists) "Replace Image" else "Capture Image"
+
+        // Update icon juga
+        val icon = if (exists) R.drawable.ic_replace_photo else R.drawable.ic_camera_alt
+        button.setIconResource(icon)
     }
 
     private fun loadImageIntoView(uri: Uri, imageView: ImageView) {
@@ -545,10 +731,33 @@ class EditSiteDataActivity : AppCompatActivity() {
                 imageView.setImageBitmap(bitmap)
                 imageView.visibility = View.VISIBLE
             }
+
+            // Tambahkan click listener untuk melihat gambar lebih detail
+            imageView.setOnClickListener {
+                // Animasikan klik
+                animateImageClick(imageView)
+            }
         } catch (e: Exception) {
-//            showToast("Error loading image: ${e.message}")
             e.printStackTrace()
         }
+    }
+
+    /**
+     * Memberikan efek animasi saat gambar diklik
+     */
+    private fun animateImageClick(imageView: ImageView) {
+        imageView.animate()
+            .scaleX(0.95f)
+            .scaleY(0.95f)
+            .setDuration(100)
+            .withEndAction {
+                imageView.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(100)
+                    .start()
+            }
+            .start()
     }
 
     private fun openDocumentPicker(docType: String) {
@@ -673,17 +882,27 @@ class EditSiteDataActivity : AppCompatActivity() {
                         "installation_process" -> ivInstallation
                         "cabinet" -> ivCabinet
                         "3p_inet" -> ivInet
-                        "3p_useetv" -> ivUctv  // PERBAIKAN: Gunakan string baru "3p_useetv"
+                        "3p_useetv" -> ivUctv
                         "3p_telephone" -> ivTelephone
                         else -> null
                     }
 
                     imageView?.let {
-                        // Load and display the image
+                        // Load and display the image with animation
                         try {
                             val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+                            it.alpha = 0f
                             it.setImageBitmap(bitmap)
                             it.visibility = View.VISIBLE
+                            it.animate()
+                                .alpha(1f)
+                                .setDuration(300)
+                                .start()
+
+                            // Add click listener
+                            it.setOnClickListener { view ->
+                                animateImageClick(view as ImageView)
+                            }
                         }
                         catch (e: Exception) {
                             showToast("Error displaying image: ${e.message}")
@@ -716,28 +935,42 @@ class EditSiteDataActivity : AppCompatActivity() {
                     val fileName = getFileNameFromUri(uri)
                     val mimeType = contentResolver.getType(uri) ?: "application/pdf"
 
+                    // Tampilkan progress bar yang sesuai
+                    val progressBar = when (currentImageType) {
+                        "email_order" -> progressEmailOrder
+                        "telkomsel_permit" -> progressTelkomselPermit
+                        "mitra_tel" -> progressTelPartner
+                        "daftar_mitra" -> progressDaftarMitra
+                        else -> null
+                    }
+                    progressBar?.visibility = View.VISIBLE
+
                     // Update the corresponding TextView based on the document type
-                    when (currentImageType) {
-                        "email_order" -> {
-                            tvEmailOrderFileName.text = fileName
-                            tvEmailOrderFileName.visibility = View.VISIBLE
-                        }
-                        "telkomsel_permit" -> {
-                            tvTelkomselPermitFileName.text = fileName
-                            tvTelkomselPermitFileName.visibility = View.VISIBLE
-                        }
-                        "mitra_tel" -> {
-                            tvTelPartnerFileName.text = fileName
-                            tvTelPartnerFileName.visibility = View.VISIBLE
-                        }
-                        "daftar_mitra" -> {
-                            tvDaftarMitraFileName.text = fileName
-                            tvDaftarMitraFileName.visibility = View.VISIBLE
-                        }
+                    val textView = when (currentImageType) {
+                        "email_order" -> tvEmailOrderFileName
+                        "telkomsel_permit" -> tvTelkomselPermitFileName
+                        "mitra_tel" -> tvTelPartnerFileName
+                        "daftar_mitra" -> tvDaftarMitraFileName
+                        else -> null
+                    }
+
+                    textView?.let {
+                        it.text = fileName
+                        it.visibility = View.VISIBLE
+                        it.alpha = 0f
+                        it.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start()
                     }
 
                     // Update button text
                     updateDocumentButtonStatus(currentImageType, true)
+
+                    // Hide progress bar after a short delay to simulate upload preview
+                    progressBar?.postDelayed({
+                        progressBar.visibility = View.GONE
+                    }, 1000)
 
                     showToast("Document selected: $fileName")
                 }
@@ -763,12 +996,17 @@ class EditSiteDataActivity : AppCompatActivity() {
     }
 
     // In the saveChanges() method, add the current user tracking
-
     private fun saveChanges() {
+        // Tampilkan animasi loading pada tombol save
+        btnSaveChanges.isClickable = false
+        btnSaveChanges.text = "Saving..."
+
         // Get current user before proceeding
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             showToast("Anda harus login terlebih dahulu")
+            btnSaveChanges.isClickable = true
+            btnSaveChanges.text = "Save Changes"
             return
         }
 
@@ -878,6 +1116,7 @@ class EditSiteDataActivity : AppCompatActivity() {
                     .addOnFailureListener { e ->
                         showToast("Error retrieving site data: ${e.message}")
                         btnSaveChanges.isEnabled = true
+                        btnSaveChanges.text = "Save Changes"
                     }
             } else {
                 // Tidak perlu mengambil data untuk idLopOlt
@@ -922,6 +1161,7 @@ class EditSiteDataActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     showToast("Error retrieving site data: ${e.message}")
                     btnSaveChanges.isEnabled = true
+                    btnSaveChanges.text = "Save Changes"
                 }
         } else {
             // Tidak ada perubahan issue, langsung update data lainnya
@@ -938,7 +1178,7 @@ class EditSiteDataActivity : AppCompatActivity() {
                 // Upload file dan update history
                 uploadAllFiles {
                     updateUserEditHistory(userEmail, siteId) {
-                        showToast("All changes saved successfully")
+                        showSuccessMessage("All changes saved successfully")
                         finish()
                     }
                 }
@@ -946,130 +1186,8 @@ class EditSiteDataActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 showToast("Error updating site data: ${e.message}")
                 btnSaveChanges.isEnabled = true
+                btnSaveChanges.text = "Save Changes"
             }
-    }
-
-
-    // Modify updateLastIssue to include the user email
-    private fun updateLastIssue(userEmail: String, onComplete: () -> Unit) {
-        if (documentId.isEmpty()) {
-            showToast("Error: Site document ID not found")
-            btnSaveChanges.isEnabled = true
-            return
-        }
-
-        val lastIssue = etLastIssue.text.toString().trim()
-        if (lastIssue.isEmpty()) {
-            onComplete() // Skip if empty
-            return
-        }
-
-        val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-        val issueWithTimestamp = "$currentTime - $lastIssue"
-
-        // Get existing issue history
-        firestore.collection("projects").document(documentId)
-            .get()
-            .addOnSuccessListener { document ->
-                val existingData = document.data
-                val existingIssueHistory = existingData?.get("lastIssueHistory") as? List<String> ?: listOf()
-
-                // Create updated issue history with new issue at the beginning
-                val updatedIssueHistory = mutableListOf(issueWithTimestamp)
-                updatedIssueHistory.addAll(existingIssueHistory)
-
-                // Update in Firestore with the user email
-                firestore.collection("projects").document(documentId)
-                    .update(
-                        mapOf(
-                            "lastIssueHistory" to updatedIssueHistory,
-                            "updatedAt" to currentTime,
-                            "lastUpdatedBy" to userEmail  // Add this line to track who made the update
-                        )
-                    )
-                    .addOnSuccessListener {
-                        // Continue with next step
-                        onComplete()
-                    }
-                    .addOnFailureListener { e ->
-                        showToast("Error updating issue: ${e.message}")
-                        btnSaveChanges.isEnabled = true
-                    }
-            }
-            .addOnFailureListener { e ->
-                showToast("Error retrieving site data: ${e.message}")
-                btnSaveChanges.isEnabled = true
-            }
-    }
-
-    // Modify updateSiteData to include the user email
-    private fun updateSiteData(userEmail: String, onComplete: () -> Unit) {
-        if (documentId.isEmpty()) {
-            showToast("Error: Site document ID not found")
-            btnSaveChanges.isEnabled = true
-            return
-        }
-
-        // Get values from new fields
-        val status = dropdownStatus.text.toString().trim()
-        val kendala = dropdownKendala.text.toString().trim()
-        val tglPlanOa = etTglPlanOa.text.toString().trim()
-
-        // Create update map with only non-empty fields
-        val updateMap = mutableMapOf<String, Any>()
-
-        // Always add the user who made this update
-        updateMap["lastUpdatedBy"] = userEmail
-
-        if (status.isNotEmpty() && status != initialStatus) {
-            updateMap["status"] = status
-
-            // Ambil data yang diperlukan dari Firestore untuk menghitung ID LOP OLT
-            firestore.collection("projects").document(documentId)
-                .get()
-                .addOnSuccessListener { document ->
-                    val data = document.data
-                    if (data != null) {
-                        // Ambil semua field yang diperlukan untuk perhitungan ID LOP OLT
-                        val platform = data["platform"] as? String
-                        val kontrakPengadaan = data["kontrakPengadaan"] as? String
-                        val kodeSto = data["kodeSto"] as? String
-                        val sizeOlt = data["sizeOlt"] as? String
-                        val jmlModul = data["jmlModul"] as? String
-                        val kodeIhld = data["kodeIhld"] as? String
-
-                        // Hitung ID LOP OLT dengan formula yang benar
-                        val idLopOlt = calculateIdLopOlt(
-                            platform,
-                            kontrakPengadaan,
-                            kodeSto,
-                            sizeOlt,
-                            jmlModul,
-                            siteId,
-                            kodeIhld,
-                            status
-                        )
-
-                        // Tambahkan ke updateMap jika berhasil dihitung
-                        if (idLopOlt.isNotEmpty()) {
-                            updateMap["idLopOlt"] = idLopOlt
-                        }
-
-                        // Lanjutkan dengan kode yang sudah ada
-                        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
-                    } else {
-                        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
-                    }
-                }
-                .addOnFailureListener { e ->
-                    showToast("Error retrieving site data: ${e.message}")
-                    btnSaveChanges.isEnabled = true
-                }
-            return // Return early since we're handling in the callback
-        }
-
-        // If status is not updated, continue with other updates
-        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
     }
 
     // Add a new function to update the user's edit history
@@ -1120,194 +1238,29 @@ class EditSiteDataActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateLastIssue(onComplete: () -> Unit) {
-        if (documentId.isEmpty()) {
-            showToast("Error: Site document ID not found")
-            btnSaveChanges.isEnabled = true
-            return
-        }
-
-        val lastIssue = etLastIssue.text.toString().trim()
-        if (lastIssue.isEmpty()) {
-            onComplete() // Skip if empty
-            return
-        }
-
-        val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-        val issueWithTimestamp = "$currentTime - $lastIssue"
-
-        // Get existing issue history
-        firestore.collection("projects").document(documentId)
-            .get()
-            .addOnSuccessListener { document ->
-                val existingData = document.data
-                val existingIssueHistory = existingData?.get("lastIssueHistory") as? List<String> ?: listOf()
-
-                // Create updated issue history with new issue at the beginning
-                val updatedIssueHistory = mutableListOf(issueWithTimestamp)
-                updatedIssueHistory.addAll(existingIssueHistory)
-
-                // Update in Firestore
-                firestore.collection("projects").document(documentId)
-                    .update(
-                        mapOf(
-                            "lastIssueHistory" to updatedIssueHistory,
-                            "updatedAt" to currentTime
-                        )
-                    )
-                    .addOnSuccessListener {
-                        // Continue with next step
-                        onComplete()
-                    }
-                    .addOnFailureListener { e ->
-                        showToast("Error updating issue: ${e.message}")
-                        btnSaveChanges.isEnabled = true
-                    }
-            }
-            .addOnFailureListener { e ->
-                showToast("Error retrieving site data: ${e.message}")
-                btnSaveChanges.isEnabled = true
-            }
-    }
-
-    private fun updateSiteData(onComplete: () -> Unit) {
-        if (documentId.isEmpty()) {
-            showToast("Error: Site document ID not found")
-            btnSaveChanges.isEnabled = true
-            return
-        }
-
-        // Get values from new fields
-        val status = dropdownStatus.text.toString().trim()
-        val kendala = dropdownKendala.text.toString().trim()
-        val tglPlanOa = etTglPlanOa.text.toString().trim()
-
-        // Create update map with only non-empty fields
-        val updateMap = mutableMapOf<String, Any>()
-
-        if (status.isNotEmpty()) {
-            updateMap["status"] = status
-
-            // Ambil data yang diperlukan dari Firestore untuk menghitung ID LOP OLT
-            firestore.collection("projects").document(documentId)
-                .get()
-                .addOnSuccessListener { document ->
-                    val data = document.data
-                    if (data != null) {
-                        // Ambil semua field yang diperlukan untuk perhitungan ID LOP OLT
-                        val platform = data["platform"] as? String
-                        val kontrakPengadaan = data["kontrakPengadaan"] as? String
-                        val kodeSto = data["kodeSto"] as? String
-                        val sizeOlt = data["sizeOlt"] as? String
-                        val jmlModul = data["jmlModul"] as? String
-                        val kodeIhld = data["kodeIhld"] as? String
-
-                        // Hitung ID LOP OLT dengan formula yang benar
-                        val idLopOlt = calculateIdLopOlt(
-                            platform,
-                            kontrakPengadaan,
-                            kodeSto,
-                            sizeOlt,
-                            jmlModul,
-                            siteId,
-                            kodeIhld,
-                            status
-                        )
-
-                        // Tambahkan ke updateMap jika berhasil dihitung
-                        if (idLopOlt.isNotEmpty()) {
-                            updateMap["idLopOlt"] = idLopOlt
-                        }
-
-                        // Lanjutkan dengan kode yang sudah ada
-                        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
-                    } else {
-                        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
-                    }
-                }
-                .addOnFailureListener { e ->
-                    showToast("Error retrieving site data: ${e.message}")
-                    btnSaveChanges.isEnabled = true
-                }
-            return // Return early since we're handling in the callback
-        }
-
-        // If status is not updated, continue with other updates
-        completeUpdateProcess(updateMap, kendala, tglPlanOa, onComplete)
-    }
-
-    // Helper method to complete the update process
-    private fun completeUpdateProcess(updateMap: MutableMap<String, Any>, kendala: String, tglPlanOa: String, onComplete: () -> Unit) {
-        // Add kendala if not empty and changed
-        if (kendala.isNotEmpty() && kendala != initialKendala) {
-            updateMap["kendala"] = kendala
-        }
-
-        // Process tglPlanOa
-        if (tglPlanOa.isNotEmpty() && tglPlanOa != initialTglPlanOa) {
-            updateMap["tglPlanOa"] = tglPlanOa
-
-            // Calculate weekPlanOa from tglPlanOa using our new function
-            val weekPlanOa = updateWeekPlanOa(tglPlanOa)
-            if (weekPlanOa.isNotEmpty()) {
-                updateMap["weekPlanOa"] = weekPlanOa
-            }
-
-            // Calculate sisaHariThdpPlanOa
-            try {
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val planDate = dateFormat.parse(tglPlanOa)
-                val currentDate = Date()
-
-                if (planDate != null) {
-                    val diffInMillis = planDate.time - currentDate.time
-                    val diffInDays = diffInMillis / (24 * 60 * 60 * 1000)
-
-                    updateMap["sisaHariThdpPlanOa"] = diffInDays.toString()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        // If no fields to update, skip to next step
-        if (updateMap.isEmpty() || updateMap.size == 1 && updateMap.containsKey("lastUpdatedBy")) {
-            onComplete()
-            return
-        }
-
-        // Add updatedAt field
-        val currentTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-        updateMap["updatedAt"] = currentTime
-
-        // Update in Firestore
-        firestore.collection("projects").document(documentId)
-            .update(updateMap)
-            .addOnSuccessListener {
-                // Continue to next step
-                onComplete()
-            }
-            .addOnFailureListener { e ->
-                showToast("Error updating site data: ${e.message}")
-                btnSaveChanges.isEnabled = true
-            }
-    }
-
     private fun uploadAllFiles(onComplete: () -> Unit) {
-        // Disable the save button to prevent multiple clicks
-        btnSaveChanges.isEnabled = false
-
-        var pendingUploads = documentUris.size + imageUris.size
+        // Count total files to upload for progress
+        val totalUploads = documentUris.size + imageUris.size
+        var completedUploads = 0
 
         // If no files to upload, call completion handler immediately
-        if (pendingUploads == 0) {
+        if (totalUploads == 0) {
             onComplete()
             return
         }
 
+        // Update UI to show uploading
+        val uploadText = "Uploading files (0/$totalUploads)"
+        btnSaveChanges.text = uploadText
+
         val onFileUploadComplete = {
-            pendingUploads--
-            if (pendingUploads <= 0) {
+            completedUploads++
+
+            // Update UI with progress
+            val progressText = "Uploading files ($completedUploads/$totalUploads)"
+            btnSaveChanges.text = progressText
+
+            if (completedUploads >= totalUploads) {
                 onComplete()
             }
         }
@@ -1327,6 +1280,16 @@ class EditSiteDataActivity : AppCompatActivity() {
         val contentResolver = applicationContext.contentResolver
         val mimeType = contentResolver.getType(uri) ?: "application/pdf"
         val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "pdf"
+
+        // Show progress bar
+        val progressBar = when (docType) {
+            "email_order" -> progressEmailOrder
+            "telkomsel_permit" -> progressTelkomselPermit
+            "mitra_tel" -> progressTelPartner
+            "daftar_mitra" -> progressDaftarMitra
+            else -> null
+        }
+        progressBar?.visibility = View.VISIBLE
 
         // Hapus dulu semua kemungkinan file lama dengan format berbeda
         val potentialExtensions = listOf("pdf", "docx", "doc", "xlsx", "xls")
@@ -1352,14 +1315,20 @@ class EditSiteDataActivity : AppCompatActivity() {
                     // Update nama file di UI dengan ekstensi baru
                     textView?.let {
                         val fileName = getFileNameFromUri(uri)
-                        it.text = "$fileName (.$extension)"
+                        it.text = fileName
                         it.visibility = View.VISIBLE
                     }
+
+                    // Hide progress bar
+                    progressBar?.visibility = View.GONE
 
                     showToast("Document $docType uploaded successfully")
                     onComplete()
                 }
                 .addOnFailureListener { e ->
+                    // Hide progress bar
+                    progressBar?.visibility = View.GONE
+
                     showToast("Error uploading document $docType: ${e.message}")
                     onComplete() // Still call complete to ensure we don't block the process
                 }
@@ -1400,5 +1369,15 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * Menampilkan pesan sukses dengan animasi dan styling yang lebih baik
+     */
+    private fun showSuccessMessage(message: String) {
+        val toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
+        val view = toast.view
+        view?.setBackgroundResource(R.drawable.success_toast_background)
+        toast.show()
     }
 }

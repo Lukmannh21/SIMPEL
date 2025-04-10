@@ -47,7 +47,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation("com.mapbox.maps:android:11.10.2")
-    implementation ("com.google.android.material:material:1.8.0")
+
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -57,6 +57,12 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+
+
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation ("com.google.android.material:material:1.6.0")
+
     implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
