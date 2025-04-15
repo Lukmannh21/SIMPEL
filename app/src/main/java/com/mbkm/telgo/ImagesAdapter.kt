@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.io.FileOutputStream
@@ -109,9 +110,11 @@ class ImagesAdapter(
 
                 // Initialize views from the dialog
                 val fullImageView = dialog.findViewById<ImageView>(R.id.fullImageView)
-                val closeButton = dialog.findViewById<ImageView>(R.id.btnCloseFullImage)
-                // Change this line to use ImageView instead of Button
-                val downloadButton = dialog.findViewById<ImageView>(R.id.btnDownloadImage)
+
+                // FIX: Proper casting based on new layout where these might be MaterialButton now
+                val closeButton = dialog.findViewById<View>(R.id.btnCloseFullImage) // Use View as base type
+                val downloadButton = dialog.findViewById<View>(R.id.btnDownloadImage) // Use View as base type
+
                 val imageTitle = dialog.findViewById<TextView>(R.id.tvFullImageTitle)
 
                 imageTitle.text = image.name
@@ -239,7 +242,7 @@ class ImagesAdapter(
         return ImageViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder:        ImageViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         holder.bind(imagesList[position])
     }
 

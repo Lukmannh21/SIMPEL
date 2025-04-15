@@ -5,7 +5,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -63,6 +65,25 @@ class SiteDetailActivity : AppCompatActivity() {
     private lateinit var tvSisaHariThdpPlanOa: TextView
     private lateinit var tvSisaHariThdpToc: TextView
 
+    // Expandable sections components
+    private lateinit var sectionBasicHeader: View
+    private lateinit var sectionTechnicalHeader: View
+    private lateinit var sectionProjectHeader: View
+    private lateinit var sectionAdditionalHeader: View
+    private lateinit var sectionIssuesHeader: View
+
+    private lateinit var sectionBasicContent: View
+    private lateinit var sectionTechnicalContent: View
+    private lateinit var sectionProjectContent: View
+    private lateinit var sectionAdditionalContent: View
+    private lateinit var sectionIssuesContent: View
+
+    private lateinit var imgBasicToggle: ImageView
+    private lateinit var imgTechnicalToggle: ImageView
+    private lateinit var imgProjectToggle: ImageView
+    private lateinit var imgAdditionalToggle: ImageView
+    private lateinit var imgIssuesToggle: ImageView
+
     private val REQUEST_STORAGE_PERMISSION = 200
 
     // Firebase
@@ -100,6 +121,9 @@ class SiteDetailActivity : AppCompatActivity() {
         // Initialize UI components
         initializeUI()
 
+        // Setup expandable sections
+        setupExpandableSections()
+
         // Set up back button
         btnBack.setOnClickListener {
             finish()
@@ -118,16 +142,12 @@ class SiteDetailActivity : AppCompatActivity() {
 
         // Set up RecyclerViews
         setupRecyclerViews()
-
-        // HAPUS pemanggilan loadSiteData() dari sini
-        // loadSiteData() dipisahkan ke onResume() saja
     }
 
     private fun initializeUI() {
         // Original UI Components
         tvSiteId = findViewById(R.id.tvSiteId)
         tvWitel = findViewById(R.id.tvWitel)
-
         tvStatus = findViewById(R.id.tvStatus)
         tvLastIssue = findViewById(R.id.tvLastIssue)
         tvKoordinat = findViewById(R.id.tvKoordinat)
@@ -163,6 +183,68 @@ class SiteDetailActivity : AppCompatActivity() {
         tvPort = findViewById(R.id.tvPort)
         tvSisaHariThdpPlanOa = findViewById(R.id.tvSisaHariThdpPlanOa)
         tvSisaHariThdpToc = findViewById(R.id.tvSisaHariThdpToc)
+
+        // Expandable section components
+        sectionBasicHeader = findViewById(R.id.sectionBasicHeader)
+        sectionTechnicalHeader = findViewById(R.id.sectionTechnicalHeader)
+        sectionProjectHeader = findViewById(R.id.sectionProjectHeader)
+        sectionAdditionalHeader = findViewById(R.id.sectionAdditionalHeader)
+        sectionIssuesHeader = findViewById(R.id.sectionIssuesHeader)
+
+        sectionBasicContent = findViewById(R.id.sectionBasicContent)
+        sectionTechnicalContent = findViewById(R.id.sectionTechnicalContent)
+        sectionProjectContent = findViewById(R.id.sectionProjectContent)
+        sectionAdditionalContent = findViewById(R.id.sectionAdditionalContent)
+        sectionIssuesContent = findViewById(R.id.sectionIssuesContent)
+
+        imgBasicToggle = findViewById(R.id.imgBasicToggle)
+        imgTechnicalToggle = findViewById(R.id.imgTechnicalToggle)
+        imgProjectToggle = findViewById(R.id.imgProjectToggle)
+        imgAdditionalToggle = findViewById(R.id.imgAdditionalToggle)
+        imgIssuesToggle = findViewById(R.id.imgIssuesToggle)
+    }
+
+    private fun setupExpandableSections() {
+        // Basic section toggle
+        sectionBasicHeader.setOnClickListener {
+            toggleSection(sectionBasicContent, imgBasicToggle)
+        }
+
+        // Technical section toggle
+        sectionTechnicalHeader.setOnClickListener {
+            toggleSection(sectionTechnicalContent, imgTechnicalToggle)
+        }
+
+        // Project section toggle
+        sectionProjectHeader.setOnClickListener {
+            toggleSection(sectionProjectContent, imgProjectToggle)
+        }
+
+        // Additional section toggle
+        sectionAdditionalHeader.setOnClickListener {
+            toggleSection(sectionAdditionalContent, imgAdditionalToggle)
+        }
+
+        // Issues section toggle
+        sectionIssuesHeader.setOnClickListener {
+            toggleSection(sectionIssuesContent, imgIssuesToggle)
+        }
+
+        // Set default expanded section
+        sectionBasicContent.visibility = View.VISIBLE
+        imgBasicToggle.rotation = 180f
+    }
+
+    private fun toggleSection(sectionContent: View, toggleIcon: ImageView) {
+        if (sectionContent.visibility == View.VISIBLE) {
+            // Collapse section
+            sectionContent.visibility = View.GONE
+            toggleIcon.animate().rotation(0f).setDuration(300).start()
+        } else {
+            // Expand section
+            sectionContent.visibility = View.VISIBLE
+            toggleIcon.animate().rotation(180f).setDuration(300).start()
+        }
     }
 
     private fun checkAndRequestStoragePermission(): Boolean {
@@ -278,6 +360,14 @@ class SiteDetailActivity : AppCompatActivity() {
                 tvSisaHariThdpPlanOa.text = site?.get("sisaHariThdpPlanOa")?.toString() ?: ""
                 tvSisaHariThdpToc.text = site?.get("sisaHariThdpToc")?.toString() ?: ""
 
+                // Set status color based on status value
+                when (site?.get("status")?.toString()?.toLowerCase(Locale.ROOT)) {
+                    "done" -> tvStatus.setBackgroundResource(R.drawable.status_badge_done)
+                    "in progress" -> tvStatus.setBackgroundResource(R.drawable.status_badge_progress)
+                    "pending" -> tvStatus.setBackgroundResource(R.drawable.status_badge_pending)
+                    else -> tvStatus.setBackgroundResource(R.drawable.status_badge_background)
+                }
+
                 // Load documents
                 loadDocuments()
 
@@ -289,7 +379,6 @@ class SiteDetailActivity : AppCompatActivity() {
             }
     }
 
-    // Tambahkan fungsi checkDocumentExists yang sebelumnya belum ditambahkan
     private fun checkDocumentExists(docType: String, docName: String, pendingChecks: AtomicInteger) {
         val formats = listOf(
             "pdf" to "application/pdf",
@@ -322,7 +411,6 @@ class SiteDetailActivity : AppCompatActivity() {
                     // Format ini tidak ditemukan, lanjutkan ke format berikutnya
                 }
                 .addOnCompleteListener {
-                    // Kurangi counter format yang sudah dicek
                     // Kurangi counter format yang sudah dicek
                     if (checkQueue.decrementAndGet() == 0 && !documentFound) {
                         // Semua format sudah dicek dan tidak ada dokumen yang ditemukan
@@ -408,7 +496,6 @@ class SiteDetailActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // If you've added the onStart method to ImagesAdapter as suggested earlier
         if (::imagesAdapter.isInitialized) {
             (imagesAdapter as? ImagesAdapter)?.let { adapter ->
                 adapter.onStart(this)
@@ -417,7 +504,6 @@ class SiteDetailActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
-        // If you've added the onStop method to ImagesAdapter as suggested earlier
         if (::imagesAdapter.isInitialized) {
             (imagesAdapter as? ImagesAdapter)?.let { adapter ->
                 adapter.onStop()
@@ -436,7 +522,6 @@ class SiteDetailActivity : AppCompatActivity() {
         android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
     }
 
-    // Clear any pending callbacks to prevent crashes when activity is destroyed
     override fun onDestroy() {
         // Cancel any Firebase callbacks if needed
         imagesList.clear()
@@ -444,5 +529,3 @@ class SiteDetailActivity : AppCompatActivity() {
         super.onDestroy()
     }
 }
-
-//

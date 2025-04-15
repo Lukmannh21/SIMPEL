@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
+    <!-- Add pinch-to-zoom support with PhotoView or custom TouchImageView -->
     <ImageView
         android:id="@+id/fullImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"
+        android:transitionName="image_transition" />
 
+    <!-- Top header bar with translucent background -->
     <LinearLayout
+        android:id="@+id/headerBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
         android:background="#80000000"
+        android:orientation="horizontal"
         android:padding="16dp">
 
         <TextView
@@ -24,22 +30,57 @@
             android:layout_weight="1"
             android:text="Image Title"
             android:textColor="@android:color/white"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
-        <ImageView
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDownloadImage"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_download"
-            android:tint="@android:color/white"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="8dp"
+            android:text="Save"
+            android:textColor="@android:color/white"
+            app:icon="@drawable/ic_download"
+            app:iconTint="@android:color/white" />
 
-        <ImageView
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCloseFullImage"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:tint="@android:color/white"/>
+            android:text="Close"
+            android:textColor="@android:color/white"
+            app:icon="@android:drawable/ic_menu_close_clear_cancel"
+            app:iconTint="@android:color/white" />
     </LinearLayout>
 
+    <!-- Image counter indicators for multiple images -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#80000000"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- These dots would be dynamically generated based on image count -->
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/dot_selected" />
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/dot_unselected" />
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/dot_unselected" />
+    </LinearLayout>
 </RelativeLayout>
