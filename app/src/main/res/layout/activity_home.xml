@@ -51,11 +51,7 @@
                     android:textColor="@android:color/white"/>
             </LinearLayout>
 
-
-
             <!-- Logo -->
-
-            <!-- CardView untuk TelGO Services -->
             <ImageView
                 android:id="@+id/logo"
                 android:layout_width="121dp"
@@ -65,142 +61,12 @@
                 android:contentDescription="Logo TelGo"
                 android:src="@drawable/tiger" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
+            <!-- WebView untuk Looker Studio -->
+            <WebView
+                android:id="@+id/webView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="6dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/telgo_services_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:text="TelGO Services"
-                        android:textColor="@android:color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/btnWitelSearch"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:background="@android:color/transparent"
-                            android:drawableTop="@drawable/search2"
-                            android:drawablePadding="8dp"
-                            android:text="Witel Search"
-                            android:textColor="@android:color/black"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <Button
-                            android:id="@+id/btnUploadProject"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:background="@android:color/transparent"
-                            android:drawableTop="@drawable/u2"
-                            android:drawablePadding="8dp"
-                            android:text="Add LOP"
-                            android:textColor="@android:color/black"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <Button
-                            android:id="@+id/btnLastHistory"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:background="@android:color/transparent"
-                            android:drawableTop="@drawable/history"
-                            android:drawablePadding="8dp"
-                            android:text="Last Update"
-                            android:textColor="@android:color/black"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Dashboard Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="12dp">
-
-                    <Spinner
-                        android:id="@+id/spinnerStatus"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:entries="@array/status_options"
-                        android:background="@android:drawable/btn_dropdown"
-                        android:layout_marginEnd="8dp"/>
-
-                    <Spinner
-                        android:id="@+id/spinnerSizeOlt"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:entries="@array/size_olt_options"
-                        android:background="@android:drawable/btn_dropdown"
-                        android:layout_marginEnd="8dp"/>
-
-                    <Button
-                        android:id="@+id/btnDownload"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:drawablePadding="8dp"
-                        android:gravity="center_vertical"
-                        android:text="Download"
-                        android:textColor="@android:color/black"
-                        android:textSize="11sp" />
-                </LinearLayout>
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fillViewport="true"
-                    android:scrollbars="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <include layout="@layout/header_project"/>
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recyclerViewDashboard"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="16dp"/>
-                    </LinearLayout>
-                </HorizontalScrollView>
-            </LinearLayout>
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp" />
 
         </LinearLayout>
     </ScrollView>

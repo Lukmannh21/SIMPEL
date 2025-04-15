@@ -26,23 +26,23 @@
         <item>INSERT CARD</item>
     </string-array>
 
-        <string name="back">Back</string>
-        <string name="full_name">Full Name</string>
-        <string name="enter_your_full_name">Enter your full name</string>
-        <string name="nik">NIK</string>
-        <string name="enter_your_nik">Enter your NIK</string>
-        <string name="company_name">Company Name</string>
-        <string name="enter_your_company_name">Enter your company name</string>
-        <string name="unit">Unit</string>
-        <string name="enter_your_unit">Enter your unit</string>
-        <string name="position">Position</string>
-        <string name="enter_your_position">Enter your position</string>
-        <string name="detail_info">Detail Info</string>
-        <string name="email">Email</string>
-        <string name="enter_your_email">Enter your email</string>
-        <string name="phone">Phone</string>
-        <string name="enter_your_phone_number">Enter your phone number</string>
-        <string name="password">Password</string>
-        <string name="enter_your_password">Enter your password</string>
-        <string name="save_button">Save</string>
+    <string name="back">Back</string>
+    <string name="full_name">Full Name</string>
+    <string name="enter_your_full_name">Enter your full name</string>
+    <string name="nik">NIK</string>
+    <string name="enter_your_nik">Enter your NIK</string>
+    <string name="company_name">Company Name</string>
+    <string name="enter_your_company_name">Enter your company name</string>
+    <string name="unit">Unit</string>
+    <string name="enter_your_unit">Enter your unit</string>
+    <string name="position">Position</string>
+    <string name="enter_your_position">Enter your position</string>
+    <string name="detail_info">Detail Info</string>
+    <string name="email">Email</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="phone">Phone</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="password">Password</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="save_button">Save</string>
 </resources>

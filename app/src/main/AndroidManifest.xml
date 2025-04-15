@@ -19,6 +19,9 @@
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
         <activity
+            android:name=".ServicesActivity"
+            android:exported="false" />
+        <activity
             android:name=".LastUpdateDetailActivity"
             android:exported="false" />
         <activity
@@ -27,7 +30,6 @@
         <activity
             android:name=".LastUpdateActivity"
             android:exported="false" />
-
 
         <provider
             android:name="androidx.core.content.FileProvider"
