@@ -5,9 +5,9 @@
         android:icon="@drawable/home"
         android:title="Home" />
     <item
-        android:id="@+id/navigation_Upload"
+        android:id="@+id/navigation_services"
         android:icon="@drawable/addlop"
-        android:title="Add LOP" />
+        android:title="Services" />
     <item
         android:id="@+id/navigation_history"
         android:icon="@drawable/ic_lastupdate"
@@ -16,5 +16,4 @@
         android:id="@+id/navigation_account"
         android:icon="@drawable/profill"
         android:title="Me" />
-
 </menu>
