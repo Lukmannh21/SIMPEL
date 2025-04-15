@@ -61,12 +61,51 @@
                 android:contentDescription="Logo TelGo"
                 android:src="@drawable/tiger" />
 
-            <!-- WebView untuk Looker Studio -->
-            <WebView
-                android:id="@+id/webView"
+            <!-- FrameLayout untuk WebView dan loading/error -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp">
+
+                <!-- WebView untuk Looker Studio -->
+                <WebView
+                    android:id="@+id/webView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <!-- Loading Progress -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="visible" />
+
+                <!-- Error Layout -->
+                <LinearLayout
+                    android:id="@+id/errorLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gagal memuat data"
+                        android:textSize="18sp"
+                        android:textColor="@android:color/black"
+                        android:layout_marginBottom="16dp"/>
+
+                    <Button
+                        android:id="@+id/btnRefresh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Refresh"
+                        android:padding="12dp"/>
+                </LinearLayout>
+            </FrameLayout>
 
         </LinearLayout>
     </ScrollView>
