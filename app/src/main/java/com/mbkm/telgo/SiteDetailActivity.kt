@@ -5,7 +5,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -118,16 +120,12 @@ class SiteDetailActivity : AppCompatActivity() {
 
         // Set up RecyclerViews
         setupRecyclerViews()
-
-        // HAPUS pemanggilan loadSiteData() dari sini
-        // loadSiteData() dipisahkan ke onResume() saja
     }
 
     private fun initializeUI() {
         // Original UI Components
         tvSiteId = findViewById(R.id.tvSiteId)
         tvWitel = findViewById(R.id.tvWitel)
-
         tvStatus = findViewById(R.id.tvStatus)
         tvLastIssue = findViewById(R.id.tvLastIssue)
         tvKoordinat = findViewById(R.id.tvKoordinat)
@@ -278,6 +276,14 @@ class SiteDetailActivity : AppCompatActivity() {
                 tvSisaHariThdpPlanOa.text = site?.get("sisaHariThdpPlanOa")?.toString() ?: ""
                 tvSisaHariThdpToc.text = site?.get("sisaHariThdpToc")?.toString() ?: ""
 
+                // Set status color based on status value
+                when (site?.get("status")?.toString()?.toLowerCase(Locale.ROOT)) {
+                    "done" -> tvStatus.setBackgroundResource(R.drawable.status_badge_done)
+                    "in progress" -> tvStatus.setBackgroundResource(R.drawable.status_badge_progress)
+                    "pending" -> tvStatus.setBackgroundResource(R.drawable.status_badge_pending)
+                    else -> tvStatus.setBackgroundResource(R.drawable.status_badge_background)
+                }
+
                 // Load documents
                 loadDocuments()
 
@@ -289,7 +295,6 @@ class SiteDetailActivity : AppCompatActivity() {
             }
     }
 
-    // Tambahkan fungsi checkDocumentExists yang sebelumnya belum ditambahkan
     private fun checkDocumentExists(docType: String, docName: String, pendingChecks: AtomicInteger) {
         val formats = listOf(
             "pdf" to "application/pdf",
@@ -322,7 +327,6 @@ class SiteDetailActivity : AppCompatActivity() {
                     // Format ini tidak ditemukan, lanjutkan ke format berikutnya
                 }
                 .addOnCompleteListener {
-                    // Kurangi counter format yang sudah dicek
                     // Kurangi counter format yang sudah dicek
                     if (checkQueue.decrementAndGet() == 0 && !documentFound) {
                         // Semua format sudah dicek dan tidak ada dokumen yang ditemukan
@@ -408,7 +412,6 @@ class SiteDetailActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // If you've added the onStart method to ImagesAdapter as suggested earlier
         if (::imagesAdapter.isInitialized) {
             (imagesAdapter as? ImagesAdapter)?.let { adapter ->
                 adapter.onStart(this)
@@ -417,7 +420,6 @@ class SiteDetailActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
-        // If you've added the onStop method to ImagesAdapter as suggested earlier
         if (::imagesAdapter.isInitialized) {
             (imagesAdapter as? ImagesAdapter)?.let { adapter ->
                 adapter.onStop()
@@ -436,7 +438,6 @@ class SiteDetailActivity : AppCompatActivity() {
         android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
     }
 
-    // Clear any pending callbacks to prevent crashes when activity is destroyed
     override fun onDestroy() {
         // Cancel any Firebase callbacks if needed
         imagesList.clear()
@@ -444,5 +445,3 @@ class SiteDetailActivity : AppCompatActivity() {
         super.onDestroy()
     }
 }
-
-//
