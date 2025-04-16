@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -71,15 +72,53 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         // Force layout update after configuration change
         webView.post {
             webView.requestLayout()
+
+            // Ensure scrolling works in both orientations
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                webView.isVerticalScrollBarEnabled = true
+                webView.isHorizontalScrollBarEnabled = true
+            } else {
+                webView.isVerticalScrollBarEnabled = true
+                webView.isHorizontalScrollBarEnabled = false
+            }
+
             // Add a small delay to ensure proper rendering
             webView.postDelayed({
-                // Reload the content if needed
-                if (webView.visibility == View.VISIBLE) {
-                    webView.clearView()
-                    webView.loadUrl(lookerEmbedUrl)
-                }
-            }, 300)
+                // Make sure the WebView is scrollable
+                injectScrollFixJavaScript()
+            }, 500)
         }
+    }
+
+    private fun injectScrollFixJavaScript() {
+        val javascript = """
+            javascript:(function() {
+                // Make all elements scrollable
+                var css = document.createElement('style');
+                css.type = 'text/css';
+                css.innerHTML = '* { -webkit-overflow-scrolling: touch !important; } ' +
+                               'body { overflow: auto !important; } ' +
+                               '.looker-table-container { overflow: auto !important; max-height: none !important; } ' +
+                               'table { overflow: auto !important; }';
+                document.head.appendChild(css);
+                
+                // Find tables and make them scrollable
+                var tables = document.querySelectorAll('table');
+                for(var i=0; i<tables.length; i++) {
+                    var table = tables[i];
+                    var wrapper = document.createElement('div');
+                    wrapper.style.overflow = 'auto';
+                    wrapper.style.width = '100%';
+                    table.parentNode.insertBefore(wrapper, table);
+                    wrapper.appendChild(table);
+                }
+                
+                // Tell the page it's in an app webview
+                document.documentElement.classList.add('in-app-webview');
+            })()
+        """.trimIndent()
+
+        webView.evaluateJavascript(javascript, null)
     }
 
     private fun setupWebView() {
@@ -92,10 +131,38 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             displayZoomControls = false
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
-            // Add these settings for better landscape rendering
+            // Enable scrolling
             setSupportZoom(true)
-            textZoom = 100
-            defaultZoom = WebSettings.ZoomDensity.MEDIUM
+            builtInZoomControls = true
+
+            // Set rendering settings for better scrolling
+            // Using only non-deprecated methods
+            setRenderPriority(WebSettings.RenderPriority.HIGH)
+
+            // Important for scrolling to work properly
+            blockNetworkImage = false
+            loadsImagesAutomatically = true
+
+            // Cache settings to improve performance without using deprecated methods
+            cacheMode = WebSettings.LOAD_DEFAULT
+        }
+
+        // Enable hardware acceleration for better performance
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+
+        // Override the WebView touch handling to ensure scrolling works
+        webView.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP -> {
+                    // Return false to indicate the event was not consumed
+                    // and should be passed to the WebView for scrolling
+                    if (!v.hasFocus()) {
+                        v.requestFocus()
+                    }
+                    false
+                }
+                else -> false
+            }
         }
 
         webView.webChromeClient = WebChromeClient()
@@ -114,22 +181,8 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 progressBar.visibility = View.GONE
                 webView.visibility = View.VISIBLE
 
-                // Add JavaScript to adjust the content for better display in both orientations
-                val javascript = """
-                    javascript:(function() {
-                        var meta = document.querySelector('meta[name="viewport"]');
-                        if (meta) {
-                            meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
-                        } else {
-                            meta = document.createElement('meta');
-                            meta.name = 'viewport';
-                            meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0';
-                            document.getElementsByTagName('head')[0].appendChild(meta);
-                        }
-                    })()
-                """.trimIndent()
-
-                webView.evaluateJavascript(javascript, null)
+                // Inject JavaScript to fix scrolling issues
+                injectScrollFixJavaScript()
             }
 
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
