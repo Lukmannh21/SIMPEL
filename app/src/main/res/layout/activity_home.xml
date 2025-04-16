@@ -41,6 +41,13 @@
                     android:textSize="24sp"
                     android:textStyle="bold"/>
 
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="Logo TelGo"
+                    android:src="@drawable/tiger" />
+
                 <!-- Button Logout -->
                 <Button
                     android:id="@+id/btnLogout"
@@ -53,14 +60,14 @@
             </LinearLayout>
 
             <!-- Logo -->
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="121dp"
-                android:layout_height="104dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:contentDescription="Logo TelGo"
-                android:src="@drawable/tiger" />
+<!--            <ImageView-->
+<!--                android:id="@+id/logo"-->
+<!--                android:layout_width="121dp"-->
+<!--                android:layout_height="104dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:contentDescription="Logo TelGo"-->
+<!--                android:src="@drawable/tiger" />-->
 
             <!-- FrameLayout untuk WebView dan loading/error -->
             <FrameLayout
