@@ -30,6 +30,9 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     private val lookerEmbedUrl = "https://lookerstudio.google.com/embed/reporting/ccdfc03d-400e-4caa-bd79-982488833438/page/AeBGF"
 
+    // Save WebView state
+    private var webViewState: Bundle? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -62,32 +65,25 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         // Setup WebView untuk Looker
         setupWebView()
 
-        // Load dashboard
-        loadLookerDashboard()
+        // Restore WebView state if exists, otherwise load the dashboard
+        if (savedInstanceState != null) {
+            webViewState = savedInstanceState.getBundle("webViewState")
+        }
+
+        if (webViewState != null) {
+            webView.restoreState(webViewState!!)
+        } else {
+            // Load dashboard
+            loadLookerDashboard()
+        }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-
-        // Force layout update after configuration change
-        webView.post {
-            webView.requestLayout()
-
-            // Ensure scrolling works in both orientations
-            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                webView.isVerticalScrollBarEnabled = true
-                webView.isHorizontalScrollBarEnabled = true
-            } else {
-                webView.isVerticalScrollBarEnabled = true
-                webView.isHorizontalScrollBarEnabled = false
-            }
-
-            // Add a small delay to ensure proper rendering
-            webView.postDelayed({
-                // Make sure the WebView is scrollable
-                injectScrollFixJavaScript()
-            }, 500)
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Save WebView state
+        val webViewBundle = Bundle()
+        webView.saveState(webViewBundle)
+        outState.putBundle("webViewState", webViewBundle)
     }
 
     private fun injectScrollFixJavaScript() {
@@ -135,15 +131,11 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             setSupportZoom(true)
             builtInZoomControls = true
 
-            // Set rendering settings for better scrolling
-            // Using only non-deprecated methods
-            setRenderPriority(WebSettings.RenderPriority.HIGH)
-
             // Important for scrolling to work properly
             blockNetworkImage = false
             loadsImagesAutomatically = true
 
-            // Cache settings to improve performance without using deprecated methods
+            // Cache settings to improve performance
             cacheMode = WebSettings.LOAD_DEFAULT
         }
 
@@ -183,6 +175,16 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
                 // Inject JavaScript to fix scrolling issues
                 injectScrollFixJavaScript()
+
+                // Set scrollbar visibility based on current orientation
+                val currentOrientation = resources.configuration.orientation
+                if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    webView.isVerticalScrollBarEnabled = true
+                    webView.isHorizontalScrollBarEnabled = true
+                } else {
+                    webView.isVerticalScrollBarEnabled = true
+                    webView.isHorizontalScrollBarEnabled = false
+                }
             }
 
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
