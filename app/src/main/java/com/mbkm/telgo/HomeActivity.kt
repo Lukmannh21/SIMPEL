@@ -1,6 +1,7 @@
 package com.mbkm.telgo
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.MenuItem
@@ -64,6 +65,23 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         loadLookerDashboard()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        // Force layout update after configuration change
+        webView.post {
+            webView.requestLayout()
+            // Add a small delay to ensure proper rendering
+            webView.postDelayed({
+                // Reload the content if needed
+                if (webView.visibility == View.VISIBLE) {
+                    webView.clearView()
+                    webView.loadUrl(lookerEmbedUrl)
+                }
+            }, 300)
+        }
+    }
+
     private fun setupWebView() {
         with(webView.settings) {
             javaScriptEnabled = true
@@ -73,6 +91,11 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             builtInZoomControls = true
             displayZoomControls = false
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+
+            // Add these settings for better landscape rendering
+            setSupportZoom(true)
+            textZoom = 100
+            defaultZoom = WebSettings.ZoomDensity.MEDIUM
         }
 
         webView.webChromeClient = WebChromeClient()
@@ -90,6 +113,23 @@ class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 // Sembunyikan loading, tampilkan WebView
                 progressBar.visibility = View.GONE
                 webView.visibility = View.VISIBLE
+
+                // Add JavaScript to adjust the content for better display in both orientations
+                val javascript = """
+                    javascript:(function() {
+                        var meta = document.querySelector('meta[name="viewport"]');
+                        if (meta) {
+                            meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
+                        } else {
+                            meta = document.createElement('meta');
+                            meta.name = 'viewport';
+                            meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0';
+                            document.getElementsByTagName('head')[0].appendChild(meta);
+                        }
+                    })()
+                """.trimIndent()
+
+                webView.evaluateJavascript(javascript, null)
             }
 
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
