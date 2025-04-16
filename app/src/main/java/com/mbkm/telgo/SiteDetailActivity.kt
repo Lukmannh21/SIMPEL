@@ -65,25 +65,6 @@ class SiteDetailActivity : AppCompatActivity() {
     private lateinit var tvSisaHariThdpPlanOa: TextView
     private lateinit var tvSisaHariThdpToc: TextView
 
-    // Expandable sections components
-    private lateinit var sectionBasicHeader: View
-    private lateinit var sectionTechnicalHeader: View
-    private lateinit var sectionProjectHeader: View
-    private lateinit var sectionAdditionalHeader: View
-    private lateinit var sectionIssuesHeader: View
-
-    private lateinit var sectionBasicContent: View
-    private lateinit var sectionTechnicalContent: View
-    private lateinit var sectionProjectContent: View
-    private lateinit var sectionAdditionalContent: View
-    private lateinit var sectionIssuesContent: View
-
-    private lateinit var imgBasicToggle: ImageView
-    private lateinit var imgTechnicalToggle: ImageView
-    private lateinit var imgProjectToggle: ImageView
-    private lateinit var imgAdditionalToggle: ImageView
-    private lateinit var imgIssuesToggle: ImageView
-
     private val REQUEST_STORAGE_PERMISSION = 200
 
     // Firebase
@@ -120,9 +101,6 @@ class SiteDetailActivity : AppCompatActivity() {
 
         // Initialize UI components
         initializeUI()
-
-        // Setup expandable sections
-        setupExpandableSections()
 
         // Set up back button
         btnBack.setOnClickListener {
@@ -183,68 +161,6 @@ class SiteDetailActivity : AppCompatActivity() {
         tvPort = findViewById(R.id.tvPort)
         tvSisaHariThdpPlanOa = findViewById(R.id.tvSisaHariThdpPlanOa)
         tvSisaHariThdpToc = findViewById(R.id.tvSisaHariThdpToc)
-
-        // Expandable section components
-        sectionBasicHeader = findViewById(R.id.sectionBasicHeader)
-        sectionTechnicalHeader = findViewById(R.id.sectionTechnicalHeader)
-        sectionProjectHeader = findViewById(R.id.sectionProjectHeader)
-        sectionAdditionalHeader = findViewById(R.id.sectionAdditionalHeader)
-        sectionIssuesHeader = findViewById(R.id.sectionIssuesHeader)
-
-        sectionBasicContent = findViewById(R.id.sectionBasicContent)
-        sectionTechnicalContent = findViewById(R.id.sectionTechnicalContent)
-        sectionProjectContent = findViewById(R.id.sectionProjectContent)
-        sectionAdditionalContent = findViewById(R.id.sectionAdditionalContent)
-        sectionIssuesContent = findViewById(R.id.sectionIssuesContent)
-
-        imgBasicToggle = findViewById(R.id.imgBasicToggle)
-        imgTechnicalToggle = findViewById(R.id.imgTechnicalToggle)
-        imgProjectToggle = findViewById(R.id.imgProjectToggle)
-        imgAdditionalToggle = findViewById(R.id.imgAdditionalToggle)
-        imgIssuesToggle = findViewById(R.id.imgIssuesToggle)
-    }
-
-    private fun setupExpandableSections() {
-        // Basic section toggle
-        sectionBasicHeader.setOnClickListener {
-            toggleSection(sectionBasicContent, imgBasicToggle)
-        }
-
-        // Technical section toggle
-        sectionTechnicalHeader.setOnClickListener {
-            toggleSection(sectionTechnicalContent, imgTechnicalToggle)
-        }
-
-        // Project section toggle
-        sectionProjectHeader.setOnClickListener {
-            toggleSection(sectionProjectContent, imgProjectToggle)
-        }
-
-        // Additional section toggle
-        sectionAdditionalHeader.setOnClickListener {
-            toggleSection(sectionAdditionalContent, imgAdditionalToggle)
-        }
-
-        // Issues section toggle
-        sectionIssuesHeader.setOnClickListener {
-            toggleSection(sectionIssuesContent, imgIssuesToggle)
-        }
-
-        // Set default expanded section
-        sectionBasicContent.visibility = View.VISIBLE
-        imgBasicToggle.rotation = 180f
-    }
-
-    private fun toggleSection(sectionContent: View, toggleIcon: ImageView) {
-        if (sectionContent.visibility == View.VISIBLE) {
-            // Collapse section
-            sectionContent.visibility = View.GONE
-            toggleIcon.animate().rotation(0f).setDuration(300).start()
-        } else {
-            // Expand section
-            sectionContent.visibility = View.VISIBLE
-            toggleIcon.animate().rotation(180f).setDuration(300).start()
-        }
     }
 
     private fun checkAndRequestStoragePermission(): Boolean {
