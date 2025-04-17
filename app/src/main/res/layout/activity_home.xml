@@ -124,7 +124,7 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="66dp"
         android:layout_marginBottom="4dp"
         android:background="@android:color/white"
         app:itemIconTint="@color/navigation_color_item"
