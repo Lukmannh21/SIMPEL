@@ -11,4 +11,7 @@
     <color name="gray">#B0B0B0</color>
     <color name="navigation_item_selected">#FF0000</color>
     <color name="navigation_item_unselected">#757575</color>
+        <color name="colorPrimary">#E90606</color>
+        <color name="colorPrimaryDark">#303F9F</color>
+        <color name="colorAccent">#FF4081</color>
 </resources>
