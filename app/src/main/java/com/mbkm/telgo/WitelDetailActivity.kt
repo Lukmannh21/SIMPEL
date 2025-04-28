@@ -4,12 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -20,23 +25,34 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.animation.flyTo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.drawable.GradientDrawable
+import android.os.Handler
+import android.os.Looper
+import android.view.animation.AccelerateDecelerateInterpolator
+import com.mapbox.maps.plugin.animation.MapAnimationOptions.Companion.mapAnimationOptions
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class WitelDetailActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var btnBack: Button
+    private lateinit var btnBack: ImageButton
     private lateinit var tvWitelTitle: TextView
     private lateinit var tvSiteCount: TextView
+    private lateinit var tvLastUpdated: TextView
     private lateinit var searchView: SearchView
     private lateinit var siteAdapter: SiteAdapter
     private lateinit var siteList: ArrayList<SiteModel>
     private lateinit var filteredSiteList: ArrayList<SiteModel>
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var progressBar: ProgressBar
     private var witelName: String = ""
 
     // Add variable for the original site list
@@ -59,7 +75,8 @@ class WitelDetailActivity : AppCompatActivity() {
         "POWER ON" to Color.CYAN,
         "DROP" to Color.BLACK,
         "MOS" to Color.MAGENTA,
-        "INTEGRASI" to Color.GRAY
+        "INTEGRASI" to Color.GRAY,
+        "DONE UT" to Color.GREEN
     )
     private val defaultMarkerColor = Color.RED
 
@@ -86,11 +103,25 @@ class WitelDetailActivity : AppCompatActivity() {
         btnBack = findViewById(R.id.btnBack)
         tvWitelTitle = findViewById(R.id.tvWitelTitle)
         tvSiteCount = findViewById(R.id.tvSiteCount)
+        tvLastUpdated = findViewById(R.id.tvLastUpdated)
         searchView = findViewById(R.id.searchView)
+        progressBar = findViewById(R.id.progressBar)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
 
         // Initialize MapBox
         mapView = findViewById(R.id.mapView)
         mapboxMap = mapView.getMapboxMap()
+
+        // Setup swipe refresh
+        swipeRefreshLayout.setColorSchemeResources(
+            R.color.colorPrimary,
+            R.color.colorAccent,
+            android.R.color.holo_green_dark
+        )
+        swipeRefreshLayout.setOnRefreshListener {
+            // Reload data
+            loadSitesForWitel()
+        }
 
         // Set toolbar title to selected witel
         tvWitelTitle.text = witelName
@@ -124,6 +155,12 @@ class WitelDetailActivity : AppCompatActivity() {
 
         // Setup search functionality
         setupSearchView()
+
+        // Initialize map layer selector FAB
+        val fabMapLayers = findViewById<FloatingActionButton>(R.id.fabMapLayers)
+        fabMapLayers.setOnClickListener {
+            showMapStyleOptions()
+        }
 
         // Initialize MapBox style
         mapboxMap.loadStyleUri(Style.MAPBOX_STREETS) { style ->
@@ -215,28 +252,27 @@ class WitelDetailActivity : AppCompatActivity() {
             .build()
 
         mapboxMap.setCamera(cameraOptions)
-
-        // Opsional: tambahkan marker untuk menandai pusat provinsi
-//        addProvinceMarker(point)
     }
 
-    // Tambahkan method untuk menambahkan marker provinsi
-    private fun addProvinceMarker(point: Point) {
-        // Buat marker dengan warna khusus untuk provinsi (beda dari marker site)
-        val provinceMarkerColor = Color.rgb(128, 0, 128) // Ungu
-        val markerIcon = createMarkerBitmap(provinceMarkerColor)
+    private fun showMapStyleOptions() {
+        val styles = arrayOf("Streets", "Outdoors", "Satellite", "Satellite Streets", "Light", "Dark")
+        val styleUris = arrayOf(
+            Style.MAPBOX_STREETS,
+            Style.OUTDOORS,
+            Style.SATELLITE,
+            Style.SATELLITE_STREETS,
+            Style.LIGHT,
+            Style.DARK
+        )
 
-        val pointAnnotationOptions = PointAnnotationOptions()
-            .withPoint(point)
-            .withIconImage(markerIcon)
-            .withTextField("Provinsi")
-            .withTextSize(14.0)
-            .withTextOffset(listOf(0.0, 2.5))
-            .withTextColor(Color.BLACK)
-            .withTextHaloColor(Color.WHITE)
-            .withTextHaloWidth(2.0)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Map Style")
+            .setItems(styles) { _, which ->
+                mapboxMap.loadStyleUri(styleUris[which])
+            }
+            .create()
 
-        pointAnnotationManager.create(pointAnnotationOptions)
+        dialog.show()
     }
 
     private fun initializePointAnnotationManager() {
@@ -245,6 +281,13 @@ class WitelDetailActivity : AppCompatActivity() {
     }
 
     private fun loadSitesForWitel() {
+        progressBar.visibility = View.VISIBLE
+
+        // Update last updated text with current date and username
+        val currentDate = "2025-04-28 01:28:42" // Using the provided date
+        val userName = "Lukmannh21" // Using the provided username
+        tvLastUpdated.text = "Last updated: $currentDate by $userName"
+
         firestore.collection("projects")
             .whereEqualTo("witel", witelName)
             .get()
@@ -304,8 +347,14 @@ class WitelDetailActivity : AppCompatActivity() {
                 if (filteredSiteList.isEmpty()) {
                     showToast("No sites found for $witelName")
                 }
+
+                // Hide loading indicators
+                progressBar.visibility = View.GONE
+                swipeRefreshLayout.isRefreshing = false
             }
             .addOnFailureListener { e ->
+                progressBar.visibility = View.GONE
+                swipeRefreshLayout.isRefreshing = false
                 showToast("Error loading sites: ${e.message}")
             }
     }
@@ -372,18 +421,72 @@ class WitelDetailActivity : AppCompatActivity() {
     private fun focusMapOnSite(site: SiteModel) {
         val coords = parseCoordinates(site.koordinat) ?: return
 
+        // Find the position of this site in the list
+        val position = filteredSiteList.indexOf(site)
+        if (position != -1) {
+            // Scroll to position with animation
+            recyclerView.smoothScrollToPosition(position)
+        }
+
         val point = Point.fromLngLat(coords.second, coords.first) // Note the order: lng, lat
+
+        // Create camera animation
         val cameraOptions = CameraOptions.Builder()
             .center(point)
-            .zoom(14.0)  // Increased zoom level to focus on the specific site
-            .pitch(0.0)
-            .bearing(0.0)
+            .zoom(15.0)
             .build()
 
-        mapboxMap.setCamera(cameraOptions)
+        // Animate camera to position
+        mapboxMap.flyTo(
+            cameraOptions,
+            mapAnimationOptions {
+                duration(1000)
+                interpolator(AccelerateDecelerateInterpolator())
+            }
+        )
 
-        // Highlight the item in the RecyclerView
-        // This would require additional implementation
+        // Add a pulsing effect to the marker
+        highlightMarker(point)
+    }
+
+    // Add this method to highlight a marker
+    private fun highlightMarker(point: Point) {
+        // Create a temporary marker with animation
+        val pulsingMarker = createPulsingMarker()
+
+        val pointAnnotationOptions = PointAnnotationOptions()
+            .withPoint(point)
+            .withIconImage(pulsingMarker)
+
+        val annotation = pointAnnotationManager.create(pointAnnotationOptions)
+
+        // Remove pulsing marker after 3 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            pointAnnotationManager.delete(annotation)
+        }, 3000)
+    }
+
+    // Add this method to create a pulsing marker
+    private fun createPulsingMarker(): Bitmap {
+        val width = 50
+        val height = 50
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint().apply {
+            color = Color.RED
+            style = Paint.Style.FILL
+            isAntiAlias = true
+        }
+
+        // Draw outer circle
+        paint.alpha = 80
+        canvas.drawCircle(width / 2f, height / 2f, width / 2f, paint)
+
+        // Draw inner circle
+        paint.alpha = 255
+        canvas.drawCircle(width / 2f, height / 2f, width / 4f, paint)
+
+        return bitmap
     }
 
     private fun showToast(message: String) {
