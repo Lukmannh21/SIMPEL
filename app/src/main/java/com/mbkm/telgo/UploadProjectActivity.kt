@@ -5,9 +5,11 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -16,6 +18,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -32,9 +36,10 @@ class UploadProjectActivity : AppCompatActivity() {
     private lateinit var statusDropdown: AutoCompleteTextView
     private lateinit var lastIssueInput: EditText
     private lateinit var koordinatInput: EditText
-    private lateinit var btnCurrentLocation: Button
-    private lateinit var btnAddData: Button
-    private lateinit var btnBack: Button
+    private lateinit var btnCurrentLocation: MaterialButton
+    private lateinit var btnAddData: MaterialButton
+    private lateinit var btnBack: MaterialButton
+    private lateinit var formProgressBar: LinearProgressIndicator
 
     private lateinit var kodeStoInput: EditText
     private lateinit var namaStoInput: EditText
@@ -45,7 +50,7 @@ class UploadProjectActivity : AppCompatActivity() {
     private lateinit var platformDropdown: AutoCompleteTextView
     private lateinit var typeDropdown: AutoCompleteTextView
     private lateinit var jmlModulInput: EditText
-    private lateinit var siteProviderInput: AutoCompleteTextView  // Match XML ID
+    private lateinit var siteProviderInput: AutoCompleteTextView
     private lateinit var kecamatanLokasiInput: EditText
     private lateinit var kodeIhldInput: EditText
     private lateinit var lopDownlinkInput: EditText
@@ -97,7 +102,7 @@ class UploadProjectActivity : AppCompatActivity() {
 
     private val kendalaOptions = listOf(
         "COMMCASE", "NEW PLN", "NO ISSUE", "PERMIT", "PONDASI",
-        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK","L2SWITCH","MIGRASI","UPGRADE PLN"
+        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK", "L2SWITCH", "MIGRASI", "UPGRADE PLN"
     )
 
     private val siteProviderOptions = listOf(
@@ -128,6 +133,9 @@ class UploadProjectActivity : AppCompatActivity() {
         // Set up date pickers
         setupDatePickers()
 
+        // Set up progress bar listeners
+        addProgressBarListeners()
+
         // Set up current location button
         btnCurrentLocation.setOnClickListener {
             if (checkLocationPermission()) {
@@ -148,6 +156,8 @@ class UploadProjectActivity : AppCompatActivity() {
 
     private fun initializeUI() {
         // Initialize all UI components by finding them by ID
+        formProgressBar = findViewById(R.id.formProgressBar)
+
         witelDropdown = findViewById(R.id.witelDropdown)
         siteIdInput = findViewById(R.id.siteIdInput)
         statusDropdown = findViewById(R.id.statusDropdown)
@@ -166,7 +176,7 @@ class UploadProjectActivity : AppCompatActivity() {
         platformDropdown = findViewById(R.id.platformDropdown)
         typeDropdown = findViewById(R.id.typeDropdown)
         jmlModulInput = findViewById(R.id.jmlModulInput)
-        siteProviderInput = findViewById(R.id.siteProviderInput) // Match exact ID from XML
+        siteProviderInput = findViewById(R.id.siteProviderInput)
         kecamatanLokasiInput = findViewById(R.id.kecamatanLokasiInput)
         kodeIhldInput = findViewById(R.id.kodeIhldInput)
         lopDownlinkInput = findViewById(R.id.lopDownlinkInput)
@@ -204,7 +214,6 @@ class UploadProjectActivity : AppCompatActivity() {
         val kendalaAdapter = ArrayAdapter(this, R.layout.dropdown_item, kendalaOptions)
         kendalaDropdown.setAdapter(kendalaAdapter)
 
-        // Updated to use siteProviderInput matching the XML ID
         val siteProviderAdapter = ArrayAdapter(this, R.layout.dropdown_item, siteProviderOptions)
         siteProviderInput.setAdapter(siteProviderAdapter)
     }
@@ -224,6 +233,66 @@ class UploadProjectActivity : AppCompatActivity() {
         }
     }
 
+    private fun addProgressBarListeners() {
+        // Buat daftar semua field yang perlu dipantau
+        val fields = listOf(
+            siteIdInput, witelDropdown, statusDropdown, koordinatInput,
+            kodeStoInput, namaStoInput, portMetroInput, sfpInput,
+            hostnameInput, sizeOltDropdown, platformDropdown, typeDropdown,
+            jmlModulInput, siteProviderInput, kecamatanLokasiInput,
+            kodeIhldInput, lopDownlinkInput, kontrakPengadaanInput,
+            tocInput, startProjectInput, catuanAcDropdown, kendalaDropdown,
+            tglPlanOaInput, odpInput, portInput, lastIssueInput
+        )
+
+        // Jumlah total field
+        val totalFields = fields.size
+
+        // Tambahkan TextWatcher ke setiap field
+        fields.forEach { field ->
+            when (field) {
+                is EditText -> {
+                    field.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                        override fun afterTextChanged(s: Editable?) {
+                            updateProgressBar(fields, totalFields)
+                        }
+                    })
+                }
+                is AutoCompleteTextView -> {
+                    field.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                        override fun afterTextChanged(s: Editable?) {
+                            updateProgressBar(fields, totalFields)
+                        }
+                    })
+                }
+            }
+        }
+    }
+
+    private fun updateProgressBar(fields: List<Any>, totalFields: Int) {
+        var filledFields = 0
+
+        // Hitung berapa field yang sudah diisi
+        fields.forEach { field ->
+            when (field) {
+                is EditText -> {
+                    if (field.text.toString().isNotEmpty()) filledFields++
+                }
+                is AutoCompleteTextView -> {
+                    if (field.text.toString().isNotEmpty()) filledFields++
+                }
+            }
+        }
+
+        // Update progress bar
+        val progressPercentage = (filledFields * 100) / totalFields
+        formProgressBar.progress = progressPercentage
+    }
+
     private fun showDatePicker(dateInput: EditText, isPlanOa: Boolean = false) {
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             calendar.set(Calendar.YEAR, year)
@@ -239,13 +308,19 @@ class UploadProjectActivity : AppCompatActivity() {
             }
         }
 
-        DatePickerDialog(
+        // Use Material DatePicker with animation
+        val datePickerDialog = DatePickerDialog(
             this,
+            R.style.DatePickerDialogTheme, // Add this style to your styles.xml
             dateSetListener,
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        )
+
+        // Add animation to the dialog
+        datePickerDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        datePickerDialog.show()
     }
 
     private fun updateWeekPlanOa(calendar: Calendar) {
@@ -281,6 +356,10 @@ class UploadProjectActivity : AppCompatActivity() {
     }
 
     private fun validateAndProceed() {
+        // Animated effect on the add button
+        btnAddData.isEnabled = false
+        btnAddData.alpha = 0.7f
+
         // Get all input values
         val witel = witelDropdown.text.toString()
         val siteId = siteIdInput.text.toString().trim()
@@ -311,9 +390,11 @@ class UploadProjectActivity : AppCompatActivity() {
         val odp = odpInput.text.toString().trim()
         val port = portInput.text.toString().trim()
 
-        // Validasi hanya untuk siteId (wajib diisi)
+        // Validasi untuk siteId (wajib diisi)
         if (siteId.isEmpty()) {
-            showToast("Site ID Location tidak boleh kosong")
+            showError(siteIdInput, "Site ID Location tidak boleh kosong")
+            btnAddData.isEnabled = true
+            btnAddData.alpha = 1.0f
             return
         }
 
@@ -324,6 +405,12 @@ class UploadProjectActivity : AppCompatActivity() {
             toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port)
     }
 
+    private fun showError(input: EditText, message: String) {
+        input.error = message
+        input.requestFocus()
+        showToast(message)
+    }
+
     private fun checkSiteIdExists(
         siteId: String, witel: String, status: String, lastIssue: String, koordinat: String,
         kodeSto: String, namaSto: String, portMetro: String, sfp: String, hostname: String,
@@ -332,10 +419,22 @@ class UploadProjectActivity : AppCompatActivity() {
         kontrakPengadaan: String, toc: String, startProject: String, catuanAc: String,
         kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String
     ) {
+        // Show loading dialog
+        val loadingDialog = AlertDialog.Builder(this)
+            .setView(R.layout.dialog_loading)
+            .setCancelable(false)
+            .create()
+        loadingDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        loadingDialog.show()
+
         firestore.collection("projects")
             .whereEqualTo("siteId", siteId)
             .get()
             .addOnSuccessListener { documents ->
+                loadingDialog.dismiss()
+                btnAddData.isEnabled = true
+                btnAddData.alpha = 1.0f
+
                 if (documents.isEmpty) {
                     // Site ID doesn't exist, show confirmation dialog for new data
                     showConfirmationDialog(
@@ -404,6 +503,9 @@ class UploadProjectActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { e ->
+                loadingDialog.dismiss()
+                btnAddData.isEnabled = true
+                btnAddData.alpha = 1.0f
                 showToast("Error: ${e.message}")
             }
     }
@@ -418,48 +520,77 @@ class UploadProjectActivity : AppCompatActivity() {
         isNewProject: Boolean, existingProjectId: String = ""
     ) {
         val title = if (isNewProject) "Konfirmasi Data Baru" else "Edit Data Projek"
-        val message = """
-            Witel: $witel
-            Site ID: $siteId
-            Status: $status
-            Kode STO: $kodeSto
-            Size OLT: $sizeOlt
-            Platform: $platform
-            Type: $type
-            Jumlah Modul: $jmlModul
-            Site Provider: $siteProvider
-            Kode IHLD: $kodeIhld
-            TOC: $toc
-            Start Project: $startProject
-            Kendala: $kendala
-            
-            ${if (isNewProject) "Apakah data di atas sudah benar?" else "Anda akan mengedit data yang sudah ada. Lanjutkan?"}
-        """.trimIndent()
+        val message = buildString {
+            append("Witel: $witel\n")
+            append("Site ID: $siteId\n")
+            append("Status: $status\n")
+            append("Kode STO: $kodeSto\n")
+            if (sizeOlt.isNotEmpty()) append("Size OLT: $sizeOlt\n")
+            if (platform.isNotEmpty()) append("Platform: $platform\n")
+            if (type.isNotEmpty()) append("Type: $type\n")
+            if (jmlModul.isNotEmpty()) append("Jumlah Modul: $jmlModul\n")
+            if (siteProvider.isNotEmpty()) append("Site Provider: $siteProvider\n")
+            if (kodeIhld.isNotEmpty()) append("Kode IHLD: $kodeIhld\n")
+            if (toc.isNotEmpty()) append("TOC: $toc\n")
+            if (startProject.isNotEmpty()) append("Start Project: $startProject\n")
+            if (kendala.isNotEmpty()) append("Kendala: $kendala\n\n")
 
-        AlertDialog.Builder(this)
+            append(if (isNewProject)
+                "Apakah data di atas sudah benar?"
+            else
+                "Anda akan mengedit data yang sudah ada. Lanjutkan?")
+        }
+
+        val alertDialog = AlertDialog.Builder(this)
             .setTitle(title)
             .setMessage(message)
             .setPositiveButton("Submit") { _, _ ->
+                // Show loading animation
+                val loadingDialog = AlertDialog.Builder(this)
+                    .setView(R.layout.dialog_loading)
+                    .setCancelable(false)
+                    .create()
+                loadingDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+                loadingDialog.show()
+
                 if (isNewProject) {
                     saveNewProject(
                         siteId, witel, status, lastIssue, koordinat, kodeSto, namaSto,
                         portMetro, sfp, hostname, sizeOlt, platform, type, jmlModul,
                         siteProvider, kecamatanLokasi, kodeIhld, lopDownlink, kontrakPengadaan,
-                        toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port
+                        toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port,
+                        onSuccess = {
+                            loadingDialog.dismiss()
+                        },
+                        onFailure = { errorMessage ->
+                            loadingDialog.dismiss()
+                            showToast(errorMessage)
+                        }
                     )
                 } else {
                     updateExistingProject(
                         existingProjectId, siteId, witel, status, lastIssue, koordinat, kodeSto, namaSto,
                         portMetro, sfp, hostname, sizeOlt, platform, type, jmlModul,
                         siteProvider, kecamatanLokasi, kodeIhld, lopDownlink, kontrakPengadaan,
-                        toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port
+                        toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port,
+                        onSuccess = {
+                            loadingDialog.dismiss()
+                        },
+                        onFailure = { errorMessage ->
+                            loadingDialog.dismiss()
+                            showToast(errorMessage)
+                        }
                     )
                 }
             }
             .setNegativeButton("Batal") { dialog, _ ->
                 dialog.dismiss()
             }
-            .show()
+            .create()
+
+        // Use animation for dialog
+        alertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        alertDialog.show()
     }
 
     private fun saveNewProject(
@@ -468,17 +599,19 @@ class UploadProjectActivity : AppCompatActivity() {
         sizeOlt: String, platform: String, type: String, jmlModul: String,
         siteProvider: String, kecamatanLokasi: String, kodeIhld: String, lopDownlink: String,
         kontrakPengadaan: String, toc: String, startProject: String, catuanAc: String,
-        kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String
+        kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
     ) {
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            showToast("Anda harus login terlebih dahulu")
+            onFailure("Anda harus login terlebih dahulu")
             return
         }
 
         // Use provided timestamp for testing, or get current time in production
         // val currentTime = getCurrentDateTime()
-        val currentTime = "2025-03-17 01:47:00" // Using provided time for consistency
+        val currentTime = "2025-04-28 07:40:37" // Using provided time from prompt
         val issueWithTimestamp = "$currentTime - $lastIssue"
 
         // Compute calculated fields
@@ -532,11 +665,11 @@ class UploadProjectActivity : AppCompatActivity() {
         firestore.collection("projects")
             .add(projectData)
             .addOnSuccessListener {
-                showToast("Data berhasil disimpan")
-                finish()
+                showSuccessDialog("Data berhasil disimpan")
+                onSuccess()
             }
             .addOnFailureListener { e ->
-                showToast("Error: ${e.message}")
+                onFailure("Error: ${e.message}")
             }
     }
 
@@ -546,17 +679,18 @@ class UploadProjectActivity : AppCompatActivity() {
         sizeOlt: String, platform: String, type: String, jmlModul: String,
         siteProvider: String, kecamatanLokasi: String, kodeIhld: String, lopDownlink: String,
         kontrakPengadaan: String, toc: String, startProject: String, catuanAc: String,
-        kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String
+        kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
     ) {
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            showToast("Anda harus login terlebih dahulu")
+            onFailure("Anda harus login terlebih dahulu")
             return
         }
 
-        // Use provided timestamp for testing, or get current time in production
-        // val currentTime = getCurrentDateTime()
-        val currentTime = "2025-03-17 01:47:00" // Using provided time for consistency
+        // Use provided timestamp for testing
+        val currentTime = "2025-04-28 07:40:37" // Using provided time from prompt
         val issueWithTimestamp = "$currentTime - $lastIssue"
 
         // Compute calculated fields
@@ -619,16 +753,36 @@ class UploadProjectActivity : AppCompatActivity() {
                 firestore.collection("projects").document(projectId)
                     .set(updateData, SetOptions.merge())
                     .addOnSuccessListener {
-                        showToast("Data berhasil diperbarui")
-                        finish()
+                        showSuccessDialog("Data berhasil diperbarui")
+                        onSuccess()
                     }
                     .addOnFailureListener { e ->
-                        showToast("Error: ${e.message}")
+                        onFailure("Error: ${e.message}")
                     }
             }
             .addOnFailureListener { e ->
-                showToast("Error: ${e.message}")
+                onFailure("Error: ${e.message}")
             }
+    }
+
+    private fun showSuccessDialog(message: String) {
+        val view = layoutInflater.inflate(R.layout.dialog_success, null)
+        val messageText = view.findViewById<android.widget.TextView>(R.id.successMessage)
+        messageText.text = message
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(view)
+            .setCancelable(false)
+            .create()
+
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        dialog.show()
+
+        // Auto dismiss after 1.5 seconds
+        android.os.Handler().postDelayed({
+            dialog.dismiss()
+            finish()
+        }, 1500)
     }
 
     // Calculated field functions
@@ -740,15 +894,17 @@ class UploadProjectActivity : AppCompatActivity() {
                     Manifest.permission.ACCESS_FINE_LOCATION
                 )
             ) {
-                // Show explanation dialog if needed
-                AlertDialog.Builder(this)
+                // Show explanation dialog if needed with animation
+                val alertDialog = AlertDialog.Builder(this)
                     .setTitle("Izin Lokasi Dibutuhkan")
                     .setMessage("Aplikasi membutuhkan izin untuk mengakses lokasi Anda")
                     .setPositiveButton("OK") { _, _ ->
                         requestLocationPermission()
                     }
                     .create()
-                    .show()
+
+                alertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+                alertDialog.show()
             } else {
                 // No explanation needed, request the permission
                 requestLocationPermission()
@@ -769,9 +925,16 @@ class UploadProjectActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private fun getCurrentLocation() {
         if (checkLocationPermission()) {
-            showToast("Mencari lokasi...")
+            // Show loading indicator for location
+            btnCurrentLocation.isEnabled = false
+            btnCurrentLocation.text = "Mendapatkan Lokasi..."
+
             fusedLocationProviderClient.lastLocation
                 .addOnSuccessListener { location ->
+                    // Reset button state
+                    btnCurrentLocation.isEnabled = true
+                    btnCurrentLocation.text = "Gunakan Lokasi Saat Ini"
+
                     if (location != null) {
                         val latitude = location.latitude
                         val longitude = location.longitude
@@ -784,6 +947,10 @@ class UploadProjectActivity : AppCompatActivity() {
                     }
                 }
                 .addOnFailureListener { e ->
+                    // Reset button state
+                    btnCurrentLocation.isEnabled = true
+                    btnCurrentLocation.text = "Gunakan Lokasi Saat Ini"
+
                     showToast("Gagal mendapatkan lokasi: ${e.message}")
                 }
         }
