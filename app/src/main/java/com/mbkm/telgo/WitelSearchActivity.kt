@@ -3,6 +3,7 @@ package com.mbkm.telgo
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -11,11 +12,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
  * WitelSearchActivity displays a list of available Witel regions
  *
- * Last Updated: 2025-03-13 07:05:26 UTC
+ * Last Updated: 2025-04-29 02:39:29 UTC
  * Updated By: Lukmannh21
  */
 class WitelSearchActivity : AppCompatActivity() {
@@ -26,6 +28,8 @@ class WitelSearchActivity : AppCompatActivity() {
     private lateinit var btnSearch: ImageButton
     private lateinit var btnBackToHome: ImageButton
     private lateinit var tvNoResults: TextView
+    private lateinit var tvWitelCount: TextView
+
 
     // Adapter and Data
     private lateinit var witelAdapter: WitelAdapter
@@ -42,10 +46,20 @@ class WitelSearchActivity : AppCompatActivity() {
         btnSearch = findViewById(R.id.btnSearch)
         btnBackToHome = findViewById<ImageButton>(R.id.btnBackToHome)
         tvNoResults = findViewById(R.id.tvNoResults)
+        tvWitelCount = findViewById(R.id.tvWitelCount)
+
+
+        // Animations
+        val fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in)
+        val slideUp = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left)
+
+        // Apply animations
+        rvWitels.startAnimation(fadeIn)
 
         // Set up back button
         btnBackToHome.setOnClickListener {
             finish()
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
 
         // Initialize witel list with data
@@ -54,26 +68,46 @@ class WitelSearchActivity : AppCompatActivity() {
         // Set up RecyclerView
         filteredList = ArrayList(witelList)
         witelAdapter = WitelAdapter(filteredList) { witel ->
-            // Handle witel item click - navigate to WitelDetailActivity
+            // Handle witel item click - navigate to WitelDetailActivity with animation
             val intent = Intent(this, WitelDetailActivity::class.java)
             intent.putExtra("WITEL_NAME", witel.name)
             // Menambahkan koordinat provinsi ke intent
             intent.putExtra("PROVINCE_LAT", witel.provinceCoordinates.first)
             intent.putExtra("PROVINCE_LON", witel.provinceCoordinates.second)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
-        rvWitels.layoutManager = LinearLayoutManager(this)
+        // Improved layout manager with smooth scrolling
+        val layoutManager = LinearLayoutManager(this)
+        rvWitels.layoutManager = layoutManager
         rvWitels.adapter = witelAdapter
 
-        // Set up search functionality
+        // Add custom item animator
+        rvWitels.itemAnimator = WitelItemAnimator()
+
+        // Set up search functionality with animation
         btnSearch.setOnClickListener {
             val query = etSearch.text.toString().trim()
             filterWitelList(query)
+
+            // Animate the recycler view when searching
+            rvWitels.startAnimation(slideUp)
         }
+
+
+
+        // Update Witel count text
+        updateWitelCount()
 
         // Show all witels initially
         updateResultsVisibility()
+    }
+
+
+
+    private fun updateWitelCount() {
+        tvWitelCount.text = "${filteredList.size} Witel Tersedia"
     }
 
     private fun initializeWitelList() {
@@ -84,6 +118,7 @@ class WitelSearchActivity : AppCompatActivity() {
                 Pair(5.548290, 95.323753), // Koordinat pusat provinsi Aceh
                 R.drawable.witel_aceh
             ),
+            // Rest of your data remains the same
             WitelModel(
                 "BABEL",
                 "Jl. Jenderal Sudirman No.105, Pangkalpinang",
@@ -156,6 +191,10 @@ class WitelSearchActivity : AppCompatActivity() {
             }
         }
 
+        // Update the count text
+        updateWitelCount()
+
+        // Notify with animation
         witelAdapter.notifyDataSetChanged()
         updateResultsVisibility()
     }
@@ -164,7 +203,10 @@ class WitelSearchActivity : AppCompatActivity() {
         if (filteredList.isEmpty()) {
             rvWitels.visibility = View.GONE
             tvNoResults.visibility = View.VISIBLE
-            tvNoResults.text = "No Witel regions found matching your search"
+            tvNoResults.text = "Tidak ditemukan Witel yang sesuai dengan pencarian Anda"
+
+            // Animate no results text
+            tvNoResults.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in))
         } else {
             rvWitels.visibility = View.VISIBLE
             tvNoResults.visibility = View.GONE
@@ -173,5 +215,11 @@ class WitelSearchActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    // Handle back button press with animation
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }
