@@ -59,14 +59,15 @@ class EventsDialogAdapter(private val events: List<EventModel>) :
 
     class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val eventName: TextView = itemView.findViewById(R.id.eventName)
+        private val eventDate: TextView = itemView.findViewById(R.id.eventDate) // Tambahkan ini
         private val siteId: TextView = itemView.findViewById(R.id.siteId)
         private val witel: TextView = itemView.findViewById(R.id.witel)
 
         fun bind(event: EventModel) {
             eventName.text = event.name
+            eventDate.text = event.date // Tampilkan Event Date
             siteId.text = "Site ID: ${event.siteId}"
             witel.text = "Witel: ${event.witel}"
         }
     }
-
 }

@@ -3,6 +3,7 @@ package com.mbkm.telgo
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
     private lateinit var calendarView: MaterialCalendarView
     private lateinit var upcomingEventsRecycler: RecyclerView
     private val eventsAdapter = EventsAdapter()
+    private var isUpcomingEventsVisible = false
     private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +40,12 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         btnLastHistory = findViewById(R.id.btnLastHistory)
         calendarView = findViewById(R.id.miniCalendar)
         upcomingEventsRecycler = findViewById(R.id.upcomingEventsRecycler)
+
+        // Tambahkan ini untuk tombol Upcoming Events
+        val btnUpcomingEvents = findViewById<Button>(R.id.btnUpcomingEvents)
+        btnUpcomingEvents.setOnClickListener {
+            toggleUpcomingEvents()
+        }
 
         // Set listener for bottom navigation
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
@@ -161,5 +169,65 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error loading TOC events: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+
+    private fun toggleUpcomingEvents() {
+        if (isUpcomingEventsVisible) {
+            // Sembunyikan RecyclerView
+            upcomingEventsRecycler.visibility = View.GONE
+            isUpcomingEventsVisible = false
+        } else {
+            // Tampilkan RecyclerView dan muat data
+            upcomingEventsRecycler.visibility = View.VISIBLE
+            isUpcomingEventsVisible = true
+
+            // Hanya muat data jika RecyclerView belum memiliki data
+            if (eventsAdapter.itemCount == 0) {
+                val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+                firestore.collection("projects")
+                    .whereGreaterThan("toc", today)
+                    .get()
+                    .addOnSuccessListener { tocDocuments ->
+                        val tocEvents = tocDocuments.mapNotNull { document ->
+                            EventModel(
+                                name = "TOC",
+                                date = document.getString("toc") ?: "",
+                                siteId = document.getString("siteId") ?: "",
+                                witel = document.getString("witel") ?: ""
+                            )
+                        }
+
+                        firestore.collection("projects")
+                            .whereGreaterThan("tglPlanOa", today)
+                            .get()
+                            .addOnSuccessListener { planOaDocuments ->
+                                val planOaEvents = planOaDocuments.mapNotNull { document ->
+                                    EventModel(
+                                        name = "Plan OA",
+                                        date = document.getString("tglPlanOa") ?: "",
+                                        siteId = document.getString("siteId") ?: "",
+                                        witel = document.getString("witel") ?: ""
+                                    )
+                                }
+
+                                val allEvents = tocEvents + planOaEvents
+
+                                if (allEvents.isNotEmpty()) {
+                                    eventsAdapter.setEvents(allEvents)
+                                } else {
+                                    Toast.makeText(this, "No upcoming events found", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this, "Error loading Plan OA events: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Error loading TOC events: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
     }
 }

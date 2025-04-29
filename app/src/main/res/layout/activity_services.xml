@@ -147,13 +147,19 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/btnUpcomingEvents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Load Upcoming Events"
+                android:layout_marginBottom="16dp" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/upcomingEventsRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:scrollbars="vertical" />
+                android:scrollbars="vertical"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 
