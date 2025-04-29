@@ -79,4 +79,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation ("org.apache.poi:poi:5.2.3")
     implementation ("org.apache.poi:poi-ooxml:5.2.3")
+
+    implementation ("com.prolificinteractive:material-calendarview:1.4.3")
+
 }
