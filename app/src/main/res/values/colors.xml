@@ -14,4 +14,12 @@
         <color name="colorPrimary">#E90606</color>
         <color name="colorPrimaryDark">#303F9F</color>
         <color name="colorAccent">#FF4081</color>
+
+    <!-- Telkomsel Color Scheme -->
+    <color name="red_telkomsel">#E90606</color>
+    <color name="red_telkomsel_dark">#C20505</color>
+    <color name="red_telkomsel_light">#FF5252</color>
+    <color name="gray_light">#F5F5F5</color>
+    <color name="gray_medium">#9E9E9E</color>
+    <color name="gray_dark">#616161</color>
 </resources>

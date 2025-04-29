@@ -4,48 +4,78 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="#E90606"> <!-- Mengubah warna CardView menjadi merah -->
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:orientation="horizontal">
 
-        <!-- Gambar Witel -->
-        <ImageView
-            android:id="@+id/imgWitelLogo"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/user"
-            android:layout_marginEnd="12dp"/>
+        <!-- Left red accent bar -->
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:background="@color/red_telkomsel" />
 
-        <!-- Layout untuk nama dan alamat -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:padding="16dp">
 
-            <TextView
-                android:id="@+id/tvWitelName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Witel Name"
-                android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            <!-- Gambar Witel dengan bentuk lingkaran -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="0dp">
 
-            <TextView
-                android:id="@+id/tvWitelAddress"
-                android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/imgWitelLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/user" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- Layout untuk nama dan alamat -->
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Witel Address"
-                android:textColor="@android:color/white"
-            android:layout_marginTop="4dp" />
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvWitelName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Witel Name"
+                    android:textColor="#212121"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvWitelAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Witel Address"
+                    android:textColor="#757575"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imgChevron"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:src="@android:drawable/ic_menu_send"
+                android:rotation="0"
+                android:tint="@color/red_telkomsel" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
