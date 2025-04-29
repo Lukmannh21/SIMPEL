@@ -113,9 +113,8 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
 
     private fun showEventsForDate(date: CalendarDay) {
         // Format tanggal yang dipilih menjadi string seperti "2025-06-27"
-        val selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-            GregorianCalendar(date.year, date.month - 1, date.day).time
-        )
+        val selectedDate = "${date.year}-${String.format("%02d", date.month + 1)}-${String.format("%02d", date.day)}"
+
 
         // Query untuk mencocokkan tanggal di Firestore
         firestore.collection("projects")
