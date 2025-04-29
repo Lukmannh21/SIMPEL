@@ -22,4 +22,22 @@
     <color name="gray_light">#F5F5F5</color>
     <color name="gray_medium">#9E9E9E</color>
     <color name="gray_dark">#616161</color>
+
+    <!-- New colors -->
+    <color name="today_color">#FF5722</color>
+    <color name="toc_event_color">#4CAF50</color>
+    <color name="plan_oa_color">#FFC107</color>
+    <color name="default_event_color">#7986CB</color>
+    <color name="divider_color">#BDBDBD</color>
+
+    <!-- Background colors -->
+    <color name="card_background_start">#1E88E5</color>
+    <color name="card_background_end">#3949AB</color>
+
+    <!-- Bottom navigation colors -->
+    <color name="selected_item_color">#1E88E5</color>
+    <color name="unselected_item_color">#757575</color>
+
+    <!-- Selector color for bottom navigation -->
+    <color name="bottom_nav_item_color">#757575</color>
 </resources>

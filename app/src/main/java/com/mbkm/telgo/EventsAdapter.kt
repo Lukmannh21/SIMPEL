@@ -1,18 +1,23 @@
 package com.mbkm.telgo
 
+import android.animation.AnimatorInflater
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 
 class EventsAdapter : RecyclerView.Adapter<EventsAdapter.EventViewHolder>() {
 
     private val events = mutableListOf<EventModel>()
+    private var lastPosition = -1
 
     fun setEvents(newEvents: List<EventModel>) {
         events.clear()
-        events.addAll(newEvents)
+        events.addAll(newEvents.sortedBy { it.date }) // Sort by date
         notifyDataSetChanged()
     }
 
@@ -25,11 +30,23 @@ class EventsAdapter : RecyclerView.Adapter<EventsAdapter.EventViewHolder>() {
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
         val event = events[position]
         holder.bind(event)
+
+        // Add animation for items
+        setAnimation(holder.itemView, position, holder.itemView.context)
+    }
+
+    private fun setAnimation(viewToAnimate: View, position: Int, context: Context) {
+        if (position > lastPosition) {
+            val animation = AnimationUtils.loadAnimation(context, R.anim.item_animation_fall_down)
+            viewToAnimate.startAnimation(animation)
+            lastPosition = position
+        }
     }
 
     override fun getItemCount(): Int = events.size
 
     class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val eventCard: CardView = itemView.findViewById(R.id.eventCard)
         private val eventName: TextView = itemView.findViewById(R.id.eventName)
         private val eventDate: TextView = itemView.findViewById(R.id.eventDate)
         private val siteId: TextView = itemView.findViewById(R.id.siteId)
@@ -40,6 +57,22 @@ class EventsAdapter : RecyclerView.Adapter<EventsAdapter.EventViewHolder>() {
             eventDate.text = event.date
             siteId.text = "Site ID: ${event.siteId}"
             witel.text = "Witel: ${event.witel}"
+
+            // Set card background color based on event type
+            when (event.name) {
+                "TOC" -> eventCard.setCardBackgroundColor(itemView.context.getColor(R.color.toc_event_color))
+                "Plan OA" -> eventCard.setCardBackgroundColor(itemView.context.getColor(R.color.plan_oa_color))
+                else -> eventCard.setCardBackgroundColor(itemView.context.getColor(R.color.default_event_color))
+            }
+
+            // Set elevation for card to create shadow effect
+            eventCard.cardElevation = 8f
+
+            // Add click animation
+            eventCard.stateListAnimator = AnimatorInflater.loadStateListAnimator(
+                itemView.context,
+                R.animator.card_raise
+            )
         }
     }
 }
