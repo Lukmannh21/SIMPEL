@@ -286,6 +286,8 @@ class LastUpdateActivity : AppCompatActivity() {
             }
         }
 
+
+
         override fun getItemCount() = siteList.size
 
         private fun formatDateTime(dateTime: String): String {
@@ -301,4 +303,6 @@ class LastUpdateActivity : AppCompatActivity() {
             }
         }
     }
+
 }
+
