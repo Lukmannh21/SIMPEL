@@ -122,8 +122,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Calendar"
-                android:textColor="@android:color/white"
+                android:text="Mini Calendar"
+                android:textColor="@android:color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium"/>
@@ -213,37 +213,145 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/upcoming_events_title"
-                android:layout_width="wrap_content"
+            <!-- Upcoming Events Section dengan desain baru -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Upcoming Events"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium"/>
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp">
 
-            <Button
-                android:id="@+id/btnUpcomingEvents"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Load Upcoming Events"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/button_background"
-                android:textColor="@android:color/white"
-                android:padding="12dp"
-                android:elevation="4dp"
-                android:fontFamily="sans-serif-medium"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/events_card_background">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/upcomingEventsRecycler"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/event_icon"
+                            android:layout_marginEnd="12dp"
+                            android:tint="@color/red_telkomsel_dark"
+                            />
+
+                        <TextView
+                            android:id="@+id/upcoming_events_title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Upcoming Events"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnUpcomingEvents"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="View"
+                            app:icon="@drawable/ic_view_events"
+                            app:iconGravity="end"
+                            android:textColor="@android:color/white"
+                            app:cornerRadius="24dp"
+                            android:backgroundTint="@color/red_telkomsel_dark"
+                            app:rippleColor="@android:color/black"
+                            android:stateListAnimator="@animator/button_state_animator"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#50FFFFFF"/>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <!-- Shimmer loading effect for events -->
+                        <LinearLayout
+                            android:id="@+id/loadingEventsShimmer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <!-- Placeholder shimmer items -->
+                            <include layout="@layout/shimmer_event_item"/>
+                            <include layout="@layout/shimmer_event_item"/>
+                            <include layout="@layout/shimmer_event_item"/>
+                        </LinearLayout>
+
+                        <!-- Empty state for no events -->
+                        <LinearLayout
+                            android:id="@+id/emptyEventsView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="24dp"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:src="@drawable/ic_no_events"
+                                android:alpha="0.7"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="No upcoming events found"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+
+                        <!-- Upcoming events preview (limited to 3 items) -->
+                        <LinearLayout
+                            android:id="@+id/upcomingEventsPreview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <!-- Preview RecyclerView (shows only first 3 items) -->
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/upcomingEventsPreviewRecycler"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"/>
+
+                            <!-- "See All" button if there are more than 3 events -->
+                            <TextView
+                                android:id="@+id/btnSeeAllEvents"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="See all upcoming events"
+                                android:textColor="@color/colorAccent"
+                                android:textStyle="bold"
+                                android:padding="16dp"
+                                android:gravity="center"
+                                android:background="?attr/selectableItemBackground"
+                                android:visibility="gone"/>
+                        </LinearLayout>
+                    </FrameLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Space at the bottom for better scrolling experience -->
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="vertical"
-                android:visibility="gone"
-                android:paddingBottom="16dp"/>
+                android:layout_height="16dp"/>
         </LinearLayout>
     </ScrollView>
 
@@ -252,7 +360,6 @@
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="68dp"
-        android:layout_marginBottom="4dp"
         android:background="@drawable/bottom_navigation_background"
         app:itemIconTint="@color/navigation_color_item"
         app:itemTextColor="@color/navigation_color_item"
@@ -261,4 +368,193 @@
         app:menu="@menu/bottom_nav_menu"
         android:elevation="16dp"/>
 
+    <!-- Modal Fullscreen Dialog for All Events -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/eventsBottomSheetContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Semi-transparent background -->
+        <View
+            android:id="@+id/eventsDialogScrim"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80000000"
+            android:alpha="0"/>
+
+        <!-- Bottom Sheet for Events -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/eventsBottomSheet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="48dp"
+            android:background="@drawable/bottom_sheet_background"
+            android:elevation="16dp"
+            android:translationY="1000dp">
+
+            <LinearLayout
+                android:id="@+id/eventsBottomSheetHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <View
+                    android:layout_width="32dp"
+                    android:layout_height="4dp"
+                    android:background="#CCCCCC"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="12dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="All Upcoming Events"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"/>
+
+                <ImageButton
+                    android:id="@+id/btnCloseEventsSheet"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_close"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:tint="@color/red_telkomsel_dark"
+                    android:contentDescription="Close"/>
+            </LinearLayout>
+
+            <!-- Filter options -->
+            <HorizontalScrollView
+                android:id="@+id/eventsFilterContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                app:layout_constraintTop_toBottomOf="@id/eventsBottomSheetHeader">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/eventsFilterChips"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    app:singleSelection="true"
+                    app:chipSpacingHorizontal="8dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAllEvents"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All"
+                        app:chipBackgroundColor="@color/chip_background_selector"
+                        app:chipStrokeColor="@color/chip_stroke_selector"
+                        app:chipStrokeWidth="1dp"
+                        android:checkable="true"
+                        android:checked="true"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTocEvents"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TOC"
+                        app:chipBackgroundColor="@color/chip_background_selector"
+                        app:chipStrokeColor="@color/chip_stroke_selector"
+                        app:chipStrokeWidth="1dp"
+                        android:checkable="true"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPlanOaEvents"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Plan OA"
+                        app:chipBackgroundColor="@color/chip_background_selector"
+                        app:chipStrokeColor="@color/chip_stroke_selector"
+                        app:chipStrokeWidth="1dp"
+                        android:checkable="true"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipThisWeek"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="This Week"
+                        app:chipBackgroundColor="@color/chip_background_selector"
+                        app:chipStrokeColor="@color/chip_stroke_selector"
+                        app:chipStrokeWidth="1dp"
+                        android:checkable="true"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipThisMonth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="This Month"
+                        app:chipBackgroundColor="@color/chip_background_selector"
+                        app:chipStrokeColor="@color/chip_stroke_selector"
+                        app:chipStrokeWidth="1dp"
+                        android:checkable="true"/>
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/allEventsRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:clipToPadding="false"
+                android:padding="8dp"
+                app:layout_constraintTop_toBottomOf="@id/eventsFilterContainer"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <!-- Loading, empty state views -->
+            <ProgressBar
+                android:id="@+id/eventsProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/colorAccent"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/eventsFilterContainer"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <LinearLayout
+                android:id="@+id/eventsEmptyState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/eventsFilterContainer"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+
+                    android:alpha="0.7"/>
+
+                <TextView
+                    android:id="@+id/eventsEmptyStateText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textColor="#BBFFFFFF"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

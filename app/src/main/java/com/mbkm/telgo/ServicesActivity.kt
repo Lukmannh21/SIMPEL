@@ -1,5 +1,8 @@
 package com.mbkm.telgo
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
@@ -8,14 +11,23 @@ import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.view.animation.AnimationUtils
+import android.view.animation.DecelerateInterpolator
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.chip.ChipGroup
 import com.google.firebase.firestore.FirebaseFirestore
+
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
@@ -24,6 +36,7 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener
 import com.prolificinteractive.materialcalendarview.spans.DotSpan
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
 class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -33,16 +46,37 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
     private lateinit var btnUploadProject: Button
     private lateinit var btnLastHistory: Button
     private lateinit var calendarView: MaterialCalendarView
-    private lateinit var upcomingEventsRecycler: RecyclerView
-    private lateinit var btnUpcomingEvents: Button
+    private lateinit var allEventsRecycler: RecyclerView
+    private lateinit var upcomingEventsPreviewRecycler: RecyclerView
+    private lateinit var btnUpcomingEvents: View
+    private lateinit var btnSeeAllEvents: TextView
+    private lateinit var btnCloseEventsSheet: ImageButton
+    private lateinit var eventsBottomSheetContainer: CoordinatorLayout
+    private lateinit var eventsBottomSheet: ConstraintLayout
+    private lateinit var eventsDialogScrim: View
+    private lateinit var loadingEventsShimmer: LinearLayout
+    private lateinit var emptyEventsView: LinearLayout
+    private lateinit var upcomingEventsPreview: LinearLayout
+    private lateinit var eventsProgressBar: View
+    private lateinit var eventsEmptyState: LinearLayout
+    private lateinit var eventsEmptyStateText: TextView
+    private lateinit var eventsFilterChips: ChipGroup
 
-    private val eventsAdapter = EventsAdapter()
-    private var isUpcomingEventsVisible = false
+    // Adapters
+    private val previewEventsAdapter = EventsAdapter()
+    private val allEventsAdapter = EventsAdapter()
+
+    private var isBottomSheetVisible = false
     private val firestore = FirebaseFirestore.getInstance()
 
     // Store event dates for calendar decoration
     private val tocEventDates = HashSet<CalendarDay>()
     private val planOaEventDates = HashSet<CalendarDay>()
+
+    // Store all events for filtering
+    private val allEvents = mutableListOf<EventModel>()
+    private val tocEvents = mutableListOf<EventModel>()
+    private val planOaEvents = mutableListOf<EventModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +96,23 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         btnUploadProject = findViewById(R.id.btnUploadProject)
         btnLastHistory = findViewById(R.id.btnLastHistory)
         calendarView = findViewById(R.id.miniCalendar)
-        upcomingEventsRecycler = findViewById(R.id.upcomingEventsRecycler)
         btnUpcomingEvents = findViewById(R.id.btnUpcomingEvents)
+
+        // Initialize new UI components
+        allEventsRecycler = findViewById(R.id.allEventsRecycler)
+        upcomingEventsPreviewRecycler = findViewById(R.id.upcomingEventsPreviewRecycler)
+        btnSeeAllEvents = findViewById(R.id.btnSeeAllEvents)
+        btnCloseEventsSheet = findViewById(R.id.btnCloseEventsSheet)
+        eventsBottomSheetContainer = findViewById(R.id.eventsBottomSheetContainer)
+        eventsBottomSheet = findViewById(R.id.eventsBottomSheet)
+        eventsDialogScrim = findViewById(R.id.eventsDialogScrim)
+        loadingEventsShimmer = findViewById(R.id.loadingEventsShimmer)
+        emptyEventsView = findViewById(R.id.emptyEventsView)
+        upcomingEventsPreview = findViewById(R.id.upcomingEventsPreview)
+        eventsProgressBar = findViewById(R.id.eventsProgressBar)
+        eventsEmptyState = findViewById(R.id.eventsEmptyState)
+        eventsEmptyStateText = findViewById(R.id.eventsEmptyStateText)
+        eventsFilterChips = findViewById(R.id.eventsFilterChips)
 
         // Apply animation to cards
         val cardView = findViewById<View>(R.id.cardView)
@@ -74,69 +123,83 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         bottomNavigationView.selectedItemId = R.id.navigation_services
 
-        // Set up RecyclerView
-        upcomingEventsRecycler.layoutManager = LinearLayoutManager(this)
-        upcomingEventsRecycler.adapter = eventsAdapter
+        // Set up RecyclerViews
+        setupRecyclerViews()
 
-        // Add button animation
-        addButtonAnimation(btnWitelSearch)
-        addButtonAnimation(btnUploadProject)
-        addButtonAnimation(btnLastHistory)
-        addButtonAnimation(btnUpcomingEvents)
-
-        // Set up button listeners
-        btnWitelSearch.setOnClickListener {
-            val intent = Intent(this, WitelSearchActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        }
-
-        btnUploadProject.setOnClickListener {
-            val intent = Intent(this, UploadProjectActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        }
-
-        btnLastHistory.setOnClickListener {
-            val intent = Intent(this, LastUpdateActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        }
-
-        btnUpcomingEvents.setOnClickListener {
-            toggleUpcomingEvents()
-        }
+        // Add button listeners
+        setupButtonListeners()
 
         // Setup calendar with decorators
         setupCalendar()
 
         // Load event dates for calendar
         loadEventDatesForCalendar()
+
+        // Load preview events
+        loadPreviewEvents()
     }
 
-    private fun addButtonAnimation(button: Button) {
-        button.setOnClickListener { view ->
+    private fun setupButtonListeners() {
+        btnWitelSearch.setOnClickListener {
             val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
-            view.startAnimation(animation)
-
-            // Add a small delay to show the animation before the original click action
-            view.postDelayed({
-                when (view.id) {
-                    R.id.btnWitelSearch -> {
-                        val intent = Intent(this, WitelSearchActivity::class.java)
-                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                    }
-                    R.id.btnUploadProject -> {
-                        val intent = Intent(this, UploadProjectActivity::class.java)
-                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                    }
-                    R.id.btnLastHistory -> {
-                        val intent = Intent(this, LastUpdateActivity::class.java)
-                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                    }
-                    R.id.btnUpcomingEvents -> {
-                        toggleUpcomingEvents()
-                    }
-                }
+            it.startAnimation(animation)
+            it.postDelayed({
+                val intent = Intent(this, WitelSearchActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }, 200)
         }
+
+        btnUploadProject.setOnClickListener {
+            val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
+            it.startAnimation(animation)
+            it.postDelayed({
+                val intent = Intent(this, UploadProjectActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }, 200)
+        }
+
+        btnLastHistory.setOnClickListener {
+            val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
+            it.startAnimation(animation)
+            it.postDelayed({
+                val intent = Intent(this, LastUpdateActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }, 200)
+        }
+
+        btnUpcomingEvents.setOnClickListener {
+            showEventsBottomSheet()
+        }
+
+        btnSeeAllEvents.setOnClickListener {
+            showEventsBottomSheet()
+        }
+
+        btnCloseEventsSheet.setOnClickListener {
+            hideEventsBottomSheet()
+        }
+
+        eventsDialogScrim.setOnClickListener {
+            hideEventsBottomSheet()
+        }
+
+        // Setup chip filter listeners
+        eventsFilterChips.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isNotEmpty()) {
+                filterEvents(checkedIds[0])
+            }
+        }
+    }
+
+    private fun setupRecyclerViews() {
+        // Setup preview recycler
+        upcomingEventsPreviewRecycler.layoutManager = LinearLayoutManager(this)
+        upcomingEventsPreviewRecycler.adapter = previewEventsAdapter
+        upcomingEventsPreviewRecycler.isNestedScrollingEnabled = false
+
+        // Setup all events recycler
+        allEventsRecycler.layoutManager = LinearLayoutManager(this)
+        allEventsRecycler.adapter = allEventsAdapter
     }
 
     private fun setupCalendar() {
@@ -153,6 +216,29 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
             calendarView.startAnimation(animation)
             showEventsForDate(date)
         })
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val intent = when (item.itemId) {
+            R.id.navigation_home -> {
+                Intent(this, HomeActivity::class.java)
+            }
+            R.id.navigation_services -> {
+                // We're already in ServicesActivity, no need to start a new activity
+                return true
+            }
+            R.id.navigation_history -> {
+                Intent(this, LastUpdateActivity::class.java)
+            }
+            R.id.navigation_account -> {
+                Intent(this, ProfileActivity::class.java)
+            }
+            else -> return false
+        }
+
+        // Start activity with transition animation
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        return true
     }
 
     private fun loadEventDatesForCalendar() {
@@ -218,29 +304,6 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
             }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val intent = when (item.itemId) {
-            R.id.navigation_home -> {
-                Intent(this, HomeActivity::class.java)
-            }
-            R.id.navigation_services -> {
-                // We're already in ServicesActivity, no need to start a new activity
-                return true
-            }
-            R.id.navigation_history -> {
-                Intent(this, LastUpdateActivity::class.java)
-            }
-            R.id.navigation_account -> {
-                Intent(this, ProfileActivity::class.java)
-            }
-            else -> return false
-        }
-
-        // Start activity with transition animation
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        return true
-    }
-
     private fun showEventsForDate(date: CalendarDay) {
         // Format tanggal yang dipilih menjadi string seperti "2025-06-27"
         val selectedDate = "${date.year}-${String.format("%02d", date.month + 1)}-${String.format("%02d", date.day)}"
@@ -300,35 +363,13 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
             }
     }
 
-    private fun toggleUpcomingEvents() {
-        if (isUpcomingEventsVisible) {
-            // Sembunyikan RecyclerView dengan animasi
-            val animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom)
-            upcomingEventsRecycler.startAnimation(animation)
-            upcomingEventsRecycler.visibility = View.GONE
-            btnUpcomingEvents.text = "Load Upcoming Events"
-            isUpcomingEventsVisible = false
-        } else {
-            // Tampilkan RecyclerView dengan animasi dan muat data
-            upcomingEventsRecycler.visibility = View.VISIBLE
-            val animation = AnimationUtils.loadAnimation(this, R.anim.slide_in_bottom)
-            upcomingEventsRecycler.startAnimation(animation)
-            btnUpcomingEvents.text = "Hide Upcoming Events"
-            isUpcomingEventsVisible = true
+    private fun loadPreviewEvents() {
+        // Show loading state
+        loadingEventsShimmer.visibility = View.VISIBLE
+        upcomingEventsPreview.visibility = View.GONE
+        emptyEventsView.visibility = View.GONE
 
-            // Muat data
-            loadUpcomingEvents()
-        }
-    }
-
-    private fun loadUpcomingEvents() {
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-
-        // Show loading indicator (if you have one)
-        // loadingIndicator.visibility = View.VISIBLE
-
-        // Clear existing events
-        eventsAdapter.setEvents(listOf())
 
         firestore.collection("projects")
             .whereGreaterThanOrEqualTo("toc", today)
@@ -343,6 +384,9 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
                     )
                 }
 
+                this.tocEvents.clear()
+                this.tocEvents.addAll(tocEvents)
+
                 firestore.collection("projects")
                     .whereGreaterThanOrEqualTo("tglPlanOa", today)
                     .get()
@@ -356,38 +400,278 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
                             )
                         }
 
-                        // Combine events and group by date
-                        val allEvents = (tocEvents + planOaEvents).sortedBy { it.date }
+                        this.planOaEvents.clear()
+                        this.planOaEvents.addAll(planOaEvents)
 
-                        // Group by date
-                        val groupedEvents = allEvents.groupBy { it.date }
-                            .flatMap { entry ->
-                                // For each date, limit to 3 events per site ID to avoid repetition
-                                entry.value.groupBy { it.siteId }
-                                    .flatMap { it.value.take(1) }
-                                    .sortedBy { it.siteId }
-                            }
+                        // Combine all events
+                        allEvents.clear()
+                        allEvents.addAll(tocEvents)
+                        allEvents.addAll(planOaEvents)
 
-                        if (groupedEvents.isNotEmpty()) {
-                            eventsAdapter.setEvents(groupedEvents)
-                        } else {
-                            Toast.makeText(this, "No upcoming events found", Toast.LENGTH_SHORT).show()
-                        }
-
-                        // Hide loading indicator (if you have one)
-                        // loadingIndicator.visibility = View.GONE
+                        // Group events for preview
+                        displayPreviewEvents()
                     }
                     .addOnFailureListener { e ->
-                        // Hide loading indicator (if you have one)
-                        // loadingIndicator.visibility = View.GONE
-                        Toast.makeText(this, "Error loading Plan OA events: ${e.message}", Toast.LENGTH_SHORT).show()
+                        // Hide loading, show error
+                        loadingEventsShimmer.visibility = View.GONE
+                        Toast.makeText(this, "Error loading events: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener { e ->
-                // Hide loading indicator (if you have one)
-                // loadingIndicator.visibility = View.GONE
-                Toast.makeText(this, "Error loading TOC events: ${e.message}", Toast.LENGTH_SHORT).show()
+                // Hide loading, show error
+                loadingEventsShimmer.visibility = View.GONE
+                Toast.makeText(this, "Error loading events: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun displayPreviewEvents() {
+        // Hide loading
+        loadingEventsShimmer.visibility = View.GONE
+
+        if (allEvents.isEmpty()) {
+            // Show empty state
+            emptyEventsView.visibility = View.VISIBLE
+            upcomingEventsPreview.visibility = View.GONE
+            return
+        }
+
+        // Show preview
+        upcomingEventsPreview.visibility = View.VISIBLE
+
+        // Group and limit events
+        val sortedEvents = allEvents.sortedBy { it.date }
+
+        // Group by date and then by event type
+        val groupedEvents = sortedEvents
+            .groupBy { it.date }
+            .flatMap { dateGroup ->
+                // For each date, take only unique site IDs
+                dateGroup.value.distinctBy { it.siteId }
+            }
+            .take(3) // Show only 3 events in preview
+
+        // Update adapter
+        previewEventsAdapter.setEvents(groupedEvents)
+
+        // Show/hide "See All" button based on event count
+        btnSeeAllEvents.visibility = if (allEvents.size > 3) View.VISIBLE else View.GONE
+    }
+
+    private fun showEventsBottomSheet() {
+        if (isBottomSheetVisible) return
+
+        // Show bottom sheet container
+        eventsBottomSheetContainer.visibility = View.VISIBLE
+
+        // Configure bottom sheet to slide up
+        val sheetAnimation = ObjectAnimator.ofFloat(eventsBottomSheet, "translationY",
+            eventsBottomSheet.height.toFloat(), 0f)
+        sheetAnimation.duration = 300
+        sheetAnimation.interpolator = DecelerateInterpolator()
+
+        // Configure scrim to fade in
+        val scrimAnimation = ObjectAnimator.ofFloat(eventsDialogScrim, "alpha", 0f, 1f)
+        scrimAnimation.duration = 300
+
+        // Play animations together
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(sheetAnimation, scrimAnimation)
+        animatorSet.start()
+
+        isBottomSheetVisible = true
+
+        // Load all events in bottom sheet
+        loadAllEvents()
+    }
+
+    private fun hideEventsBottomSheet() {
+        if (!isBottomSheetVisible) return
+
+        // Configure bottom sheet to slide down
+        val sheetAnimation = ObjectAnimator.ofFloat(eventsBottomSheet, "translationY",
+            0f, eventsBottomSheet.height.toFloat())
+        sheetAnimation.duration = 250
+
+        // Configure scrim to fade out
+        val scrimAnimation = ObjectAnimator.ofFloat(eventsDialogScrim, "alpha", 1f, 0f)
+        scrimAnimation.duration = 250
+
+        // Play animations together
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(sheetAnimation, scrimAnimation)
+        animatorSet.start()
+
+        // Hide container after animation completes
+        sheetAnimation.addUpdateListener(object : ValueAnimator.AnimatorUpdateListener {
+            override fun onAnimationUpdate(animation: ValueAnimator) {
+                if (animation.animatedFraction >= 0.9) {
+                    eventsBottomSheetContainer.visibility = View.GONE
+                    isBottomSheetVisible = false
+                }
+            }
+        })
+    }
+
+    private fun loadAllEvents() {
+        // Show loading state
+        eventsProgressBar.visibility = View.VISIBLE
+        eventsEmptyState.visibility = View.GONE
+        allEventsRecycler.visibility = View.GONE
+
+        // We already have the events loaded in memory, so just display them
+        if (allEvents.isNotEmpty()) {
+            displayAllEvents(allEvents)
+            return
+        }
+
+        // If events aren't loaded yet, load them
+        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+        firestore.collection("projects")
+            .whereGreaterThanOrEqualTo("toc", today)
+            .get()
+            .addOnSuccessListener { tocDocuments ->
+                val tocEvents = tocDocuments.mapNotNull { document ->
+                    EventModel(
+                        name = "TOC",
+                        date = document.getString("toc") ?: "",
+                        siteId = document.getString("siteId") ?: "",
+                        witel = document.getString("witel") ?: ""
+                    )
+                }
+
+                this.tocEvents.clear()
+                this.tocEvents.addAll(tocEvents)
+
+                firestore.collection("projects")
+                    .whereGreaterThanOrEqualTo("tglPlanOa", today)
+                    .get()
+                    .addOnSuccessListener { planOaDocuments ->
+                        val planOaEvents = planOaDocuments.mapNotNull { document ->
+                            EventModel(
+                                name = "Plan OA",
+                                date = document.getString("tglPlanOa") ?: "",
+                                siteId = document.getString("siteId") ?: "",
+                                witel = document.getString("witel") ?: ""
+                            )
+                        }
+
+                        this.planOaEvents.clear()
+                        this.planOaEvents.addAll(planOaEvents)
+
+                        // Combine all events
+                        allEvents.clear()
+                        allEvents.addAll(tocEvents)
+                        allEvents.addAll(planOaEvents)
+
+                        // Display events
+                        displayAllEvents(allEvents)
+                    }
+                    .addOnFailureListener { e ->
+                        // Hide loading, show error
+                        eventsProgressBar.visibility = View.GONE
+                        Toast.makeText(this, "Error loading events: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                // Hide loading, show error
+                eventsProgressBar.visibility = View.GONE
+                Toast.makeText(this, "Error loading events: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun displayAllEvents(events: List<EventModel>) {
+        // Hide loading
+        eventsProgressBar.visibility = View.GONE
+
+        if (events.isEmpty()) {
+            // Show empty state
+            eventsEmptyState.visibility = View.VISIBLE
+            allEventsRecycler.visibility = View.GONE
+            return
+        }
+
+        // Show events
+        allEventsRecycler.visibility = View.VISIBLE
+
+        // Group events by date
+        val sortedEvents = events.sortedBy { it.date }
+
+        // Update adapter
+        allEventsAdapter.setEvents(sortedEvents)
+
+        // Animate items in
+        val animation = AnimationUtils.loadAnimation(this, R.anim.item_animation_fall_down)
+        allEventsRecycler.startAnimation(animation)
+    }
+
+    private fun filterEvents(chipId: Int) {
+        when (chipId) {
+            R.id.chipAllEvents -> {
+                displayAllEvents(allEvents)
+            }
+            R.id.chipTocEvents -> {
+                displayAllEvents(tocEvents)
+            }
+            R.id.chipPlanOaEvents -> {
+                displayAllEvents(planOaEvents)
+            }
+            R.id.chipThisWeek -> {
+                // Filter for events this week
+                val calendar = Calendar.getInstance()
+                val today = calendar.time
+
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
+                val weekStart = calendar.time
+
+                calendar.add(Calendar.DAY_OF_WEEK, 6)
+                val weekEnd = calendar.time
+
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val weekStartStr = dateFormat.format(weekStart)
+                val weekEndStr = dateFormat.format(weekEnd)
+
+                val thisWeekEvents = allEvents.filter { event ->
+                    val eventDate = dateFormat.parse(event.date)
+                    eventDate != null && !eventDate.before(weekStart) && !eventDate.after(weekEnd)
+                }
+
+                if (thisWeekEvents.isEmpty()) {
+                    eventsEmptyStateText.text = "No events this week"
+                }
+
+                displayAllEvents(thisWeekEvents)
+            }
+            R.id.chipThisMonth -> {
+                // Filter for events this month
+                val calendar = Calendar.getInstance()
+                val month = calendar.get(Calendar.MONTH)
+                val year = calendar.get(Calendar.YEAR)
+
+                val thisMonthEvents = allEvents.filter { event ->
+                    val eventDateStr = event.date
+                    if (eventDateStr.isNotEmpty()) {
+                        val dateParts = eventDateStr.split("-")
+                        if (dateParts.size == 3) {
+                            val eventYear = dateParts[0].toInt()
+                            val eventMonth = dateParts[1].toInt() - 1 // Calendar months are 0-based
+
+                            eventYear == year && eventMonth == month
+                        } else {
+                            false
+                        }
+                    } else {
+                        false
+                    }
+                }
+
+                if (thisMonthEvents.isEmpty()) {
+                    eventsEmptyStateText.text = "No events this month"
+                }
+
+                displayAllEvents(thisMonthEvents)
+            }
+        }
     }
 
     // Calendar decorator for today's date
