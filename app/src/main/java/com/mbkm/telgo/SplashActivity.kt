@@ -1,5 +1,6 @@
 package com.mbkm.telgo
 
+import android.app.Service
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -31,7 +32,7 @@ class SplashActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             // User is signed in, go to HomeActivity
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, ServicesActivity::class.java))
         } else {
             // No user is signed in, go to LoginActivity
             startActivity(Intent(this, LoginActivity::class.java))
