@@ -666,7 +666,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
                 }
 
                 if (thisMonthEvents.isEmpty()) {
-                    eventsEmptyStateText.text = "No events this month"
+                    eventsEmptyStateText.text = ""
                 }
 
                 displayAllEvents(thisMonthEvents)
