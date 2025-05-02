@@ -462,6 +462,71 @@
                     android:orientation="vertical"
                     android:animateLayoutChanges="true">
 
+                    <!-- NEW: Document BA (Berita Acara) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/document_section_background"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="8dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_document"
+                                android:layout_marginEnd="8dp"
+                                android:tint="#666666" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Document BA:"
+                                android:textStyle="bold"
+                                android:textColor="#555555" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnUploadDocumentBA"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Upload Document"
+                            android:textAllCaps="false"
+                            android:textSize="14sp"
+                            android:paddingVertical="12dp"
+                            app:icon="@drawable/ic_upload"
+                            app:iconGravity="textStart"
+                            app:cornerRadius="8dp"
+                            android:backgroundTint="#E62020"
+                            app:rippleColor="#80FFFFFF"
+                            android:layout_marginBottom="4dp" />
+
+                        <ProgressBar
+                            android:id="@+id/progressDocumentBA"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tvDocumentBAFileName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="#555555"
+                            android:textSize="14sp"
+                            android:drawableStart="@drawable/ic_file"
+                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
                     <!-- Email Order -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -527,6 +592,7 @@
                             android:visibility="gone" />
                     </LinearLayout>
 
+                    <!-- Rest of the document sections remain unchanged -->
                     <!-- Telkomsel Permit -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -724,6 +790,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- The rest of the layout remains unchanged -->
         <!-- Image Capture Section - Enhanced with expandable animation -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -1231,7 +1298,6 @@
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
         <!-- Save Buttons - Enhanced with elevation and ripple -->
         <LinearLayout
             android:layout_width="match_parent"
