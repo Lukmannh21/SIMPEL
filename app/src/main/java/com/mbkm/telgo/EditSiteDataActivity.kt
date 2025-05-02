@@ -43,6 +43,11 @@ class EditSiteDataActivity : AppCompatActivity() {
     private lateinit var etLastIssue: EditText
     private lateinit var tvKoordinat: TextView
 
+    // Added Document BA components
+    private lateinit var btnUploadDocumentBA: MaterialButton
+    private lateinit var tvDocumentBAFileName: TextView
+    private lateinit var progressDocumentBA: ProgressBar
+
     private lateinit var btnUploadDaftarMitra: MaterialButton
     private lateinit var tvDaftarMitraFileName: TextView
 
@@ -192,6 +197,11 @@ class EditSiteDataActivity : AppCompatActivity() {
         btnUploadTelkomselPermit = findViewById(R.id.btnUploadTelkomselPermit)
         btnUploadTelPartner = findViewById(R.id.btnUploadTelPartner)
         btnUploadDaftarMitra = findViewById(R.id.btnUploadDaftarMitra)
+
+        // New Document BA components
+        btnUploadDocumentBA = findViewById(R.id.btnUploadDocumentBA)
+        tvDocumentBAFileName = findViewById(R.id.tvDocumentBAFileName)
+        progressDocumentBA = findViewById(R.id.progressDocumentBA)
 
         btnCaptureLocation = findViewById(R.id.btnCaptureLocation)
         btnCaptureFoundation = findViewById(R.id.btnCaptureFoundation)
@@ -416,6 +426,12 @@ class EditSiteDataActivity : AppCompatActivity() {
             }
         }
 
+        // Document BA upload button
+        btnUploadDocumentBA.setOnClickListener {
+            openDocumentPicker("document_ba")
+            animateButtonClick(btnUploadDocumentBA)
+        }
+
         // Original document upload buttons
         btnUploadEmailOrder.setOnClickListener {
             openDocumentPicker("email_order")
@@ -617,6 +633,7 @@ class EditSiteDataActivity : AppCompatActivity() {
     private fun loadExistingFiles() {
         // Load existing documents
         val documentTypes = listOf(
+            "document_ba" to tvDocumentBAFileName to progressDocumentBA,
             "email_order" to tvEmailOrderFileName to progressEmailOrder,
             "telkomsel_permit" to tvTelkomselPermitFileName to progressTelkomselPermit,
             "mitra_tel" to tvTelPartnerFileName to progressTelPartner,
@@ -681,6 +698,7 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     private fun updateDocumentButtonStatus(docType: String, exists: Boolean) {
         val button = when (docType) {
+            "document_ba" -> btnUploadDocumentBA
             "email_order" -> btnUploadEmailOrder
             "telkomsel_permit" -> btnUploadTelkomselPermit
             "mitra_tel" -> btnUploadTelPartner
@@ -741,7 +759,6 @@ class EditSiteDataActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-
     /**
      * Memberikan efek animasi saat gambar diklik
      */
@@ -937,6 +954,7 @@ class EditSiteDataActivity : AppCompatActivity() {
 
                     // Tampilkan progress bar yang sesuai
                     val progressBar = when (currentImageType) {
+                        "document_ba" -> progressDocumentBA
                         "email_order" -> progressEmailOrder
                         "telkomsel_permit" -> progressTelkomselPermit
                         "mitra_tel" -> progressTelPartner
@@ -947,6 +965,7 @@ class EditSiteDataActivity : AppCompatActivity() {
 
                     // Update the corresponding TextView based on the document type
                     val textView = when (currentImageType) {
+                        "document_ba" -> tvDocumentBAFileName
                         "email_order" -> tvEmailOrderFileName
                         "telkomsel_permit" -> tvTelkomselPermitFileName
                         "mitra_tel" -> tvTelPartnerFileName
@@ -1283,6 +1302,7 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         // Show progress bar
         val progressBar = when (docType) {
+            "document_ba" -> progressDocumentBA
             "email_order" -> progressEmailOrder
             "telkomsel_permit" -> progressTelkomselPermit
             "mitra_tel" -> progressTelPartner
@@ -1305,6 +1325,7 @@ class EditSiteDataActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     // Update TextView untuk menampilkan nama file dan ekstensi baru
                     val textView = when (docType) {
+                        "document_ba" -> tvDocumentBAFileName
                         "email_order" -> tvEmailOrderFileName
                         "telkomsel_permit" -> tvTelkomselPermitFileName
                         "mitra_tel" -> tvTelPartnerFileName

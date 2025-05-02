@@ -345,16 +345,18 @@ class SiteDetailActivity : AppCompatActivity() {
         }
     }
 
+    // Add this to the loadDocuments() method in SiteDetailActivity.kt
     private fun loadDocuments() {
         // Bersihkan list terlebih dahulu dan beritahu adapter segera
         documentsList.clear()
         documentsAdapter.notifyDataSetChanged()
 
         // Gunakan AtomicInteger untuk melacak proses yang sedang berjalan
-        val pendingChecks = AtomicInteger(4) // 4 jenis dokumen yang akan diperiksa
+        val pendingChecks = AtomicInteger(5) // 5 jenis dokumen yang akan diperiksa (added document_ba)
 
         // Tentukan jenis-jenis dokumen yang akan diperiksa
         val documentTypes = listOf(
+            "document_ba" to "Document BA",
             "email_order" to "Document Email Order",
             "telkomsel_permit" to "Document Telkomsel Permit",
             "mitra_tel" to "Document Mitra Tel",
