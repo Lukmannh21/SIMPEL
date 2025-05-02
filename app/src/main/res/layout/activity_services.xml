@@ -25,7 +25,7 @@
 
             <!-- Existing Components -->
             <ImageView
-                android:id="@+id/lo go"
+                android:id="@+id/logo"
                 android:layout_width="130dp"
                 android:layout_height="114dp"
                 android:layout_gravity="center"
