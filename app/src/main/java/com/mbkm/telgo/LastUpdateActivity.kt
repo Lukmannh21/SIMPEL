@@ -1,31 +1,45 @@
 package com.mbkm.telgo
 
+import android.app.ActivityOptions
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.view.animation.AnimationUtils
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class LastUpdateActivity : AppCompatActivity() {
+class LastUpdateActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var btnBack: Button
+    private lateinit var btnBack: ImageButton
     private lateinit var tvLastUpdateTitle: TextView
     private lateinit var tvTotalSites: TextView
     private lateinit var tvUploadedBy: TextView
     private lateinit var tvEditedSites: TextView
     private lateinit var tvNoSites: TextView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var emptyStateView: View
+    private lateinit var btnRefresh: MaterialButton
+    private lateinit var bottomNavigationView: BottomNavigationView
+
     private lateinit var siteAdapter: SiteAdapter
     private lateinit var siteList: ArrayList<SiteModelLastUpdate>
     private lateinit var firestore: FirebaseFirestore
@@ -36,6 +50,9 @@ class LastUpdateActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_last_update)
 
+        // Apply activity transition animation
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+
         // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -44,7 +61,7 @@ class LastUpdateActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
             showToast("User not logged in")
-            finish()
+            redirectToLogin()
             return
         }
 
@@ -55,20 +72,29 @@ class LastUpdateActivity : AppCompatActivity() {
 
         // Set up back button
         btnBack.setOnClickListener {
-            finish()
+            finishWithAnimation()
         }
 
-        siteList = arrayListOf()
-        siteAdapter = SiteAdapter(siteList) { site ->
-            // Handle item click
-            val intent = Intent(this, LastUpdateDetailActivity::class.java) // Ganti SiteDetailActivity menjadi LastUpdateDetailActivity
-            intent.putExtra("SITE_ID", site.siteId)
-            intent.putExtra("WITEL", site.witel)
-            startActivity(intent)
+        // Set up refresh button in empty state
+        btnRefresh.setOnClickListener {
+            loadUserSites()
         }
 
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = siteAdapter
+        // Setup RecyclerView
+        setupRecyclerView()
+
+        // Setup SwipeRefreshLayout
+        swipeRefreshLayout.setColorSchemeColors(
+            ContextCompat.getColor(this, R.color.red_telkomsel_dark),
+            ContextCompat.getColor(this, R.color.red_telkomsel_light)
+        )
+        swipeRefreshLayout.setOnRefreshListener {
+            loadUserSites()
+        }
+
+        // Setup bottom navigation
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+        bottomNavigationView.selectedItemId = R.id.navigation_history
 
         // Display current user info
         tvUploadedBy.text = "User: $currentUserEmail"
@@ -85,14 +111,87 @@ class LastUpdateActivity : AppCompatActivity() {
         tvUploadedBy = findViewById(R.id.tvUploadedBy)
         tvEditedSites = findViewById(R.id.tvEditedSites)
         tvNoSites = findViewById(R.id.tvNoSites)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        emptyStateView = findViewById(R.id.emptyStateView)
+        btnRefresh = findViewById(R.id.btnRefresh)
+        bottomNavigationView = findViewById(R.id.bottomNavigation)
 
         tvLastUpdateTitle.text = "My Site Updates"
-        tvTotalSites.text = "Loading data..."
-        tvEditedSites.text = "Recent Updates"
-        tvNoSites.visibility = View.GONE
+        tvTotalSites.text = "0"
+        tvEditedSites.text = "0"
+        emptyStateView.visibility = View.GONE
+    }
+
+    private fun setupRecyclerView() {
+        siteList = arrayListOf()
+        siteAdapter = SiteAdapter(siteList) { site ->
+            // Handle item click
+            val intent = Intent(this, LastUpdateDetailActivity::class.java)
+            intent.putExtra("SITE_ID", site.siteId)
+            intent.putExtra("WITEL", site.witel)
+
+            // Create animation for transition
+            val options = ActivityOptions.makeCustomAnimation(
+                this,
+                R.anim.slide_in_right,
+                R.anim.slide_out_left
+            )
+            startActivity(intent, options.toBundle())
+        }
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = siteAdapter
+
+        // Set layout animation for recycler view
+        val animation = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation_fall_down)
+        recyclerView.layoutAnimation = animation
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.navigation_home -> {
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+                return true
+            }
+            R.id.navigation_services -> {
+                val intent = Intent(this, ServicesActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                return true
+            }
+            R.id.navigation_history -> {
+                // We're already in LastUpdateActivity, no need to start a new activity
+                return true
+            }
+            R.id.navigation_account -> {
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Ensure the correct navigation item is selected
+        bottomNavigationView.selectedItemId = R.id.navigation_history
+    }
+
+    override fun finish() {
+        super.finish()
+        // Apply exit animation
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
     private fun loadUserSites() {
+        // Show loading indicator
+        swipeRefreshLayout.isRefreshing = true
+        emptyStateView.visibility = View.GONE
+
         // Pertama, dapatkan daftar siteId yang diupdate oleh user dari koleksi users
         firestore.collection("users")
             .whereEqualTo("email", currentUserEmail)
@@ -110,13 +209,13 @@ class LastUpdateActivity : AppCompatActivity() {
                 val editedSites = userDoc.get("editedSites") as? List<String> ?: listOf()
 
                 if (editedSites.isEmpty()) {
-                    tvEditedSites.text = "No edited sites found"
+                    tvEditedSites.text = "0"
                     // Lanjutkan dengan memeriksa lastUpdatedBy/uploadedBy dalam project
                     loadSitesByUpdateField()
                     return@addOnSuccessListener
                 }
 
-                tvEditedSites.text = "Edited Sites: ${editedSites.size}"
+                tvEditedSites.text = editedSites.size.toString()
 
                 // Jika ada editedSites, ambil semua project yang memiliki siteId dalam daftar
                 firestore.collection("projects")
@@ -133,6 +232,7 @@ class LastUpdateActivity : AppCompatActivity() {
                     }
                     .addOnFailureListener { e ->
                         showToast("Error loading edited sites: ${e.message}")
+                        swipeRefreshLayout.isRefreshing = false
                     }
             }
             .addOnFailureListener { e ->
@@ -178,6 +278,7 @@ class LastUpdateActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 handleNoSites("Error: ${e.message}")
+                swipeRefreshLayout.isRefreshing = false
             }
     }
 
@@ -211,22 +312,49 @@ class LastUpdateActivity : AppCompatActivity() {
         if (siteList.isEmpty()) {
             handleNoSites("No sites found")
         } else {
-            tvTotalSites.text = "Total Sites: ${siteList.size}"
-            tvNoSites.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
+            tvTotalSites.text = siteList.size.toString()
+            emptyStateView.visibility = View.GONE
+            swipeRefreshLayout.visibility = View.VISIBLE
+
+            // Apply animation to recyclerView
+            recyclerView.scheduleLayoutAnimation()
             siteAdapter.notifyDataSetChanged()
 
             // Scroll to top to show newest update
             recyclerView.scrollToPosition(0)
         }
+
+        // Hide loading indicator
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun handleNoSites(message: String) {
-        tvTotalSites.text = "Total Sites: 0"
-        tvNoSites.visibility = View.VISIBLE
+        tvTotalSites.text = "0"
+        tvEditedSites.text = "0"
+        emptyStateView.visibility = View.VISIBLE
         tvNoSites.text = message
-        recyclerView.visibility = View.GONE
-        showToast(message)
+        swipeRefreshLayout.visibility = View.GONE
+        swipeRefreshLayout.isRefreshing = false
+    }
+
+    private fun redirectToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        finish()
+    }
+
+    private fun finishWithAnimation() {
+        finish()
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+    }
+
+    @Override
+    override fun onBackPressed() {
+        super.onBackPressed()
+        // Apply exit animation
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
     private fun showToast(message: String) {
@@ -246,6 +374,8 @@ class LastUpdateActivity : AppCompatActivity() {
             val tvLastIssue: TextView = itemView.findViewById(R.id.tvLastIssue)
             val tvKoordinat: TextView = itemView.findViewById(R.id.tvKoordinat)
             val tvUpdatedAt: TextView = itemView.findViewById(R.id.tvUpdatedAt)
+            val statusIndicator: View = itemView.findViewById(R.id.statusIndicator)
+            val cardView: MaterialCardView = itemView as MaterialCardView
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SiteViewHolder {
@@ -260,6 +390,14 @@ class LastUpdateActivity : AppCompatActivity() {
             holder.tvSiteId.text = currentItem.siteId
             holder.tvWitel.text = currentItem.witel
             holder.tvStatus.text = "Status: ${currentItem.status}"
+
+            // Set status indicator color
+            when (currentItem.status.lowercase()) {
+                "open" -> holder.statusIndicator.setBackgroundColor(Color.GREEN)
+                "in progress" -> holder.statusIndicator.setBackgroundColor(Color.YELLOW)
+                "closed" -> holder.statusIndicator.setBackgroundColor(Color.RED)
+                else -> holder.statusIndicator.setBackgroundColor(Color.GRAY)
+            }
 
             // Format and display last issue
             val issue = if (currentItem.lastIssue.contains(" - ")) {
@@ -277,16 +415,36 @@ class LastUpdateActivity : AppCompatActivity() {
             try {
                 holder.tvUpdatedAt.text = "Updated: ${formatDateTime(currentItem.updatedAt)}"
             } catch (e: Exception) {
-                // Jika tidak ada tvUpdatedAt di layout
+                holder.tvUpdatedAt.text = "Updated: ${currentItem.updatedAt}"
             }
 
-            // Set click listener for the entire item
+            // Add click animation
             holder.itemView.setOnClickListener {
-                onItemClick(currentItem)
+                // Add animation effect
+                it.animate()
+                    .scaleX(0.95f)
+                    .scaleY(0.95f)
+                    .setDuration(100)
+                    .withEndAction {
+                        it.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(100)
+                            .withEndAction {
+                                onItemClick(currentItem)
+                            }
+                            .start()
+                    }
+                    .start()
             }
+
+            // Apply animation to each item
+            val animation = AnimationUtils.loadAnimation(
+                holder.itemView.context,
+                R.anim.item_animation_fall_down
+            )
+            holder.itemView.startAnimation(animation)
         }
-
-
 
         override fun getItemCount() = siteList.size
 
@@ -303,6 +461,4 @@ class LastUpdateActivity : AppCompatActivity() {
             }
         }
     }
-
 }
-
