@@ -56,9 +56,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:text="TelGO Services"
+                        android:text="TELGO SERVICES"
                         android:textColor="@android:color/black"
-                        android:textSize="22sp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         android:fontFamily="sans-serif-medium"/>
 
@@ -122,7 +122,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Mini Calendar"
+                android:layout_gravity="center"
+                android:text="PLAN ACTIVITY"
                 android:textColor="@android:color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
