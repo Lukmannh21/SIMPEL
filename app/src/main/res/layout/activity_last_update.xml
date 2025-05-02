@@ -4,107 +4,258 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_light"
     tools:context=".LastUpdateActivity">
 
-    <!-- Menampilkan email user saat ini -->
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <!-- Material Toolbar with updated design -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@android:color/transparent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="?attr/actionBarSize"
+            android:paddingHorizontal="16dp">
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="43dp"
-                android:layout_height="42dp"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="@android:color/transparent"
-                android:drawableTop="@drawable/back"
-                android:text="Back"
-                android:textColor="@android:color/white"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"
+                android:src="@drawable/back"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" /> <!-- Memberikan margin untuk membuat logo sedikit lebih ke bawah -->
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/red_telkomsel_dark" />
 
             <TextView
                 android:id="@+id/tvLastUpdateTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Last Update"
-                android:textColor="@android:color/black"
+                android:text="My Updates"
+                android:textColor="@color/red_telkomsel_dark"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Total sites (sama dengan yang sudah ada) -->
-    <TextView
-        android:id="@+id/tvTotalSites"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Total Sites: 0"
-        android:textSize="16sp"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textColor="@android:color/black"/>
-
-    <!-- Upload user (hanya diubah isinya) -->
-    <TextView
-        android:id="@+id/tvUploadedBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sites updated by me"
-        android:textSize="16sp"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tvTotalSites"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textColor="@android:color/black"/>
-
-    <!-- Edited sites (hanya diubah isinya) -->
-    <TextView
-        android:id="@+id/tvEditedSites"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Recent Updates"
-        android:textSize="16sp"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tvUploadedBy"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textColor="@android:color/black"/>
-
-    <!-- Pesan no sites (ditambahkan) -->
-    <TextView
-        android:id="@+id/tvNoSites"
+    <!-- User Info Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardUserInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="You haven't updated or uploaded any sites yet"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:visibility="gone"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tvEditedSites"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
-    <!-- RecyclerView (tetap sama) -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewSites"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/gradient_card_background">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_account_circle"
+                    app:tint="@color/red_telkomsel_dark" />
+
+                <TextView
+                    android:id="@+id/tvUploadedBy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:text="User: email@example.com"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginVertical="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/red_telkomsel_light">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Sites"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tvTotalSites"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@android:color/white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/red_telkomsel_dark">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Updated"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tvEditedSites"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@android:color/white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvSiteListHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Site Updates"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/cardUserInfo"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Empty State View -->
+    <LinearLayout
+        android:id="@+id/emptyStateView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/tvEditedSites"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tvSiteListHeader"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/search"
+            android:alpha="0.5"
+            app:tint="#757575" />
+
+        <TextView
+            android:id="@+id/tvNoSites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You haven't updated or uploaded any sites yet"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="32dp"
+            android:textColor="#757575" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refresh"
+            android:layout_marginTop="16dp"
+            app:icon="@drawable/ic_refresh"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:textColor="@color/red_telkomsel_dark"
+            app:strokeColor="@color/red_telkomsel_dark" />
+    </LinearLayout>
+
+    <!-- Pull to refresh layout -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tvSiteListHeader"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewSites"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="8dp"
+            android:clipToPadding="false" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:background="@drawable/bottom_navigation_background"
+        app:itemIconTint="@color/navigation_color_item"
+        app:itemTextColor="@color/navigation_color_item"
+        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" /> 
+        app:menu="@menu/bottom_nav_menu"
+        android:elevation="16dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
