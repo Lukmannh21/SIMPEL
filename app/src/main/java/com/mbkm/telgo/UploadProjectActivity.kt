@@ -609,6 +609,9 @@ class UploadProjectActivity : AppCompatActivity() {
             return
         }
 
+        // Get current user's email
+        val userEmail = currentUser.email ?: "unknown@email.com"
+
         // Use provided timestamp for testing, or get current time in production
         // val currentTime = getCurrentDateTime()
         val currentTime = "2025-04-28 07:40:37" // Using provided time from prompt
@@ -627,7 +630,7 @@ class UploadProjectActivity : AppCompatActivity() {
             "status" to status,
             "lastIssueHistory" to listOf(issueWithTimestamp),
             "koordinat" to koordinat,
-            "uploadedBy" to "Lukmannh21", // Using provided user for consistency
+            "uploadedBy" to userEmail, // Using logged-in user's email
             "createdAt" to currentTime,
             "updatedAt" to currentTime,
 
@@ -689,6 +692,9 @@ class UploadProjectActivity : AppCompatActivity() {
             return
         }
 
+        // Get current user's email
+        val userEmail = currentUser.email ?: "unknown@email.com"
+
         // Use provided timestamp for testing
         val currentTime = "2025-04-28 07:40:37" // Using provided time from prompt
         val issueWithTimestamp = "$currentTime - $lastIssue"
@@ -717,6 +723,7 @@ class UploadProjectActivity : AppCompatActivity() {
                     "status" to status,
                     "lastIssueHistory" to updatedIssueHistory,
                     "koordinat" to koordinat,
+                    "uploadedBy" to userEmail, // Using logged-in user's email
                     "updatedAt" to currentTime,
 
                     // New fields
