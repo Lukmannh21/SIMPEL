@@ -35,7 +35,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:contentDescription="Logo TelGo"
-            android:src="@drawable/tiger" />
+            android:src="@drawable/logo_baru" />
 
         <!-- Button Logout -->
         <Button
