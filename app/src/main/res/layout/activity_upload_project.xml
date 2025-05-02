@@ -33,7 +33,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/tiger" />
+                    android:src="@drawable/logo_baru" />
 
                 <TextView
                     android:id="@+id/tvFormTitle"

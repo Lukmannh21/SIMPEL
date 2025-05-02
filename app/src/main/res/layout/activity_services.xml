@@ -25,13 +25,13 @@
 
             <!-- Existing Components -->
             <ImageView
-                android:id="@+id/logo"
-                android:layout_width="121dp"
-                android:layout_height="104dp"
+                android:id="@+id/lo go"
+                android:layout_width="130dp"
+                android:layout_height="114dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
                 android:contentDescription="Logo TelGo"
-                android:src="@drawable/tiger"
+                android:src="@drawable/logo_baru"
                 android:transitionName="logo_transition"/>
 
             <androidx.cardview.widget.CardView
