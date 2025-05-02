@@ -5,11 +5,13 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -30,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -124,8 +127,10 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     // Request codes
     private val REQUEST_CAMERA_PERMISSION = 101
+    private val REQUEST_STORAGE_PERMISSION = 105
     private val REQUEST_IMAGE_CAPTURE = 102
     private val REQUEST_DOCUMENT_PICK = 103
+    private val REQUEST_PICK_IMAGE = 104
 
     // Currently selected image type for camera
     private var currentImageType: String = ""
@@ -759,6 +764,7 @@ class EditSiteDataActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
     /**
      * Memberikan efek animasi saat gambar diklik
      */
@@ -797,26 +803,57 @@ class EditSiteDataActivity : AppCompatActivity() {
     }
 
     private fun captureImage(imageType: String) {
-        if (checkCameraPermission()) {
-            // Store the image type to use when handling the result
-            currentImageType = imageType
+        // Store the image type to use when handling the result
+        currentImageType = imageType
 
-            // Create file for the photo
-            val photoFile = createImageFile()
-            if (photoFile != null) {
-                val photoURI = FileProvider.getUriForFile(
-                    this,
-                    "com.mbkm.telgo.fileprovider",
-                    photoFile
-                )
+        // Create a dialog with camera and gallery options
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setTitle("Choose Image Source")
 
-                val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                    putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+        // Create a custom layout with two buttons side by side
+        val dialogView = layoutInflater.inflate(R.layout.dialog_image_source, null)
+        val btnCamera = dialogView.findViewById<MaterialButton>(R.id.btnCamera)
+        val btnGallery = dialogView.findViewById<MaterialButton>(R.id.btnGallery)
+
+        dialogBuilder.setView(dialogView)
+        val dialog = dialogBuilder.create()
+
+        // Camera button click
+        btnCamera.setOnClickListener {
+            if (checkCameraPermission()) {
+                val photoFile = createImageFile()
+                if (photoFile != null) {
+                    val photoURI = FileProvider.getUriForFile(
+                        this,
+                        "com.mbkm.telgo.fileprovider",
+                        photoFile
+                    )
+
+                    val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                        putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    }
+
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
                 }
+            }
+            dialog.dismiss()
+        }
 
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        // Gallery button click
+        btnGallery.setOnClickListener {
+            if (checkStoragePermission()) {
+                // Use ACTION_GET_CONTENT instead of ACTION_PICK for more compatibility
+                val pickPhotoIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                    type = "image/*"
+                }
+                startActivityForResult(pickPhotoIntent, REQUEST_PICK_IMAGE)
+                dialog.dismiss()
+            } else {
+                dialog.dismiss()
             }
         }
+
+        dialog.show()
     }
 
     private fun createImageFile(): File? {
@@ -856,6 +893,41 @@ class EditSiteDataActivity : AppCompatActivity() {
         return true
     }
 
+    // Add the missing storage permission check function
+    private fun checkStoragePermission(): Boolean {
+        // For Android 13+ (API level 33+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_MEDIA_IMAGES
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                    REQUEST_STORAGE_PERMISSION
+                )
+                return false
+            }
+        }
+        // For Android 12 and below
+        else {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    REQUEST_STORAGE_PERMISSION
+                )
+                return false
+            }
+        }
+        return true
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -865,10 +937,21 @@ class EditSiteDataActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_CAMERA_PERMISSION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission granted, capture image
+                    // Permission granted, reopen the dialog to choose camera or gallery
                     captureImage(currentImageType)
                 } else {
                     showToast("Camera permission is required to capture images")
+                }
+            }
+            REQUEST_STORAGE_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted, open gallery
+                    val pickPhotoIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "image/*"
+                    }
+                    startActivityForResult(pickPhotoIntent, REQUEST_PICK_IMAGE)
+                } else {
+                    showToast("Storage permission is required to select images")
                 }
             }
         }
@@ -883,7 +966,7 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         when (requestCode) {
             REQUEST_IMAGE_CAPTURE -> {
-                // Image captured from camera
+                // Existing camera capture code - unchanged
                 if (currentPhotoPath.isNotEmpty()) {
                     // Create URI from file path
                     val photoFile = File(currentPhotoPath)
@@ -936,14 +1019,75 @@ class EditSiteDataActivity : AppCompatActivity() {
                 }
             }
 
+            REQUEST_PICK_IMAGE -> {
+                // Fixed gallery image selection code
+                data?.data?.let { uri ->
+                    // Create a local copy of the file to avoid permission issues
+                    val localUri = copyUriToLocalFile(uri)
+
+                    // Store the local URI for later upload
+                    if (localUri != null) {
+                        imageUris[currentImageType] = localUri
+
+                        // Display the selected image in the appropriate ImageView
+                        val imageView = when (currentImageType) {
+                            "site_location" -> ivLocation
+                            "foundation_shelter" -> ivFoundation
+                            "installation_process" -> ivInstallation
+                            "cabinet" -> ivCabinet
+                            "3p_inet" -> ivInet
+                            "3p_useetv" -> ivUctv
+                            "3p_telephone" -> ivTelephone
+                            else -> null
+                        }
+
+                        imageView?.let {
+                            try {
+                                // Load and display the image with animation
+                                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, localUri)
+                                it.alpha = 0f
+                                it.setImageBitmap(bitmap)
+                                it.visibility = View.VISIBLE
+                                it.animate()
+                                    .alpha(1f)
+                                    .setDuration(300)
+                                    .start()
+
+                                // Add click listener
+                                it.setOnClickListener { view ->
+                                    animateImageClick(view as ImageView)
+                                }
+                            } catch (e: Exception) {
+                                showToast("Error displaying image: ${e.message}")
+                                e.printStackTrace()
+                            }
+
+                            // Update button text to indicate replacement is possible
+                            updateImageButtonStatus(currentImageType, true)
+                        }
+
+                        showToast("Image selected successfully")
+                    } else {
+                        showToast("Error: Could not copy image file")
+                    }
+                } ?: run {
+                    showToast("Error: No image selected")
+                }
+            }
+
             REQUEST_DOCUMENT_PICK -> {
                 // Document selected
                 data?.data?.let { uri ->
                     // Take a persistent URI permission
-                    contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
+                    try {
+                        contentResolver.takePersistableUriPermission(
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+                    } catch (e: Exception) {
+                        Log.e("EditSiteData", "Error taking permission: ${e.message}")
+                        // Continue anyway as we'll copy the file to local storage
+                    }
 
                     // Store the URI for later upload
                     documentUris[currentImageType] = uri
@@ -994,6 +1138,36 @@ class EditSiteDataActivity : AppCompatActivity() {
                     showToast("Document selected: $fileName")
                 }
             }
+        }
+    }
+
+    // New method to copy URI to local file
+    private fun copyUriToLocalFile(uri: Uri): Uri? {
+        return try {
+            // Create a temporary file in the app's private directory
+            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val imageFileName = "JPEG_${timeStamp}_"
+            val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val localFile = File.createTempFile(imageFileName, ".jpg", storageDir)
+
+            // Copy content from the URI to the local file
+            contentResolver.openInputStream(uri)?.use { input ->
+                FileOutputStream(localFile).use { output ->
+                    val buffer = ByteArray(4 * 1024) // 4k buffer
+                    var bytesRead = input.read(buffer)
+                    while (bytesRead != -1) {
+                        output.write(buffer, 0, bytesRead)
+                        bytesRead = input.read(buffer)
+                    }
+                    output.flush()
+                }
+            }
+
+            // Return URI for the local file
+            Uri.fromFile(localFile)
+        } catch (e: Exception) {
+            Log.e("EditSiteData", "Error copying URI to local file", e)
+            null
         }
     }
 
