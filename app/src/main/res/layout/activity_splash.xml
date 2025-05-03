@@ -7,15 +7,42 @@
     android:background="@color/white"
     tools:context=".SplashActivity">
 
-    <!-- Logo ImageView -->
+    <!-- Logo ImageView with improved styling -->
     <ImageView
         android:id="@+id/splash_logo"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/logo_splash_screen"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Pulsating circle behind the logo for visual effect -->
+    <View
+        android:id="@+id/logo_background"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:background="@drawable/pulsating_circle"
+        app:layout_constraintTop_toTopOf="@id/splash_logo"
+        app:layout_constraintBottom_toBottomOf="@id/splash_logo"
+        app:layout_constraintStart_toStartOf="@id/splash_logo"
+        app:layout_constraintEnd_toEndOf="@id/splash_logo"
+        android:elevation="-1dp"/>
+
+    <!-- Watermark text -->
+    <TextView
+        android:id="@+id/watermark_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo_splash_screen"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
+        android:text="ILKOMTI22USU"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/red_telkomsel_dark"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

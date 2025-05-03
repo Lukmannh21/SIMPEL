@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true">
+
+    <!-- Delay the watermark appearance -->
+    <alpha
+        android:startOffset="500"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0"
+        android:duration="1000" />
+
+    <!-- Slide up from bottom -->
+    <translate
+        android:startOffset="500"
+        android:fromYDelta="50%"
+        android:toYDelta="0%"
+        android:duration="1000" />
+</set>
