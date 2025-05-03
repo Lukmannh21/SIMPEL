@@ -1,16 +1,27 @@
 package com.mbkm.telgo
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AnticipateOvershootInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.concurrent.atomic.AtomicInteger
@@ -23,12 +34,9 @@ class LastUpdateDetailActivity : AppCompatActivity() {
     private lateinit var tvStatus: TextView
     private lateinit var tvLastIssue: TextView
     private lateinit var tvKoordinat: TextView
-    private lateinit var btnBack: Button
+    private lateinit var btnBack: ImageView
     private lateinit var rvDocuments: RecyclerView
     private lateinit var rvImages: RecyclerView
-
-    // buat meriksa data telah dimuat apa nggak biar dia gak dobel
-    private var isDataInitialized = false
 
     // Additional UI Components
     private lateinit var tvIdLopOlt: TextView
@@ -58,6 +66,17 @@ class LastUpdateDetailActivity : AppCompatActivity() {
     private lateinit var tvSisaHariThdpPlanOa: TextView
     private lateinit var tvSisaHariThdpToc: TextView
 
+    // New UI components for expandable sections
+    private lateinit var technicalInfoHeader: LinearLayout
+    private lateinit var technicalInfoContent: LinearLayout
+    private lateinit var technicalInfoExpandIcon: ImageView
+    private lateinit var projectInfoHeader: LinearLayout
+    private lateinit var projectInfoContent: LinearLayout
+    private lateinit var projectInfoExpandIcon: ImageView
+
+    // Flag to check if data has been loaded
+    private var isDataInitialized = false
+
     private val REQUEST_STORAGE_PERMISSION = 200
 
     // Firebase
@@ -76,6 +95,10 @@ class LastUpdateDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Apply enter transition animation
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+
         setContentView(R.layout.activity_last_update_detail)
 
         // Get data from intent
@@ -97,7 +120,7 @@ class LastUpdateDetailActivity : AppCompatActivity() {
 
         // Set up back button
         btnBack.setOnClickListener {
-            finish()
+            finishWithAnimation()
         }
 
         // Check and request storage permissions
@@ -106,8 +129,8 @@ class LastUpdateDetailActivity : AppCompatActivity() {
         // Set up RecyclerViews
         setupRecyclerViews()
 
-        // HAPUS pemanggilan loadSiteData() dari sini
-        // loadSiteData() dipisahkan ke onResume() saja
+        // Set up expandable sections
+        setupExpandableSections()
     }
 
     private fun initializeUI() {
@@ -148,6 +171,35 @@ class LastUpdateDetailActivity : AppCompatActivity() {
         tvPort = findViewById(R.id.tvPort)
         tvSisaHariThdpPlanOa = findViewById(R.id.tvSisaHariThdpPlanOa)
         tvSisaHariThdpToc = findViewById(R.id.tvSisaHariThdpToc)
+
+        // New UI components for expandable sections
+        technicalInfoHeader = findViewById(R.id.technicalInfoHeader)
+        technicalInfoContent = findViewById(R.id.technicalInfoContent)
+        technicalInfoExpandIcon = findViewById(R.id.technicalInfoExpandIcon)
+        projectInfoHeader = findViewById(R.id.projectInfoHeader)
+        projectInfoContent = findViewById(R.id.projectInfoContent)
+        projectInfoExpandIcon = findViewById(R.id.projectInfoExpandIcon)
+
+        // Set up app bar scroll effects
+        setupAppBarScrollBehavior()
+    }
+
+    private fun setupAppBarScrollBehavior() {
+        val appBarLayout = findViewById<AppBarLayout>(R.id.appBarLayout)
+
+        appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+            // Calculate the scroll percentage (0% to 100%)
+            val scrollPercentage = -verticalOffset / appBarLayout.totalScrollRange.toFloat()
+
+            // Apply alpha effects based on scroll
+            val contentAlpha = 1 - scrollPercentage * 2 // Fade out content faster
+            tvWitel.alpha = maxOf(0f, contentAlpha)
+
+            // Scale effects
+            val scale = 1 - (scrollPercentage * 0.2f) // Scale down by 20% max
+            tvSiteId.scaleX = maxOf(0.8f, scale)
+            tvSiteId.scaleY = maxOf(0.8f, scale)
+        })
     }
 
     private fun checkAndRequestStoragePermission(): Boolean {
@@ -173,6 +225,61 @@ class LastUpdateDetailActivity : AppCompatActivity() {
         return true
     }
 
+    private fun setupRecyclerViews() {
+        // Set up Documents RecyclerView
+        documentsAdapter = DocumentsAdapter(documentsList)
+        rvDocuments.layoutManager = LinearLayoutManager(this)
+        rvDocuments.adapter = documentsAdapter
+
+        // Set up Images RecyclerView with grid layout
+        imagesAdapter = ImagesAdapter(imagesList, this)
+        rvImages.layoutManager = GridLayoutManager(this, 2)
+        rvImages.adapter = imagesAdapter
+    }
+
+    private fun setupExpandableSections() {
+        // Technical info section
+        technicalInfoHeader.setOnClickListener {
+            toggleSectionVisibility(technicalInfoContent, technicalInfoExpandIcon)
+        }
+
+        // Project info section
+        projectInfoHeader.setOnClickListener {
+            toggleSectionVisibility(projectInfoContent, projectInfoExpandIcon)
+        }
+    }
+
+    private fun toggleSectionVisibility(contentView: View, arrowIcon: ImageView) {
+        val isContentVisible = contentView.visibility == View.VISIBLE
+
+        // Create animation for arrow rotation
+        val rotationDegree = if (isContentVisible) 0f else 180f
+        val rotationAnim = ObjectAnimator.ofFloat(arrowIcon, "rotation", arrowIcon.rotation, rotationDegree)
+        rotationAnim.duration = 300
+        rotationAnim.interpolator = DecelerateInterpolator()
+        rotationAnim.start()
+
+        // Animate content visibility
+        if (isContentVisible) {
+            // Animate collapsing
+            contentView.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    contentView.visibility = View.GONE
+                    contentView.alpha = 1f
+                }.start()
+        } else {
+            // Animate expanding
+            contentView.alpha = 0f
+            contentView.visibility = View.VISIBLE
+            contentView.animate()
+                .alpha(1f)
+                .setDuration(300)
+                .start()
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -190,19 +297,6 @@ class LastUpdateDetailActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun setupRecyclerViews() {
-        // Set up Documents RecyclerView
-        documentsAdapter = DocumentsAdapter(documentsList)
-        rvDocuments.layoutManager = LinearLayoutManager(this)
-        rvDocuments.adapter = documentsAdapter
-
-        // Set up Images RecyclerView
-        imagesAdapter =
-            ImagesAdapter(imagesList, this)  // Pass activity context for permission checking
-        rvImages.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        rvImages.adapter = imagesAdapter
     }
 
     private fun loadSiteData() {
@@ -224,6 +318,9 @@ class LastUpdateDetailActivity : AppCompatActivity() {
                 val document = documents.documents[0]
                 val site = document.data
 
+                // Apply scale-in animation to main content
+                applyEntranceAnimations()
+
                 // Set basic site information (original)
                 tvSiteId.text = siteId
                 tvWitel.text = witel
@@ -236,32 +333,32 @@ class LastUpdateDetailActivity : AppCompatActivity() {
                 tvKoordinat.text = site?.get("koordinat")?.toString() ?: ""
 
                 // Set additional site information
-                tvIdLopOlt.text = site?.get("idLopOlt")?.toString() ?: ""
-                tvKodeSto.text = site?.get("kodeSto")?.toString() ?: ""
-                tvNamaSto.text = site?.get("namaSto")?.toString() ?: ""
-                tvPortMetro.text = site?.get("portMetro")?.toString() ?: ""
-                tvSfp.text = site?.get("sfp")?.toString() ?: ""
-                tvHostname.text = site?.get("hostname")?.toString() ?: ""
-                tvSizeOlt.text = site?.get("sizeOlt")?.toString() ?: ""
-                tvPlatform.text = site?.get("platform")?.toString() ?: ""
-                tvType.text = site?.get("type")?.toString() ?: ""
-                tvJmlModul.text = site?.get("jmlModul")?.toString() ?: ""
-                tvSiteProvider.text = site?.get("siteProvider")?.toString() ?: ""
-                tvKecamatanLokasi.text = site?.get("kecamatanLokasi")?.toString() ?: ""
-                tvKodeIhld.text = site?.get("kodeIhld")?.toString() ?: ""
-                tvLopDownlink.text = site?.get("lopDownlink")?.toString() ?: ""
-                tvKontrakPengadaan.text = site?.get("kontrakPengadaan")?.toString() ?: ""
-                tvToc.text = site?.get("toc")?.toString() ?: ""
-                tvStartProject.text = site?.get("startProject")?.toString() ?: ""
-                tvCatuanAc.text = site?.get("catuanAc")?.toString() ?: ""
-                tvKendala.text = site?.get("kendala")?.toString() ?: ""
-                tvTglPlanOa.text = site?.get("tglPlanOa")?.toString() ?: ""
-                tvWeekPlanOa.text = site?.get("weekPlanOa")?.toString() ?: ""
-                tvDurasiPekerjaan.text = site?.get("durasiPekerjaan")?.toString() ?: ""
-                tvOdp.text = site?.get("odp")?.toString() ?: ""
-                tvPort.text = site?.get("port")?.toString() ?: ""
-                tvSisaHariThdpPlanOa.text = site?.get("sisaHariThdpPlanOa")?.toString() ?: ""
-                tvSisaHariThdpToc.text = site?.get("sisaHariThdpToc")?.toString() ?: ""
+                tvIdLopOlt.text = site?.get("idLopOlt")?.toString() ?: "-"
+                tvKodeSto.text = site?.get("kodeSto")?.toString() ?: "-"
+                tvNamaSto.text = site?.get("namaSto")?.toString() ?: "-"
+                tvPortMetro.text = site?.get("portMetro")?.toString() ?: "-"
+                tvSfp.text = site?.get("sfp")?.toString() ?: "-"
+                tvHostname.text = site?.get("hostname")?.toString() ?: "-"
+                tvSizeOlt.text = site?.get("sizeOlt")?.toString() ?: "-"
+                tvPlatform.text = site?.get("platform")?.toString() ?: "-"
+                tvType.text = site?.get("type")?.toString() ?: "-"
+                tvJmlModul.text = site?.get("jmlModul")?.toString() ?: "-"
+                tvSiteProvider.text = site?.get("siteProvider")?.toString() ?: "-"
+                tvKecamatanLokasi.text = site?.get("kecamatanLokasi")?.toString() ?: "-"
+                tvKodeIhld.text = site?.get("kodeIhld")?.toString() ?: "-"
+                tvLopDownlink.text = site?.get("lopDownlink")?.toString() ?: "-"
+                tvKontrakPengadaan.text = site?.get("kontrakPengadaan")?.toString() ?: "-"
+                tvToc.text = site?.get("toc")?.toString() ?: "-"
+                tvStartProject.text = site?.get("startProject")?.toString() ?: "-"
+                tvCatuanAc.text = site?.get("catuanAc")?.toString() ?: "-"
+                tvKendala.text = site?.get("kendala")?.toString() ?: "-"
+                tvTglPlanOa.text = site?.get("tglPlanOa")?.toString() ?: "-"
+                tvWeekPlanOa.text = site?.get("weekPlanOa")?.toString() ?: "-"
+                tvDurasiPekerjaan.text = site?.get("durasiPekerjaan")?.toString() ?: "-"
+                tvOdp.text = site?.get("odp")?.toString() ?: "-"
+                tvPort.text = site?.get("port")?.toString() ?: "-"
+                tvSisaHariThdpPlanOa.text = site?.get("sisaHariThdpPlanOa")?.toString() ?: "-"
+                tvSisaHariThdpToc.text = site?.get("sisaHariThdpToc")?.toString() ?: "-"
 
                 // Load documents
                 loadDocuments()
@@ -272,6 +369,28 @@ class LastUpdateDetailActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 showToast("Error loading site: ${e.message}")
             }
+    }
+
+    private fun applyEntranceAnimations() {
+        // Stagger the entrance of the cards
+        val cards = listOf<View>(
+            findViewById(R.id.technicalInfoCard),
+            findViewById(R.id.projectInfoCard),
+            rvDocuments.parent.parent as View,
+            rvImages.parent.parent as View
+        )
+
+        cards.forEachIndexed { index, card ->
+            card.alpha = 0f
+            card.translationY = 100f
+            card.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay(300 + (index * 150).toLong())
+                .setDuration(500)
+                .setInterpolator(AnticipateOvershootInterpolator(1.0f))
+                .start()
+        }
     }
 
     private fun checkDocumentExists(docType: String, docName: String, pendingChecks: AtomicInteger) {
@@ -411,12 +530,29 @@ class LastUpdateDetailActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Hanya muat data jika belum dimuat atau setelah kembali dari activity lain
+        // Load data if not already loaded
         loadSiteData()
     }
 
+    override fun finish() {
+        super.finish()
+        // Apply exit animation
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+    }
+
+    private fun finishWithAnimation() {
+        finish()
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        // Apply exit animation
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+    }
+
     private fun showToast(message: String) {
-        android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     // Clear any pending callbacks to prevent crashes when activity is destroyed

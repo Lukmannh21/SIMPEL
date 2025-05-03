@@ -1,389 +1,977 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:background="#F5F5F5"
     tools:context=".LastUpdateDetailActivity">
 
-    <LinearLayout
+    <!-- App Bar with collapsing toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="180dp"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
-        <!-- Detail Site Info Panel -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
+            android:layout_height="match_parent"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginStart="16dp"
+            app:expandedTitleMarginBottom="28dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+            <!-- Gradient background for toolbar -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_toolbar_background" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                app:layout_collapseMode="parallax">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Basic Information"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="#000000"/>
-
-                <!-- Site ID -->
                 <TextView
                     android:id="@+id/tvSiteId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Site ID"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp" />
+                    android:text="ABC123"
+                    android:textColor="@color/black"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
 
-                <!-- Witel -->
                 <TextView
                     android:id="@+id/tvWitel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Witel"
-                    android:layout_marginBottom="4dp" />
+                    android:text="ACEH"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
-                <!-- Status -->
-                <TextView
-                    android:id="@+id/tvStatus"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Status"
-                    android:layout_marginBottom="4dp" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rounded_status_background"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp">
 
-                <!-- Last Issue -->
-                <TextView
-                    android:id="@+id/tvLastIssue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Last Issue"
-                    android:layout_marginBottom="4dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Status: "
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
 
-                <!-- Koordinat -->
-                <TextView
-                    android:id="@+id/tvKoordinat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Koordinat"
-                    android:layout_marginBottom="4dp" />
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DONE"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <!-- Detail Informasi Tambahan -->
-        <androidx.cardview.widget.CardView
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/back" />
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <LinearLayout
+            <!-- Location and Coordinate Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#DDDDDD"
+                app:strokeWidth="1dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Technical Information"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="#000000"/>
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-                <!-- ID Lop OLT -->
-                <TextView
-                    android:id="@+id/tvIdLopOlt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="ID Lop OLT"
-                    android:layout_marginBottom="4dp" />
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@android:drawable/ic_dialog_map"
+                        android:tint="@color/purple_500" />
 
-                <!-- Kode STO -->
-                <TextView
-                    android:id="@+id/tvKodeSto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Kode STO"
-                    android:layout_marginBottom="4dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="16dp">
 
-                <!-- Nama STO -->
-                <TextView
-                    android:id="@+id/tvNamaSto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Nama STO"
-                    android:layout_marginBottom="4dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Site Location"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="#000000" />
 
-                <!-- Port Metro -->
-                <TextView
-                    android:id="@+id/tvPortMetro"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Port Metro"
-                    android:layout_marginBottom="4dp" />
+                        <TextView
+                            android:id="@+id/tvKoordinat"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="0.0, 0.0"
+                            android:textSize="15sp"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- SFP -->
-                <TextView
-                    android:id="@+id/tvSfp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="SFP"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Hostname -->
-                <TextView
-                    android:id="@+id/tvHostname"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Hostname"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Size OLT -->
-                <TextView
-                    android:id="@+id/tvSizeOlt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Size OLT"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Platform -->
-                <TextView
-                    android:id="@+id/tvPlatform"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Platform"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Type -->
-                <TextView
-                    android:id="@+id/tvType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Type"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Jumlah Modul -->
-                <TextView
-                    android:id="@+id/tvJmlModul"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Jumlah Modul"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Site Provider -->
-                <TextView
-                    android:id="@+id/tvSiteProvider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Site Provider"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Kecamatan Lokasi -->
-                <TextView
-                    android:id="@+id/tvKecamatanLokasi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Kecamatan Lokasi"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Kode IHLD -->
-                <TextView
-                    android:id="@+id/tvKodeIhld"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Kode IHLD"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Lop Downlink -->
-                <TextView
-                    android:id="@+id/tvLopDownlink"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Lop Downlink"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Kontrak Pengadaan -->
-                <TextView
-                    android:id="@+id/tvKontrakPengadaan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Kontrak Pengadaan"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- TOC -->
-                <TextView
-                    android:id="@+id/tvToc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="TOC"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Start Project -->
-                <TextView
-                    android:id="@+id/tvStartProject"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Start Project"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Catuan AC -->
-                <TextView
-                    android:id="@+id/tvCatuanAc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Catuan AC"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Kendala -->
-                <TextView
-                    android:id="@+id/tvKendala"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Kendala"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Tanggal Plan OA -->
-                <TextView
-                    android:id="@+id/tvTglPlanOa"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tanggal Plan OA"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Week Plan OA -->
-                <TextView
-                    android:id="@+id/tvWeekPlanOa"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Week Plan OA"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Durasi Pekerjaan -->
-                <TextView
-                    android:id="@+id/tvDurasiPekerjaan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Durasi Pekerjaan"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- ODP -->
-                <TextView
-                    android:id="@+id/tvOdp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="ODP"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Port -->
-                <TextView
-                    android:id="@+id/tvPort"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Port"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Sisa Hari Terhadap Plan OA -->
-                <TextView
-                    android:id="@+id/tvSisaHariThdpPlanOa"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sisa Hari Terhadap Plan OA"
-                    android:layout_marginBottom="4dp" />
-
-                <!-- Sisa Hari Terhadap TOC -->
-                <TextView
-                    android:id="@+id/tvSisaHariThdpToc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sisa Hari Terhadap TOC"
-                    android:layout_marginBottom="4dp" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Documents Section -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
-
-            <LinearLayout
+            <!-- Recent Issue Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#FFCDD2"
+                app:strokeWidth="1dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Documents"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="#000000"/>
+                    android:orientation="horizontal"
+                    android:padding="16dp">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvDocuments"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@android:drawable/ic_dialog_alert"
+                        android:tint="#F44336" />
 
-        <!-- Images Section -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="16dp">
 
-            <LinearLayout
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Recent Issue"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="#F44336" />
+
+                        <TextView
+                            android:id="@+id/tvLastIssue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="No issues reported"
+                            android:textSize="15sp"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Technical Information - Expandable -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/technicalInfoCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#DDDDDD"
+                app:strokeWidth="1dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Photo Evidence"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="#000000"/>
+                    android:orientation="vertical">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvImages"
+                    <!-- Header with expand/collapse button -->
+                    <LinearLayout
+                        android:id="@+id/technicalInfoHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:background="?attr/selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Technical Information"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:textColor="#000000" />
+
+                        <ImageView
+                            android:id="@+id/technicalInfoExpandIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/arrow_down_float"
+                            android:rotation="0" />
+                    </LinearLayout>
+
+                    <!-- Content - Initially hidden -->
+                    <LinearLayout
+                        android:id="@+id/technicalInfoContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="gone">
+
+                        <!-- Group 1: OLT Information -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="OLT Information"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/purple_500"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- ID Lop OLT -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="ID Lop OLT:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvIdLopOlt"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Size OLT -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Size OLT:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvSizeOlt"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Platform -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Platform:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvPlatform"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Type -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Type:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvType"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Jumlah Modul -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Jumlah Modul:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvJmlModul"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Hostname -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Hostname:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvHostname"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Group 2: STO Information -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="STO Information"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/purple_500"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Kode STO -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Kode STO:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvKodeSto"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Nama STO -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Nama STO:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvNamaSto"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Kode IHLD -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Kode IHLD:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvKodeIhld"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Group 3: Connection Information -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Connection Information"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/purple_500"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Port Metro -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Port Metro:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvPortMetro"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- SFP -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="SFP:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvSfp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Port -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Port:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvPort"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Lop Downlink -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Lop Downlink:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvLopDownlink"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- ODP -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="ODP:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvOdp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Group 4: Location Information -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Location Information"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="@color/purple_500"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Kecamatan Lokasi -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Kecamatan:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvKecamatanLokasi"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Site Provider -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Site Provider:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvSiteProvider"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Catuan AC -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Catuan AC:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvCatuanAc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Project Information - Expandable -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/projectInfoCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#DDDDDD"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:text="Back"
-            android:textSize="20sp"
-            android:textAllCaps="false"
-            android:background="@drawable/btn_red"
-            app:layout_constraintTop_toBottomOf="@id/btnAddData"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    </LinearLayout>
-</ScrollView>
+                    <!-- Header with expand/collapse button -->
+                    <LinearLayout
+                        android:id="@+id/projectInfoHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:background="?attr/selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Project Information"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:textColor="#000000" />
+
+                        <ImageView
+                            android:id="@+id/projectInfoExpandIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/arrow_down_float"
+                            android:rotation="0" />
+                    </LinearLayout>
+
+                    <!-- Content - Initially hidden -->
+                    <LinearLayout
+                        android:id="@+id/projectInfoContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="gone">
+
+                        <!-- Kontrak Pengadaan -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Kontrak Pengadaan:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvKontrakPengadaan"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- TOC -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="TOC:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvToc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Start Project -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Start Project:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvStartProject"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Tanggal Plan OA -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Tanggal Plan OA:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvTglPlanOa"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Week Plan OA -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Week Plan OA:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvWeekPlanOa"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Durasi Pekerjaan -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Durasi Pekerjaan:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvDurasiPekerjaan"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Sisa Hari Terhadap Plan OA -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Sisa Hari Plan OA:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvSisaHariThdpPlanOa"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Sisa Hari Terhadap TOC -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Sisa Hari TOC:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvSisaHariThdpToc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+
+                        <!-- Kendala -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:text="Kendala:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvKendala"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Documents Section - More attractive -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#D1C4E9"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:background="#EDE7F6">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/ic_menu_agenda"
+                            android:tint="@color/purple_500" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="Documents"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:textColor="@color/purple_700" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvDocuments"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:clipToPadding="false" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Images Section - Grid layout -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#BBDEFB"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:background="#E3F2FD">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/ic_menu_gallery"
+                            android:tint="#1976D2" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="Photo Evidence"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:textColor="#1565C0" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvImages"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:clipToPadding="false" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
