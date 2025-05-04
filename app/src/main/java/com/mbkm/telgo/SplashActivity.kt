@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -17,10 +18,14 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var logoImageView: ImageView
     private lateinit var watermarkTextView: TextView
     private lateinit var pulseView: View
+    private val TAG = "SplashActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+        // Initialize notification system - added for background notifications
+        setupNotificationsSystem()
 
         auth = FirebaseAuth.getInstance()
 
@@ -44,12 +49,37 @@ class SplashActivity : AppCompatActivity() {
         }, 2500) // Extended to 2.5 seconds to enjoy the animations
     }
 
+    private fun setupNotificationsSystem() {
+        try {
+            // Initialize notification channels and basic setup
+            NotificationManager.initialize(this)
+
+            // Set up reliable background operation without using foreground service
+            NotificationManager.setupNotificationsWithoutForegroundService(this)
+
+            Log.d(TAG, "Notification system initialized successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up notifications: ${e.message}", e)
+        }
+    }
+
     private fun checkUserLoggedIn() {
         // Check if user is signed in
         val currentUser = auth.currentUser
         if (currentUser != null) {
             // User is signed in, go to ServicesActivity
-            startActivity(Intent(this, ServicesActivity::class.java))
+            val intent = Intent(this, ServicesActivity::class.java)
+            startActivity(intent)
+
+            // Request battery optimization exemption if the user is logged in
+            if (NotificationManager.shouldRequestBatteryOptimization(this)) {
+                try {
+                    NotificationManager.requestBatteryOptimizationExemption(this)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error requesting battery optimization: ${e.message}", e)
+                    // Continue without stopping the flow if this fails
+                }
+            }
         } else {
             // No user is signed in, go to LoginActivity
             startActivity(Intent(this, LoginActivity::class.java))

@@ -22,10 +22,12 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
     private lateinit var tvEmail: TextView
     private lateinit var tvPhone: TextView
     private lateinit var btnEditProfile: Button
+    private lateinit var btnNotificationSettings: Button
     private lateinit var btnLogout: Button
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var cardPersonalInfo: CardView
     private lateinit var cardAccountDetails: CardView
+    private lateinit var cardNotificationSettings: CardView
     private lateinit var ivProfileImage: ImageView
 
     private lateinit var auth: FirebaseAuth
@@ -51,10 +53,12 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
         tvEmail = findViewById(R.id.tvEmail)
         tvPhone = findViewById(R.id.tvPhone)
         btnEditProfile = findViewById(R.id.btnEditProfile)
+        btnNotificationSettings = findViewById(R.id.btnNotificationSettings)
         btnLogout = findViewById(R.id.btnLogout)
         bottomNavigationView = findViewById(R.id.bottomNavigation)
         cardPersonalInfo = findViewById(R.id.cardPersonalInfo)
         cardAccountDetails = findViewById(R.id.cardAccountDetails)
+        cardNotificationSettings = findViewById(R.id.cardNotificationSettings)
         ivProfileImage = findViewById(R.id.ivProfileImage)
 
         // Setup bottom navigation
@@ -64,6 +68,12 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
         // Setup button click listeners
         btnEditProfile.setOnClickListener {
             val intent = Intent(this, EditProfileActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
+
+        btnNotificationSettings.setOnClickListener {
+            val intent = Intent(this, NotificationSettingsActivity::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
@@ -96,6 +106,15 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
         cardAccountDetails.setOnClickListener {
             it.animate().scaleX(0.96f).scaleY(0.96f).setDuration(100).withEndAction {
                 it.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
+            }.start()
+        }
+
+        cardNotificationSettings.setOnClickListener {
+            it.animate().scaleX(0.96f).scaleY(0.96f).setDuration(100).withEndAction {
+                it.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
+                val intent = Intent(this, NotificationSettingsActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             }.start()
         }
     }

@@ -1,12 +1,17 @@
 package com.mbkm.telgo
 
+import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.ActivityOptions
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.transition.Explode
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.Window
@@ -15,18 +20,25 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
@@ -62,11 +74,57 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
     private lateinit var eventsEmptyStateText: TextView
     private lateinit var eventsFilterChips: ChipGroup
 
+    // Notification-related UI components
+    private lateinit var btnNotifications: FloatingActionButton
+    private lateinit var notificationBadge: BadgeDrawable
+    private lateinit var inAppNotification: View
+    private lateinit var tvNotificationTitle: TextView
+    private lateinit var tvNotificationMessage: TextView
+    private lateinit var tvNotificationTimestamp: TextView
+    private lateinit var btnCloseNotification: ImageView
+    private lateinit var notificationsDashboardContainer: CoordinatorLayout
+    private lateinit var notificationsDashboard: ConstraintLayout
+    private lateinit var notificationsDialogScrim: View
+    private lateinit var btnCloseNotificationsDashboard: ImageButton
+    private lateinit var notificationsRecyclerView: RecyclerView
+    private lateinit var notificationsEmptyState: LinearLayout
+    private lateinit var notificationsFilterChips: ChipGroup
+
+    private lateinit var btnClearAllNotifications: Button
+
+
     // Adapters
     private val previewEventsAdapter = EventsAdapter()
     private val allEventsAdapter = EventsAdapter()
+    private val notificationsAdapter by lazy {
+        NotificationsAdapter(this) { notification ->
+            // Handle notification click - could open detail view or mark as read
+            markNotificationAsRead(notification.id)
+        }
+    }
+
+    // Request code for notification permission
+    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 100
+
+    // Permission launcher for Android 13+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission granted, initialize notifications
+            NotificationManager.checkNotificationsNow(this)
+        } else {
+            // Permission denied, inform user
+            Toast.makeText(
+                this,
+                "Notification permission denied. You won't receive event reminders.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
     private var isBottomSheetVisible = false
+    private var isNotificationsDashboardVisible = false
     private val firestore = FirebaseFirestore.getInstance()
 
     // Store event dates for calendar decoration
@@ -123,11 +181,20 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         bottomNavigationView.selectedItemId = R.id.navigation_services
 
+        // In initializeNotificationsUI() add:
+        btnClearAllNotifications = findViewById(R.id.btnClearAllNotifications)
+        btnClearAllNotifications.setOnClickListener {
+            clearAllNotifications()
+        }
+
         // Set up RecyclerViews
         setupRecyclerViews()
 
         // Add button listeners
         setupButtonListeners()
+
+        // Initialize notification UI
+        initializeNotificationsUI()
 
         // Setup calendar with decorators
         setupCalendar()
@@ -137,6 +204,548 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
 
         // Load preview events
         loadPreviewEvents()
+
+        // Initialize notification system
+        NotificationManager.initialize(this)
+
+        // Check and request notification permissions
+        checkAndRequestNotificationPermission()
+
+        // Load notifications count for badge
+        loadNotificationsCount()
+
+        // Handle if app was opened from notification
+        handleNotificationIntent(intent)
+    }
+
+    private fun initializeNotificationsUI() {
+        // Initialize notification button and badge
+        btnNotifications = findViewById(R.id.btnNotifications)
+        notificationBadge = BadgeDrawable.create(this)
+
+        // Initialize in-app notification card
+        inAppNotification = findViewById(R.id.inAppNotification)
+        tvNotificationTitle = findViewById(R.id.notificationTitle)
+        tvNotificationMessage = findViewById(R.id.notificationMessage)
+        tvNotificationTimestamp = findViewById(R.id.notificationTimestamp)
+        btnCloseNotification = findViewById(R.id.btnCloseNotification)
+
+        // Initialize notifications dashboard
+        notificationsDashboardContainer = findViewById(R.id.notificationsDashboardContainer)
+        notificationsDashboard = findViewById(R.id.notificationsDashboard)
+        notificationsDialogScrim = findViewById(R.id.notificationsDialogScrim)
+        btnCloseNotificationsDashboard = findViewById(R.id.btnCloseNotificationsDashboard)
+        notificationsRecyclerView = findViewById(R.id.notificationsRecyclerView)
+        notificationsEmptyState = findViewById(R.id.notificationsEmptyState)
+        notificationsFilterChips = findViewById(R.id.notificationsFilterChips)
+
+        // Configure notifications recycler view
+        notificationsRecyclerView.layoutManager = LinearLayoutManager(this)
+        notificationsRecyclerView.adapter = notificationsAdapter
+
+        // Set up notification button click
+        btnNotifications.setOnClickListener {
+            showNotificationsDashboard()
+        }
+
+        // Set up close button for in-app notification
+        btnCloseNotification.setOnClickListener {
+            hideInAppNotification()
+        }
+
+        // Set up close button for notifications dashboard
+        btnCloseNotificationsDashboard.setOnClickListener {
+            hideNotificationsDashboard()
+        }
+
+        // Set up scrim click for notifications dashboard
+        notificationsDialogScrim.setOnClickListener {
+            hideNotificationsDashboard()
+        }
+
+        // Setup filter chips
+        notificationsFilterChips.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isNotEmpty()) {
+                filterNotifications(checkedIds[0])
+            }
+        }
+    }
+
+    // Check and request notification permissions
+    private fun checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted
+                    NotificationManager.checkNotificationsNow(this)
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    // Show an explanation to the user
+                    showNotificationPermissionRationale()
+                }
+                else -> {
+                    // No explanation needed, request the permission
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            // For Android 12 and below, notification permissions are granted at install time
+            NotificationManager.checkNotificationsNow(this)
+        }
+    }
+
+    // Show rationale for notification permission
+    private fun showNotificationPermissionRationale() {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Notification Permission Required")
+            .setMessage("This app needs notification permission to send you reminders about upcoming TOC and Plan OA events.")
+            .setPositiveButton("Grant") { _, _ ->
+                // Request the permission
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+            .setNegativeButton("Deny") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(
+                    this,
+                    "Notification permission denied. You won't receive event reminders.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            .show()
+    }
+
+    private fun handleNotificationIntent(intent: Intent?) {
+        // Check if this activity was launched from a notification
+        intent?.let {
+            if (it.getBooleanExtra("SHOW_EVENTS", false)) {
+                val eventType = it.getStringExtra("EVENT_TYPE") ?: ""
+                val siteId = it.getStringExtra("SITE_ID") ?: ""
+
+                // Show events based on intent data
+                if (eventType.isNotEmpty()) {
+                    showEventsBottomSheet()
+
+                    // Select the appropriate filter chip
+                    when (eventType) {
+                        NotificationHelper.NOTIFICATION_TYPE_TOC -> {
+                            eventsFilterChips.check(R.id.chipTocEvents)
+                        }
+                        NotificationHelper.NOTIFICATION_TYPE_PLAN_OA -> {
+                            eventsFilterChips.check(R.id.chipPlanOaEvents)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadNotificationsCount() {
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+
+        firestore.collection("notifications")
+            .whereEqualTo("userId", currentUser.uid)
+            .whereEqualTo("isRead", false)
+            .get()
+            .addOnSuccessListener { documents ->
+                val unreadCount = documents.size()
+
+                if (unreadCount > 0) {
+                    try {
+                        // Set notification icon to active version
+                        btnNotifications.setImageResource(R.drawable.ic_notification)
+
+                        // Change button color to make it more noticeable
+                        btnNotifications.backgroundTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(this, R.color.red_telkomsel)
+                        )
+
+                        // Add a subtle animation to draw attention
+                        btnNotifications.animate()
+                            .scaleX(1.1f)
+                            .scaleY(1.1f)
+                            .setDuration(200)
+                            .withEndAction {
+                                btnNotifications.animate()
+                                    .scaleX(1.0f)
+                                    .scaleY(1.0f)
+                                    .setDuration(200)
+                                    .start()
+                            }
+                            .start()
+
+                        // Show the latest notification in-app
+                        if (documents.documents.isNotEmpty()) {
+                            val latestNotification = documents.documents[0]
+                            showInAppNotification(
+                                latestNotification.getString("title") ?: "",
+                                latestNotification.getString("message") ?: "",
+                                latestNotification.getLong("timestamp") ?: System.currentTimeMillis()
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Log.e("Badge", "Error showing badge: ${e.message}")
+                        // Fallback - just change the icon
+                        btnNotifications.setImageResource(R.drawable.ic_notifications)
+                    }
+                } else {
+                    // No unread notifications - use normal icon
+                    btnNotifications.setImageResource(R.drawable.ic_notifications)
+                    btnNotifications.backgroundTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(this, R.color.red_telkomsel_dark)
+                    )
+                }
+            }
+    }
+
+    private fun showInAppNotification(title: String, message: String, timestamp: Long) {
+        // Set notification content
+        tvNotificationTitle.text = title
+        tvNotificationMessage.text = message
+
+        // Format timestamp
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        tvNotificationTimestamp.text = dateFormat.format(Date(timestamp))
+
+        // Show notification with animation
+        inAppNotification.alpha = 0f
+        inAppNotification.visibility = View.VISIBLE
+        inAppNotification.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(300)
+            .setInterpolator(DecelerateInterpolator())
+            .start()
+
+        // Auto-hide after 5 seconds
+        inAppNotification.postDelayed({
+            if (inAppNotification.visibility == View.VISIBLE) {
+                hideInAppNotification()
+            }
+        }, 5000)
+    }
+
+    private fun hideInAppNotification() {
+        inAppNotification.animate()
+            .alpha(0f)
+            .translationY(-100f)
+            .setDuration(200)
+            .withEndAction {
+                inAppNotification.visibility = View.GONE
+            }
+            .start()
+    }
+
+    private fun showNotificationsDashboard() {
+        if (isNotificationsDashboardVisible) return
+
+        // Show dashboard container
+        notificationsDashboardContainer.visibility = View.VISIBLE
+
+        // Configure dashboard to slide up
+        val sheetAnimation = ObjectAnimator.ofFloat(notificationsDashboard, "translationY",
+            notificationsDashboard.height.toFloat(), 0f)
+        sheetAnimation.duration = 300
+        sheetAnimation.interpolator = DecelerateInterpolator()
+
+        // Configure scrim to fade in
+        val scrimAnimation = ObjectAnimator.ofFloat(notificationsDialogScrim, "alpha", 0f, 1f)
+        scrimAnimation.duration = 300
+
+        // Play animations together
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(sheetAnimation, scrimAnimation)
+        animatorSet.start()
+
+        isNotificationsDashboardVisible = true
+
+        // Load notifications
+        loadNotifications()
+    }
+
+    private fun hideNotificationsDashboard() {
+        if (!isNotificationsDashboardVisible) return
+
+        // Configure dashboard to slide down
+        val sheetAnimation = ObjectAnimator.ofFloat(notificationsDashboard, "translationY",
+            0f, notificationsDashboard.height.toFloat())
+        sheetAnimation.duration = 250
+
+        // Configure scrim to fade out
+        val scrimAnimation = ObjectAnimator.ofFloat(notificationsDialogScrim, "alpha", 1f, 0f)
+        scrimAnimation.duration = 250
+
+        // Play animations together
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(sheetAnimation, scrimAnimation)
+        animatorSet.start()
+
+        // Hide container after animation completes
+        sheetAnimation.addUpdateListener(object : ValueAnimator.AnimatorUpdateListener {
+            override fun onAnimationUpdate(animation: ValueAnimator) {
+                if (animation.animatedFraction >= 0.9) {
+                    notificationsDashboardContainer.visibility = View.GONE
+                    isNotificationsDashboardVisible = false
+                }
+            }
+        })
+    }
+
+    private fun loadNotifications() {
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+
+        firestore.collection("notifications")
+            .whereEqualTo("userId", currentUser.uid)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                val notificationsList = documents.mapNotNull { doc ->
+                    val id = doc.id
+                    val title = doc.getString("title") ?: ""
+                    val message = doc.getString("message") ?: ""
+                    val eventType = doc.getString("eventType") ?: ""
+                    val siteId = doc.getString("siteId") ?: ""
+                    val witel = doc.getString("witel") ?: ""
+                    val eventDate = doc.getString("eventDate") ?: ""
+                    val timestamp = doc.getLong("timestamp") ?: 0L
+                    val isRead = doc.getBoolean("isRead") ?: false
+                    val daysBefore = doc.getLong("daysBefore")?.toInt()
+
+                    NotificationModel(
+                        id = id,
+                        title = title,
+                        message = message,
+                        eventType = eventType,
+                        siteId = siteId,
+                        witel = witel,
+                        eventDate = eventDate,
+                        timestamp = timestamp,
+                        isRead = isRead,
+                        daysBefore = daysBefore
+                    )
+                }
+
+                if (notificationsList.isEmpty()) {
+                    notificationsEmptyState.visibility = View.VISIBLE
+                    notificationsRecyclerView.visibility = View.GONE
+                } else {
+                    notificationsEmptyState.visibility = View.GONE
+                    notificationsRecyclerView.visibility = View.VISIBLE
+                    notificationsAdapter.setNotifications(notificationsList)
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error loading notifications: ${e.message}", Toast.LENGTH_SHORT).show()
+                notificationsEmptyState.visibility = View.VISIBLE
+                notificationsRecyclerView.visibility = View.GONE
+            }
+    }
+
+    private fun filterNotifications(chipId: Int) {
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+
+        val query = when (chipId) {
+            R.id.chipAllNotifications -> {
+                firestore.collection("notifications")
+                    .whereEqualTo("userId", currentUser.uid)
+            }
+            R.id.chipTocNotifications -> {
+                firestore.collection("notifications")
+                    .whereEqualTo("userId", currentUser.uid)
+                    .whereEqualTo("eventType", NotificationHelper.NOTIFICATION_TYPE_TOC)
+            }
+            R.id.chipPlanOaNotifications -> {
+                firestore.collection("notifications")
+                    .whereEqualTo("userId", currentUser.uid)
+                    .whereEqualTo("eventType", NotificationHelper.NOTIFICATION_TYPE_PLAN_OA)
+            }
+            R.id.chipTodayNotifications -> {
+                // Get today's start and end timestamps
+                val cal = Calendar.getInstance()
+                cal.set(Calendar.HOUR_OF_DAY, 0)
+                cal.set(Calendar.MINUTE, 0)
+                cal.set(Calendar.SECOND, 0)
+                val startOfDay = cal.timeInMillis
+
+                cal.set(Calendar.HOUR_OF_DAY, 23)
+                cal.set(Calendar.MINUTE, 59)
+                cal.set(Calendar.SECOND, 59)
+                val endOfDay = cal.timeInMillis
+
+                firestore.collection("notifications")
+                    .whereEqualTo("userId", currentUser.uid)
+                    .whereGreaterThanOrEqualTo("timestamp", startOfDay)
+                    .whereLessThanOrEqualTo("timestamp", endOfDay)
+            }
+            else -> {
+                firestore.collection("notifications")
+                    .whereEqualTo("userId", currentUser.uid)
+            }
+        }
+
+        query.orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+                val notificationsList = documents.mapNotNull { doc ->
+                    val id = doc.id
+                    val title = doc.getString("title") ?: ""
+                    val message = doc.getString("message") ?: ""
+                    val eventType = doc.getString("eventType") ?: ""
+                    val siteId = doc.getString("siteId") ?: ""
+                    val witel = doc.getString("witel") ?: ""
+                    val eventDate = doc.getString("eventDate") ?: ""
+                    val timestamp = doc.getLong("timestamp") ?: 0L
+                    val isRead = doc.getBoolean("isRead") ?: false
+                    val daysBefore = doc.getLong("daysBefore")?.toInt()
+
+                    NotificationModel(
+                        id = id,
+                        title = title,
+                        message = message,
+                        eventType = eventType,
+                        siteId = siteId,
+                        witel = witel,
+                        eventDate = eventDate,
+                        timestamp = timestamp,
+                        isRead = isRead,
+                        daysBefore = daysBefore
+                    )
+                }
+
+                if (notificationsList.isEmpty()) {
+                    notificationsEmptyState.visibility = View.VISIBLE
+                    notificationsRecyclerView.visibility = View.GONE
+                } else {
+                    notificationsEmptyState.visibility = View.GONE
+                    notificationsRecyclerView.visibility = View.VISIBLE
+                    notificationsAdapter.setNotifications(notificationsList)
+                }
+            }
+    }
+
+    // Replace the clearAllNotifications method with this improved version:
+
+    // Updated clearAllNotifications method
+
+    private fun clearAllNotifications() {
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+
+        // Show confirmation dialog
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Clear All Notifications")
+            .setMessage("Are you sure you want to remove all notifications?")
+            .setPositiveButton("Clear All") { _, _ ->
+                // Show loading state
+                val loadingDialog = androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setView(R.layout.dialog_loading)
+                    .setCancelable(false)
+                    .create()
+                loadingDialog.show()
+
+                // First, permanently delete all notifications
+                firestore.collection("notifications")
+                    .whereEqualTo("userId", currentUser.uid)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        val batch = firestore.batch()
+
+                        for (doc in documents) {
+                            batch.delete(doc.reference)
+                        }
+
+                        // Commit the batch deletion
+                        batch.commit()
+                            .addOnSuccessListener {
+                                // Record the clear operation timestamp
+                                val clearTimestamp = System.currentTimeMillis()
+
+                                firestore.collection("user_preferences")
+                                    .document(currentUser.uid)
+                                    .set(
+                                        mapOf(
+                                            "last_notification_clear_time" to clearTimestamp,
+                                            "notifications_cleared" to true
+                                        ),
+                                        com.google.firebase.firestore.SetOptions.merge()
+                                    )
+                                    .addOnSuccessListener {
+                                        Log.d("NotificationClear", "Recorded clear operation at $clearTimestamp")
+
+                                        // Also clear any cached notification data
+                                        NotificationManager.clearNotificationData(this)
+
+                                        // Clear the adapter
+                                        notificationsAdapter.setNotifications(emptyList())
+
+                                        // Show empty state
+                                        notificationsEmptyState.visibility = View.VISIBLE
+                                        notificationsRecyclerView.visibility = View.GONE
+
+                                        // Refresh badge count
+                                        loadNotificationsCount()
+
+                                        // Dismiss loading dialog
+                                        loadingDialog.dismiss()
+
+                                        // Show success message
+                                        Toast.makeText(this, "All notifications cleared", Toast.LENGTH_SHORT).show()
+
+                                        // Hide notification dashboard
+                                        hideNotificationsDashboard()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("NotificationClear", "Failed to record clear time", e)
+                                        loadingDialog.dismiss()
+                                        Toast.makeText(this, "Notifications cleared", Toast.LENGTH_SHORT).show()
+                                        hideNotificationsDashboard()
+                                    }
+                            }
+                            .addOnFailureListener { e ->
+                                loadingDialog.dismiss()
+                                Toast.makeText(this, "Error clearing notifications: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                    .addOnFailureListener { e ->
+                        loadingDialog.dismiss()
+                        Toast.makeText(this, "Error clearing notifications: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+
+
+    private fun markNotificationAsRead(notificationId: String) {
+        firestore.collection("notifications").document(notificationId)
+            .update("isRead", true)
+            .addOnSuccessListener {
+                Log.d("Notification", "Successfully marked notification as read")
+
+                // Remove notification from adapter
+                val currentList = notificationsAdapter.getNotifications()
+                val updatedList = currentList.filterNot { it.id == notificationId }
+                notificationsAdapter.setNotifications(updatedList)
+
+                // Refresh notifications count
+                loadNotificationsCount()
+
+                // Show empty state if no notifications left
+                if (updatedList.isEmpty()) {
+                    notificationsEmptyState.visibility = View.VISIBLE
+                    notificationsRecyclerView.visibility = View.GONE
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Notification", "Failed to mark notification as read: ${e.message}")
+                Toast.makeText(this, "Failed to remove notification", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun setupButtonListeners() {
@@ -239,6 +848,12 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         // Start activity with transition animation
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         return true
+    }
+
+    // Override onNewIntent to handle notifications when app is already open
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleNotificationIntent(intent)
     }
 
     private fun loadEventDatesForCalendar() {
