@@ -99,9 +99,9 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipTocNotifications"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TOC"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:text=""
                     app:chipBackgroundColor="@color/chip_background_selector"
                     app:chipStrokeColor="@color/chip_stroke_selector"
                     app:chipStrokeWidth="1dp"
@@ -109,9 +109,9 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipPlanOaNotifications"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Plan OA"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:text=""
                     app:chipBackgroundColor="@color/chip_background_selector"
                     app:chipStrokeColor="@color/chip_stroke_selector"
                     app:chipStrokeWidth="1dp"
