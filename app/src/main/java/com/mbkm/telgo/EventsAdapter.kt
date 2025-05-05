@@ -13,11 +13,30 @@ import androidx.recyclerview.widget.RecyclerView
 class EventsAdapter : RecyclerView.Adapter<EventsAdapter.EventViewHolder>() {
 
     private val events = mutableListOf<EventModel>()
+    private val allEvents = mutableListOf<EventModel>() // Keep a copy of all events for filtering
+
     private var lastPosition = -1
 
     fun setEvents(newEvents: List<EventModel>) {
         events.clear()
         events.addAll(newEvents.sortedBy { it.date }) // Sort by date
+        allEvents.clear()
+        allEvents.addAll(newEvents.sortedBy { it.date })
+        notifyDataSetChanged()
+    }
+
+    fun filter(query: String) {
+        val filteredEvents = if (query.isEmpty()) {
+            allEvents // Show all events if query is empty
+        } else {
+            allEvents.filter {
+                it.name.contains(query, ignoreCase = true) || // Filter by event name
+                        it.siteId.contains(query, ignoreCase = true) || // Filter by site ID
+                        it.witel.contains(query, ignoreCase = true) // Filter by witel
+            }
+        }
+        events.clear()
+        events.addAll(filteredEvents)
         notifyDataSetChanged()
     }
 

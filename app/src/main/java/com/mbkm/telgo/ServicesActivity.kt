@@ -73,6 +73,8 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
     private lateinit var eventsEmptyState: LinearLayout
     private lateinit var eventsEmptyStateText: TextView
     private lateinit var eventsFilterChips: ChipGroup
+    private lateinit var eventsSearchView: androidx.appcompat.widget.SearchView
+
 
     // Notification-related UI components
     private lateinit var btnNotifications: FloatingActionButton
@@ -171,6 +173,24 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         eventsEmptyState = findViewById(R.id.eventsEmptyState)
         eventsEmptyStateText = findViewById(R.id.eventsEmptyStateText)
         eventsFilterChips = findViewById(R.id.eventsFilterChips)
+
+
+        // Initialize SearchView
+        eventsSearchView = findViewById(R.id.eventsSearchView)
+
+        // Setup SearchView listener
+        eventsSearchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { allEventsAdapter.filter(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { allEventsAdapter.filter(it) }
+                return true
+            }
+        })
+
 
         // Apply animation to cards
         val cardView = findViewById<View>(R.id.cardView)
