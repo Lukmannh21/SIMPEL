@@ -24,7 +24,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Initialize notification system - added for background notifications
+        // Initialize notification system early - added for background notifications
         setupNotificationsSystem()
 
         auth = FirebaseAuth.getInstance()
@@ -51,13 +51,16 @@ class SplashActivity : AppCompatActivity() {
 
     private fun setupNotificationsSystem() {
         try {
-            // Initialize notification channels and basic setup
+            // 1. Initialize notification channels and basic setup
             NotificationManager.initialize(this)
 
-            // Set up reliable background operation without using foreground service
-            NotificationManager.setupNotificationsWithoutForegroundService(this)
+            // 2. Set up aggressive background notification checks
+            NotificationManager.setupAggressiveBackgroundChecks(this)
 
-            Log.d(TAG, "Notification system initialized successfully")
+            // 3. Trigger an immediate check to ensure notifications are working
+            NotificationManager.checkNotificationsNow(this)
+
+            Log.d(TAG, "Notification system initialized successfully with aggressive scheduling")
         } catch (e: Exception) {
             Log.e(TAG, "Error setting up notifications: ${e.message}", e)
         }

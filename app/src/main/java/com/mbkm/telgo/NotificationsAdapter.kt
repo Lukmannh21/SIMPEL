@@ -1,6 +1,7 @@
 package com.mbkm.telgo
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +25,23 @@ class NotificationsAdapter(
 
     fun setNotifications(newNotifications: List<NotificationModel>) {
         notifications.clear()
-        notifications.addAll(newNotifications.sortedByDescending { it.timestamp })
+
+        // Filter out invalid notifications
+        val validNotifications = newNotifications.filter { notification ->
+            val isValid = !notification.title.isNullOrBlank() &&
+                    !notification.message.isNullOrBlank() &&
+                    !notification.siteId.isNullOrBlank() &&
+                    !notification.eventType.isNullOrBlank()
+
+            if (!isValid) {
+                Log.d("NotificationsAdapter", "Filtering out invalid notification: ${notification.id}")
+            }
+
+            isValid
+        }
+
+        // Sort by timestamp (newest first) and add to our list
+        notifications.addAll(validNotifications.sortedByDescending { it.timestamp })
         lastPosition = -1
         notifyDataSetChanged()
     }
@@ -56,8 +73,6 @@ class NotificationsAdapter(
         }
     }
 
-    // Add this method to your NotificationsAdapter class:
-
     fun getNotifications(): List<NotificationModel> {
         return notifications.toList()
     }
@@ -73,9 +88,15 @@ class NotificationsAdapter(
         private val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
 
         fun bind(notification: NotificationModel) {
-            tvNotificationTitle.text = notification.title
-            tvNotificationMessage.text = notification.message
-            tvSiteId.text = "Site ID: ${notification.siteId} | Witel: ${notification.witel}"
+            // Set defaults for null values (should never happen with our filter, but just in case)
+            val title = notification.title ?: "Event Notification"
+            val message = notification.message ?: "You have an upcoming event"
+            val siteId = notification.siteId ?: "Unknown"
+            val witel = notification.witel ?: "Unknown"
+
+            tvNotificationTitle.text = title
+            tvNotificationMessage.text = message
+            tvSiteId.text = "Site ID: $siteId | Witel: $witel"
 
             // Format timestamp
             val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())

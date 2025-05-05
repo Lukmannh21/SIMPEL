@@ -13,6 +13,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import kotlin.random.Random
 
@@ -29,11 +30,12 @@ class NotificationWorker(
     // Track when this worker last ran to prevent too frequent execution
     companion object {
         private var lastRunTimestamp = 0L
-        private const val MIN_RUN_INTERVAL = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
+        private const val MIN_RUN_INTERVAL = 30 * 60 * 1000 // 30 minutes in milliseconds (reduced from 2 hours)
     }
 
     // Method for direct calling outside WorkManager (from AlarmManager, etc.)
     fun checkNotificationsDirectly() {
+        Log.d(TAG, "Starting direct notification check at ${Date()}")
         // Use a wake lock to ensure the operation completes even if device is sleeping
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = powerManager.newWakeLock(
@@ -47,6 +49,8 @@ class NotificationWorker(
             runBlocking {
                 doWork()
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during direct notification check: ${e.message}", e)
         } finally {
             // Always release the wake lock
             if (wakeLock.isHeld) {
@@ -60,14 +64,14 @@ class NotificationWorker(
             // Check if this worker has run recently
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastRunTimestamp < MIN_RUN_INTERVAL) {
-                Log.d(TAG, "Skipping notification check - ran recently")
+                Log.d(TAG, "Skipping notification check - ran recently (${(currentTime - lastRunTimestamp) / 1000 / 60} minutes ago)")
                 return Result.success()
             }
 
             // Update last run timestamp
             lastRunTimestamp = currentTime
 
-            Log.d(TAG, "Starting notification check work")
+            Log.d(TAG, "Starting notification check work at ${Date()}")
 
             val currentUser = auth.currentUser
             if (currentUser == null) {
@@ -76,6 +80,7 @@ class NotificationWorker(
             }
 
             val currentUserId = currentUser.uid
+            Log.d(TAG, "Processing notifications for user: ${currentUserId}")
 
             // Create a calendar for today with time set to 00:00:00 for accurate date comparison
             val todayCalendar = Calendar.getInstance().apply {
@@ -121,8 +126,9 @@ class NotificationWorker(
             Log.d(TAG, "Found ${userEditedSites.size} sites for notification check")
 
             // Check for TOC events
-            val tocEnabled = isCategoryEnabled(currentUserId, "toc_enabled")
+            val tocEnabled = isCategoryEnabled(currentUserId, "toc_enabled", true)
             if (tocEnabled) {
+                Log.d(TAG, "TOC notifications are enabled, checking TOC events")
                 processUserSitesInBatches(
                     "toc",
                     "TOC Event",
@@ -137,8 +143,9 @@ class NotificationWorker(
             }
 
             // Check for Plan OA events
-            val planOaEnabled = isCategoryEnabled(currentUserId, "plan_oa_enabled")
+            val planOaEnabled = isCategoryEnabled(currentUserId, "plan_oa_enabled", true)
             if (planOaEnabled) {
+                Log.d(TAG, "Plan OA notifications are enabled, checking Plan OA events")
                 processUserSitesInBatches(
                     "tglPlanOa",
                     "Plan OA Event",
@@ -228,19 +235,29 @@ class NotificationWorker(
             for (i in userSites.indices step 10) {
                 val batchSites = userSites.subList(i, minOf(i + 10, userSites.size))
 
+                Log.d(TAG, "Processing batch ${i/10 + 1} with ${batchSites.size} sites")
+
                 val sites = firestore.collection("projects")
                     .whereIn("siteId", batchSites)
                     .get()
                     .await()
 
+                Log.d(TAG, "Retrieved ${sites.size()} sites from Firestore")
+
                 for (site in sites.documents) {
-                    val eventDateStr = site.getString(dateField) ?: continue
+                    val eventDateStr = site.getString(dateField)
+                    if (eventDateStr.isNullOrEmpty()) {
+                        continue
+                    }
+
                     val siteId = site.getString("siteId") ?: continue
                     val witel = site.getString("witel") ?: continue
 
                     try {
                         // Calculate days remaining properly
                         val daysRemaining = calculateDaysRemaining(eventDateStr, todayCalendar)
+
+                        Log.d(TAG, "Site $siteId has $daysRemaining days remaining for $eventTypeName")
 
                         // Check if this is one of our notification days
                         if (daysRemaining in dayThresholds) {
@@ -256,6 +273,8 @@ class NotificationWorker(
                             // Create notification message
                             val message = "$notificationMessage $eventTypeName for site $siteId in $witel"
 
+                            Log.d(TAG, "Found notification condition: $title - $message")
+
                             // Check if user has set to mute this specific event notification
                             if (isNotificationMuted(userId, siteId, dateField)) {
                                 Log.d(TAG, "Notification for $siteId is muted, skipping")
@@ -268,8 +287,8 @@ class NotificationWorker(
                                 continue
                             }
 
-                            // Generate unique notification ID
-                            val notificationId = Random.nextInt(1000, 9999)
+                            // Generate unique notification ID based on site and event type for consistency
+                            val notificationId = generateConsistentNotificationId(siteId, eventTypeName, daysRemaining)
 
                             // Determine event type for the notification
                             val eventTypeCode = if (dateField == "toc") {
@@ -278,25 +297,31 @@ class NotificationWorker(
                                 NotificationHelper.NOTIFICATION_TYPE_PLAN_OA
                             }
 
-                            Log.d(TAG, "Sending notification for $siteId: $title ($daysRemaining days remaining)")
+                            Log.d(TAG, "Sending notification for $siteId: $title ($daysRemaining days remaining) with ID $notificationId")
 
                             // Show the notification - use the application context for stability
                             withContext(Dispatchers.Main) {
-                                NotificationHelper.showEventNotification(
-                                    context,
-                                    notificationId,
-                                    title,
-                                    message,
-                                    eventTypeCode,
-                                    siteId,
-                                    witel,
-                                    eventDateStr,
-                                    daysRemaining
-                                )
-                            }
+                                try {
+                                    NotificationHelper.showEventNotification(
+                                        context.applicationContext,
+                                        notificationId,
+                                        title,
+                                        message,
+                                        eventTypeCode,
+                                        siteId,
+                                        witel,
+                                        eventDateStr,
+                                        daysRemaining
+                                    )
 
-                            // Log successful notification for debugging
-                            Log.d(TAG, "Successfully sent notification for $siteId with ID $notificationId")
+                                    // Record the notification to prevent duplicates
+                                    recordSentNotification(userId, siteId, eventDateStr, eventTypeCode, daysRemaining)
+
+                                    Log.d(TAG, "Successfully sent notification for $siteId with ID $notificationId")
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "Failed to show notification: ${e.message}", e)
+                                }
+                            }
                         }
                     } catch (e: Exception) {
                         Log.e(TAG, "Error processing date $eventDateStr for site $siteId", e)
@@ -324,6 +349,40 @@ class NotificationWorker(
         // Calculate difference in days - properly accounting for time
         val diffInMillis = eventCalendar.timeInMillis - todayCalendar.timeInMillis
         return (diffInMillis / (1000 * 60 * 60 * 24)).toInt()
+    }
+
+    // Generate a consistent notification ID based on the site and event
+    private fun generateConsistentNotificationId(siteId: String, eventType: String, daysRemaining: Int): Int {
+        val idBase = "${siteId}_${eventType}_${daysRemaining}".hashCode()
+        return Math.abs(idBase) % 10000 + 1000 // Keep between 1000-9999
+    }
+
+    // Record that we sent a notification to prevent duplicates
+    private suspend fun recordSentNotification(
+        userId: String,
+        siteId: String,
+        eventDate: String,
+        eventType: String,
+        daysRemaining: Int
+    ) {
+        try {
+            val notification = hashMapOf(
+                "userId" to userId,
+                "siteId" to siteId,
+                "eventDate" to eventDate,
+                "eventType" to eventType,
+                "daysBefore" to daysRemaining,
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            firestore.collection("notifications")
+                .add(notification)
+                .await()
+
+            Log.d(TAG, "Recorded sent notification for $siteId")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error recording sent notification", e)
+        }
     }
 
     // Check if we've already sent this notification recently
@@ -355,7 +414,12 @@ class NotificationWorker(
                 .get()
                 .await()
 
-            return !result.isEmpty
+            val hasPreviousNotification = !result.isEmpty
+            if (hasPreviousNotification) {
+                Log.d(TAG, "Found previous notification for $siteId sent ${(System.currentTimeMillis() - result.documents[0].getLong("timestamp")!!) / (60 * 60 * 1000)} hours ago")
+            }
+
+            return hasPreviousNotification
         } catch (e: Exception) {
             Log.e(TAG, "Error checking for recent notifications", e)
             return false // If error, assume no recent notification to be safe
@@ -412,18 +476,37 @@ class NotificationWorker(
     }
 
     // Check if a specific notification category is enabled
-    private suspend fun isCategoryEnabled(userId: String, categoryKey: String): Boolean {
+    private suspend fun isCategoryEnabled(userId: String, categoryKey: String, defaultValue: Boolean = true): Boolean {
         try {
             val prefs = firestore.collection("user_preferences")
                 .document(userId)
                 .get()
                 .await()
 
-            // If category doesn't exist, default to true
-            return prefs?.getBoolean(categoryKey) ?: true
+            // If no document exists yet, create one with default values
+            if (!prefs.exists()) {
+                Log.d(TAG, "No preferences found for user, creating default preferences")
+                val defaultPrefs = hashMapOf(
+                    "notifications_enabled" to true,
+                    "toc_enabled" to true,
+                    "plan_oa_enabled" to true
+                )
+                firestore.collection("user_preferences")
+                    .document(userId)
+                    .set(defaultPrefs)
+                    .await()
+
+                return defaultValue
+            }
+
+            // Get the value, defaulting to provided default
+            val enabled = prefs.getBoolean(categoryKey)
+            Log.d(TAG, "Category $categoryKey enabled: ${enabled ?: defaultValue}")
+
+            return enabled ?: defaultValue
         } catch (e: Exception) {
             Log.e(TAG, "Error checking if category $categoryKey is enabled", e)
-            return true // Default to enabled if error
+            return defaultValue // Default to provided value if error
         }
     }
 }

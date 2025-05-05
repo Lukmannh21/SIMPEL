@@ -1,5 +1,6 @@
 package com.mbkm.telgo
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -15,6 +16,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 object NotificationManager {
@@ -107,6 +109,131 @@ object NotificationManager {
             Log.d(TAG, "Background alarm scheduled for notification checks")
         } catch (e: Exception) {
             Log.e(TAG, "Error setting up notifications: ${e.message}", e)
+        }
+    }
+    /**
+     * Ensures aggressive scheduling of notification checks
+     */
+    fun setupAggressiveBackgroundChecks(context: Context) {
+        Log.d(TAG, "Setting up aggressive background notification checks")
+
+        try {
+            // Schedule exact alarm for more reliable operation
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+
+            // Create an intent for immediate check (after boot)
+            val immediateIntent = Intent(context, NotificationAlarmReceiver::class.java)
+            immediateIntent.action = "IMMEDIATE_CHECK"
+
+            val immediatePendingIntent = PendingIntent.getBroadcast(
+                context,
+                1001, // Different request code for this one
+                immediateIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            // Schedule for 5 minutes from now (gives time for system to stabilize)
+            val fiveMinutes = 5 * 60 * 1000L
+            val immediateCheck = System.currentTimeMillis() + fiveMinutes
+
+            // Schedule repeating alarms at key times of day
+            scheduleTimeOfDayAlarms(context)
+
+            // Try to set exact alarm for immediate check
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    immediateCheck,
+                    immediatePendingIntent
+                )
+                Log.d(TAG, "Scheduled exact alarm for immediate notification check in 5 minutes")
+            } else {
+                alarmManager.setExact(
+                    AlarmManager.RTC_WAKEUP,
+                    immediateCheck,
+                    immediatePendingIntent
+                )
+            }
+
+            // Also use foreground service if available
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    NotificationForegroundService.startService(context)
+                    Log.d(TAG, "Started foreground service for reliable notifications")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error starting foreground service: ${e.message}", e)
+                }
+            }
+
+            // And schedule standard workmanager tasks
+            scheduleNotifications(context)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up aggressive background checks: ${e.message}", e)
+        }
+    }
+
+    /**
+     * Schedule alarms for specific times of day when notification checks are most important
+     */
+    private fun scheduleTimeOfDayAlarms(context: Context) {
+        try {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+
+            // Times to check notifications (7 AM, 12 PM, 5 PM)
+            val timeChecks = listOf(
+                Pair(7, 0),   // 7:00 AM
+                Pair(12, 0),  // 12:00 PM
+                Pair(17, 0)   // 5:00 PM
+            )
+
+            timeChecks.forEachIndexed { index, timeCheck ->
+                val (hour, minute) = timeCheck
+
+                // Create calendar for this alarm time
+                val calendar = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, hour)
+                    set(Calendar.MINUTE, minute)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+
+                // If the time has already passed today, schedule for tomorrow
+                if (calendar.timeInMillis <= System.currentTimeMillis()) {
+                    calendar.add(Calendar.DAY_OF_MONTH, 1)
+                }
+
+                // Create intent and pending intent
+                val intent = Intent(context, NotificationAlarmReceiver::class.java)
+                intent.action = "TIME_OF_DAY_CHECK_$index"
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    2000 + index, // Different request code for each time
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
+                // Schedule alarm
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                } else {
+                    alarmManager.setExact(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }
+
+                Log.d(TAG, "Scheduled daily notification check for $hour:$minute")
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error scheduling time-of-day alarms: ${e.message}", e)
         }
     }
 
