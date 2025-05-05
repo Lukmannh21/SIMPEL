@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -593,6 +594,54 @@ class UploadProjectActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
+    // Add new function to update the user's edit history
+    private fun updateUserEditHistory(userEmail: String, siteId: String, onComplete: () -> Unit) {
+        // Get user document by email
+        firestore.collection("users")
+            .whereEqualTo("email", userEmail)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    // User document not found, complete anyway
+                    onComplete()
+                    return@addOnSuccessListener
+                }
+
+                val userDoc = documents.documents[0]
+                val userId = userDoc.id
+
+                // Get current list of edited sites or create new one
+                var editedSites = userDoc.get("editedSites") as? MutableList<String> ?: mutableListOf()
+
+                // Check if this site is already in the list
+                if (!editedSites.contains(siteId)) {
+                    // Add site if not already in the list
+                    editedSites.add(siteId)
+
+                    // Update user document with the new list
+                    firestore.collection("users").document(userId)
+                        .update("editedSites", editedSites)
+                        .addOnSuccessListener {
+                            // Continue to next step
+                            onComplete()
+                        }
+                        .addOnFailureListener { e ->
+                            // Log error but continue anyway to not block the flow
+                            Log.e("UploadProjectActivity", "Error updating user's edit history: ${e.message}")
+                            onComplete()
+                        }
+                } else {
+                    // Site already in the list, just complete
+                    onComplete()
+                }
+            }
+            .addOnFailureListener { e ->
+                // Log error but continue anyway to not block the flow
+                Log.e("UploadProjectActivity", "Error finding user document: ${e.message}")
+                onComplete()
+            }
+    }
+
     private fun saveNewProject(
         siteId: String, witel: String, status: String, lastIssue: String, koordinat: String,
         kodeSto: String, namaSto: String, portMetro: String, sfp: String, hostname: String,
@@ -668,8 +717,11 @@ class UploadProjectActivity : AppCompatActivity() {
         firestore.collection("projects")
             .add(projectData)
             .addOnSuccessListener {
-                showSuccessDialog("Data berhasil disimpan")
-                onSuccess()
+                // Update user's edit history
+                updateUserEditHistory(userEmail, siteId) {
+                    showSuccessDialog("Data berhasil disimpan")
+                    onSuccess()
+                }
             }
             .addOnFailureListener { e ->
                 onFailure("Error: ${e.message}")
@@ -760,8 +812,11 @@ class UploadProjectActivity : AppCompatActivity() {
                 firestore.collection("projects").document(projectId)
                     .set(updateData, SetOptions.merge())
                     .addOnSuccessListener {
-                        showSuccessDialog("Data berhasil diperbarui")
-                        onSuccess()
+                        // Update user's edit history
+                        updateUserEditHistory(userEmail, siteId) {
+                            showSuccessDialog("Data berhasil diperbarui")
+                            onSuccess()
+                        }
                     }
                     .addOnFailureListener { e ->
                         onFailure("Error: ${e.message}")
