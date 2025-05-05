@@ -50,7 +50,7 @@
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
     <color name="ripple_color">#E0E0E0</color>
-
+    <color name="green">#4CAF50</color>
     <color name="green_success">#4CAF50</color>
     <color name="red_error">#F44336</color>
 </resources>

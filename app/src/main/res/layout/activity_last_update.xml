@@ -31,14 +31,14 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/red_telkomsel_dark" />
+                app:tint="@color/black" />
 
             <TextView
                 android:id="@+id/tvLastUpdateTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="My Updates"
-                android:textColor="@color/red_telkomsel_dark"
+                android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
