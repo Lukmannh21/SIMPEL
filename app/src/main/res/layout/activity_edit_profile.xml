@@ -1,247 +1,360 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:background="#F5F5F5"
+    tools:context=".EditProfileActivity">
 
-
-    <LinearLayout
+    <!-- Top App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:background="#F1F6FB"
-        tools:context=".RegisterActivity">
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#F5F5F5"
+            app:contentInsetStart="0dp">
 
-        <!-- Back Button -->
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="start"
-            android:layout_marginEnd="16dp"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/back"
-            android:text="@string/back"
-            android:textColor="@android:color/white"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/back"
+                    android:src="@drawable/back"
+                    app:tint="@color/black" />
 
-        <!-- Title -->
-        <TextView
-            android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Edit Profile"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit Profile Information"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            tools:ignore="HardcodedText" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
+            <!-- Profile Picture Section -->
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp">
 
-        <!-- Account Identity -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Account Identity"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="5dp"
-            tools:ignore="HardcodedText"
-            android:layout_marginStart="16dp"/>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardCornerRadius="60dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="2dp"
+                    app:strokeColor="@color/red_telkomsel_dark">
 
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="profile_picture"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_account_circle" />
+                </com.google.android.material.card.MaterialCardView>
 
-        <!-- Full Name -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/full_name"
-            android:textColor="#333333"
-            android:textSize="13sp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginStart="16dp"/>
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabEditPhoto"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="end|bottom"
+                    app:fabSize="mini"
+                    app:backgroundTint="@color/red_telkomsel_dark"
+                    app:tint="@android:color/white"
+                    android:src="@drawable/ic_edit"
+                    app:elevation="4dp" />
+            </FrameLayout>
 
+            <!-- Personal Information Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardPersonalInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:foreground="?attr/selectableItemBackground">
 
-        <EditText
-            android:id="@+id/etFullName"
-            android:layout_width="350dp"
-            android:layout_height="48dp"
-            android:maxWidth="488dp"
-            android:layout_gravity="center_horizontal"
-            android:autofillHints=""
-            android:background="@drawable/input_bg"
-            android:padding="10dp"
-            android:textSize="14sp"
-            android:hint="@string/enter_your_full_name"
-            android:inputType="text"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="@drawable/gradient_card_background">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Personal Information"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
 
-        <!-- NIK -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nik"
-            android:textColor="#333333"
-            android:textSize="13sp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginStart="16dp"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#DDDDDD" />
 
+                    <!-- Full Name -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilFullName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:startIconDrawable="@drawable/ic_person"
+                        app:startIconTint="@color/red_telkomsel_dark"
+                        app:hintEnabled="true"
+                        app:hintAnimationEnabled="true"
+                        app:boxBackgroundColor="@android:color/white"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <EditText
-            android:id="@+id/etNIK"
-            android:layout_width="350dp"
-            android:layout_height="48dp"
-            android:maxWidth="488dp"
-            android:layout_gravity="center_horizontal"
-            android:autofillHints=""
-            android:background="@drawable/input_bg"
-            android:padding="10dp"
-            android:textSize="14sp"
-            android:hint="@string/enter_your_nik"
-            android:maxLength="16"
-            android:inputType="number"/>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etFullName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Full Name"
+                            android:inputType="textPersonName"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- NIK -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilNIK"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:startIconDrawable="@drawable/ic_badge"
+                        app:startIconTint="@color/red_telkomsel_dark"
+                        app:hintEnabled="true"
+                        app:hintAnimationEnabled="true"
+                        app:boxBackgroundColor="@android:color/white"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <!-- Company Name -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/company_name"
-            android:textColor="#333333"
-            android:textSize="14sp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="16dp"/>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etNIK"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="NIK"
+                            android:inputType="number"
+                            android:maxLength="16"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Company Name -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilCompanyName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:startIconDrawable="@drawable/ic_business"
+                        app:startIconTint="@color/red_telkomsel_dark"
+                        app:hintEnabled="true"
+                        app:hintAnimationEnabled="true"
+                        app:boxBackgroundColor="@android:color/white"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <EditText
-            android:id="@+id/etCompanyName"
-            android:layout_width="350dp"
-            android:layout_height="48dp"
-            android:maxWidth="488dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/input_bg"
-            android:hint="@string/enter_your_company_name"
-            android:inputType="text"
-            android:padding="10dp"
-            android:textSize="14sp"
-            android:autofillHints="companyName"/>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCompanyName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Company Name"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Unit -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilUnit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:startIconDrawable="@drawable/ic_business_center"
+                        app:startIconTint="@color/red_telkomsel_dark"
+                        app:hintEnabled="true"
+                        app:hintAnimationEnabled="true"
+                        app:boxBackgroundColor="@android:color/white"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <!-- Unit -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/unit"
-            android:textColor="#333333"
-            android:textSize="14sp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="16dp"/>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etUnit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Unit"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Position -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPosition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:startIconDrawable="@drawable/ic_work"
+                        app:startIconTint="@color/red_telkomsel_dark"
+                        app:hintEnabled="true"
+                        app:hintAnimationEnabled="true"
+                        app:boxBackgroundColor="@android:color/white"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <EditText
-            android:id="@+id/etUnit"
-            android:layout_width="350dp"
-            android:layout_height="48dp"
-            android:maxWidth="488dp"
-            android:layout_gravity="center_horizontal"
-            android:autofillHints=""
-            android:background="@drawable/input_bg"
-            android:hint="@string/enter_your_unit"
-            android:inputType="text"
-            android:padding="10dp"
-            android:textSize="14sp" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPosition"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Position"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <!-- Position -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/position"
-            android:textColor="#333333"
-            android:textSize="14sp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="16dp"/>
+            <!-- Contact Information Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardContactInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:foreground="?attr/selectableItemBackground">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="@drawable/gradient_card_background">
 
-        <EditText
-            android:id="@+id/etPosition"
-            android:layout_width="350dp"
-            android:layout_height="48dp"
-            android:maxWidth="488dp"
-            android:layout_gravity="center_horizontal"
-            android:autofillHints=""
-            android:background="@drawable/input_bg"
-            android:hint="@string/enter_your_position"
-            android:inputType="text"
-            android:padding="10dp"
-            android:textSize="14sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Contact Information"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#DDDDDD" />
 
-        <!-- Detail Info -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/detail_info"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginStart="16dp"/>
+                    <!-- Phone Number -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:startIconDrawable="@drawable/ic_phone"
+                        app:startIconTint="@color/red_telkomsel_dark"
+                        app:hintEnabled="true"
+                        app:hintAnimationEnabled="true"
+                        app:boxBackgroundColor="@android:color/white"
+                        app:prefixText="+62"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Phone Number"
+                            android:inputType="phone"
+                            android:maxLength="15"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
+            <!-- Save Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginVertical="16dp"
+                android:text="Save Changes"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="28dp"
+                app:backgroundTint="@color/red_telkomsel_dark"
+                app:elevation="6dp"
+                app:iconGravity="textStart"
+                app:icon="@drawable/ic_save"
+                app:iconTint="@android:color/white"
+                app:iconPadding="8dp" />
 
-        <!-- Phone -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/phone"
-            android:textColor="#333333"
-            android:textSize="14sp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginStart="16dp"/>
+        </LinearLayout>
+    </ScrollView>
 
+    <!-- Loading overlay -->
+    <View
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:alpha="0"
+        android:visibility="gone"/>
 
-        <EditText
-            android:id="@+id/etPhone"
-            android:layout_width="350dp"
-            android:layout_height="48dp"
-            android:maxWidth="488dp"
-            android:layout_gravity="center_horizontal"
-            android:autofillHints=""
-            android:background="@drawable/input_bg"
-            android:padding="10dp"
-            android:textSize="14sp"
-            android:inputType="phone"
-            android:digits="0123456789"
-            android:maxLength="15"
-            android:hint="@string/enter_your_phone_number"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/red_telkomsel_dark"
+        android:visibility="gone"/>
 
+    <!-- Success animation view -->
+    <ImageView
+        android:id="@+id/successAnimation"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_check_circle"
+        android:visibility="gone"
+        app:tint="@color/green" />
 
-        <!-- Save Button -->
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="320dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:text="@string/save_button"
-            android:textSize="15sp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:backgroundTint="@color/red"
-            android:background="@drawable/btn_red"
-            android:textAllCaps="false"/>
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
