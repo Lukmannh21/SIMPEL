@@ -45,7 +45,7 @@
                     android:id="@+id/telgoTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TelGo"
+                    android:text="SIMPEL"
                     android:textSize="28sp"
                     android:textStyle="bold"
                     android:textColor="@color/red_telkomsel_dark"/>

@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlin.random.Random
 
 class NotificationWorker(
     private val context: Context,
@@ -30,12 +29,19 @@ class NotificationWorker(
     // Track when this worker last ran to prevent too frequent execution
     companion object {
         private var lastRunTimestamp = 0L
-        private const val MIN_RUN_INTERVAL = 30 * 60 * 1000 // 30 minutes in milliseconds (reduced from 2 hours)
+        private const val MIN_RUN_INTERVAL = 30 * 60 * 1000 // 30 minutes in milliseconds
     }
 
     // Method for direct calling outside WorkManager (from AlarmManager, etc.)
     fun checkNotificationsDirectly() {
         Log.d(TAG, "Starting direct notification check at ${Date()}")
+
+        // Check global notification lock first - fixed with fully qualified name
+        if (!com.mbkm.telgo.NotificationManager.canShowNotification(context)) {
+            Log.d(TAG, "⛔ Direct check blocked by global notification lock")
+            return
+        }
+
         // Use a wake lock to ensure the operation completes even if device is sleeping
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = powerManager.newWakeLock(
@@ -61,7 +67,13 @@ class NotificationWorker(
 
     override suspend fun doWork(): Result {
         try {
-            // Check if this worker has run recently
+            // Check global notification timestamp first - fixed with fully qualified name
+            if (!com.mbkm.telgo.NotificationManager.canShowNotification(context)) {
+                Log.d(TAG, "⛔ Global notification lock active, skipping this notification check")
+                return Result.success()
+            }
+
+            // Original frequency check
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastRunTimestamp < MIN_RUN_INTERVAL) {
                 Log.d(TAG, "Skipping notification check - ran recently (${(currentTime - lastRunTimestamp) / 1000 / 60} minutes ago)")

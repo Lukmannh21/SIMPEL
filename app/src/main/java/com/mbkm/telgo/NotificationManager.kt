@@ -17,6 +17,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import java.util.Calendar
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 object NotificationManager {
@@ -24,9 +25,61 @@ object NotificationManager {
     private const val IMMEDIATE_NOTIFICATION_WORK_NAME = "telgo_immediate_notification_check"
     private const val TAG = "NotificationManager"
 
-    // Add these variables directly inside the object
+    // Global timestamp tracking for all notification sources
+    private const val PREFS_NAME = "notification_timestamp_prefs"
+    private const val LAST_NOTIFICATION_KEY = "last_notification_timestamp"
+    private const val LAST_NOTIFICATION_TYPE_KEY = "last_notification_type"
+    private const val MIN_NOTIFICATION_INTERVAL = 2 * 60 * 60 * 1000 // 2 hours between notifications
+
+    // Previous time tracking
     private var lastRunTimestamp = 0L
     private const val MIN_RUN_INTERVAL = 30 * 60 * 1000 // 30 minutes in milliseconds
+
+    /**
+     * Checks if a notification was recently shown and blocks if too recent
+     * This method ensures notifications don't show too frequently regardless of source
+     * @return true if it's OK to show a notification, false if too recent
+     */
+    fun canShowNotification(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val lastNotificationTime = prefs.getLong(LAST_NOTIFICATION_KEY, 0L)
+        val currentTime = System.currentTimeMillis()
+
+        // Check if enough time has passed since last notification
+        if (currentTime - lastNotificationTime < MIN_NOTIFICATION_INTERVAL) {
+            val minutesAgo = (currentTime - lastNotificationTime) / (60 * 1000)
+            Log.d(TAG, "⛔ Blocking notification - last one was $minutesAgo minutes ago")
+            return false
+        }
+
+        Log.d(TAG, "✅ Allowing notification, enough time has passed since last one")
+        return true
+    }
+
+    /**
+     * Record when a notification was shown to prevent duplicates
+     */
+    fun recordNotificationShown(context: Context, notificationType: String) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putLong(LAST_NOTIFICATION_KEY, System.currentTimeMillis())
+            .putString(LAST_NOTIFICATION_TYPE_KEY, notificationType)
+            .apply()
+
+        Log.d(TAG, "📝 Recorded notification shown of type: $notificationType")
+    }
+
+    /**
+     * Force reset the notification timestamp to allow the next notification
+     * Call this if you want to force notifications to be allowed
+     */
+    fun resetNotificationTimestamp(context: Context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putLong(LAST_NOTIFICATION_KEY, 0L)
+            .apply()
+        Log.d(TAG, "🔄 Global notification timestamp reset")
+    }
 
     // Initialize notifications system
     fun initialize(context: Context) {
@@ -46,23 +99,24 @@ object NotificationManager {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        // Create periodic work request that runs every 6 hours
-        // Note: Minimum interval for periodic work is 15 minutes
-        val notificationRequest = PeriodicWorkRequest.Builder(NotificationWorker::class.java,
-            6, TimeUnit.HOURS)
+        // Increase to 12 hours to reduce frequency
+        val notificationRequest = PeriodicWorkRequest.Builder(
+            NotificationWorker::class.java,
+            12, TimeUnit.HOURS)
             .setConstraints(constraints)
-            .setInitialDelay(15, TimeUnit.MINUTES) // Small initial delay
+            .setInitialDelay(1, TimeUnit.HOURS)
             .build()
 
         // Enqueue the work
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             NOTIFICATION_WORK_NAME,
-            ExistingPeriodicWorkPolicy.UPDATE, // Update existing work if exists
+            ExistingPeriodicWorkPolicy.UPDATE,
             notificationRequest
         )
 
-        Log.d(TAG, "Notification worker scheduled for every 6 hours")
+        Log.d(TAG, "Notification worker scheduled for every 12 hours")
     }
+
     fun setupNotificationsWithoutForegroundService(context: Context) {
         try {
             // Schedule WorkManager tasks
@@ -111,6 +165,7 @@ object NotificationManager {
             Log.e(TAG, "Error setting up notifications: ${e.message}", e)
         }
     }
+
     /**
      * Ensures aggressive scheduling of notification checks
      */
@@ -175,16 +230,16 @@ object NotificationManager {
 
     /**
      * Schedule alarms for specific times of day when notification checks are most important
+     * Set to exactly 8 AM and 10 PM WIB
      */
     private fun scheduleTimeOfDayAlarms(context: Context) {
         try {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
 
-            // Times to check notifications (7 AM, 12 PM, 5 PM)
+            // Times to check notifications (8 AM and 10 PM WIB)
             val timeChecks = listOf(
-                Pair(7, 0),   // 7:00 AM
-                Pair(12, 0),  // 12:00 PM
-                Pair(17, 0)   // 5:00 PM
+                Pair(8, 0),    // 8:00 AM WIB
+                Pair(22, 0)    // 10:00 PM WIB
             )
 
             timeChecks.forEachIndexed { index, timeCheck ->
@@ -229,7 +284,8 @@ object NotificationManager {
                     )
                 }
 
-                Log.d(TAG, "Scheduled daily notification check for $hour:$minute")
+                val scheduledTime = Date(calendar.timeInMillis)
+                Log.d(TAG, "Scheduled daily notification check for $hour:$minute on $scheduledTime")
             }
 
         } catch (e: Exception) {
@@ -266,6 +322,9 @@ object NotificationManager {
 
         // Update last run timestamp to prevent immediate re-checking
         lastRunTimestamp = System.currentTimeMillis()
+
+        // Record notification shown to prevent duplicates
+        recordNotificationShown(context, "clear_action")
 
         // Clear any notification badges
         try {
@@ -315,7 +374,7 @@ object NotificationManager {
             Log.e(TAG, "Error checking notification state", e)
         }
 
-        return true
+        return canShowNotification(context)
     }
 
     /**

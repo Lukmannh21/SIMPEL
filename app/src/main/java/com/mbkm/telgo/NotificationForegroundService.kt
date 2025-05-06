@@ -18,6 +18,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.atomic.AtomicBoolean
 
+
 class NotificationForegroundService : Service() {
     private val NOTIFICATION_CHANNEL_ID = "telgo_service_channel"
     private val NOTIFICATION_ID = 1001
@@ -101,9 +102,14 @@ class NotificationForegroundService : Service() {
                 }
 
                 try {
-                    // Trigger a notification check via WorkManager directly
-                    Log.d(TAG, "Foreground service triggering notification check")
-                    triggerNotificationCheck()
+                    // Check global timestamp before triggering check
+                    if (com.mbkm.telgo.NotificationManager.canShowNotification(applicationContext)) {
+                        // Trigger a notification check via WorkManager directly
+                        Log.d(TAG, "Foreground service triggering notification check")
+                        triggerNotificationCheck()
+                    } else {
+                        Log.d(TAG, "Foreground service skipping check due to global timestamp")
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "Error in periodic notification check", e)
                 }
@@ -139,8 +145,8 @@ class NotificationForegroundService : Service() {
 
     companion object {
         private const val TAG = "NotificationForegroundService"
-        private const val CHECK_INTERVAL = 60 * 60 * 1000L // 1 hour
-        private const val INITIAL_DELAY = 5 * 60 * 1000L // 5 minutes
+        private const val CHECK_INTERVAL = 3 * 60 * 60 * 1000L // 3 hours (increased from 1 hour)
+        private const val INITIAL_DELAY = 30 * 60 * 1000L // 30 minutes (increased from 5 minutes)
 
         fun startService(context: Context) {
             try {
