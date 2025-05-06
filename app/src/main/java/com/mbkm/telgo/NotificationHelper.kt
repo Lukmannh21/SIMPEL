@@ -78,9 +78,18 @@ object NotificationHelper {
         siteId: String,
         witel: String,
         eventDate: String,
-        daysBefore: Int? = null
+        daysBefore: Int = -1
     ) {
-        // Check for notification permission
+        // Check global notification lock first
+        if (!com.mbkm.telgo.NotificationManager.canShowNotification(context)) {
+            Log.d(TAG, "⛔ Notification blocked by global timestamp lock")
+
+            // Still save to Firestore for in-app viewing
+            saveNotificationToFirestore(context, title, message, eventType, siteId, witel, eventDate, daysBefore)
+            return
+        }
+
+        // Continue with existing permission checks
         if (!hasNotificationPermission(context)) {
             Log.w(TAG, "Notification permission not granted, cannot show notification")
             // Save the notification to Firestore so it can be shown in the app later
@@ -132,6 +141,11 @@ object NotificationHelper {
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     notify(notificationId, notification)
+
+                    // Record that we showed a notification in the global timestamp
+                    com.mbkm.telgo.NotificationManager.recordNotificationShown(context, eventType)
+
+                    Log.d(TAG, "✅ Notification shown with ID: $notificationId")
                 }
             }
             // Also save to Firestore for display in the app

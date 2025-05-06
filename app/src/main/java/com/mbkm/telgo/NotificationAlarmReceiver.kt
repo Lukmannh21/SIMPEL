@@ -20,6 +20,12 @@ class NotificationAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "Alarm triggered, checking for notifications at ${Date()}")
 
+        // Check global timestamp first
+        if (!com.mbkm.telgo.NotificationManager.canShowNotification(context)) {
+            Log.d(TAG, "⛔ Notification check blocked by global timestamp - skipping this alarm")
+            return
+        }
+
         // Acquire a wake lock to make sure we complete our work
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = powerManager.newWakeLock(
