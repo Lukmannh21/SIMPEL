@@ -137,6 +137,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.TelGO" />
 
+        <activity
+            android:name=".BASurveyBigActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TelGO" />
+
         <service
             android:name=".NotificationForegroundService"
             android:enabled="true"

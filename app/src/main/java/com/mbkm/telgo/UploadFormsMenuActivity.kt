@@ -43,7 +43,8 @@ class UploadFormsMenuActivity : AppCompatActivity() {
             it.startAnimation(animation)
             it.postDelayed({
                 // Will implement later
-                showToast("Feature coming soon")
+                val intent = Intent(this, BASurveyBigActivity::class.java)
+                startActivity(intent)
             }, 200)
         }
 
