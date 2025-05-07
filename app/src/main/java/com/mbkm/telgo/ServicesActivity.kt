@@ -93,6 +93,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
     private lateinit var notificationsFilterChips: ChipGroup
 
     private lateinit var btnClearAllNotifications: Button
+    private lateinit var btnUploadForms: Button
 
 
     // Adapters
@@ -173,6 +174,9 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         eventsEmptyState = findViewById(R.id.eventsEmptyState)
         eventsEmptyStateText = findViewById(R.id.eventsEmptyStateText)
         eventsFilterChips = findViewById(R.id.eventsFilterChips)
+
+        btnUploadForms = findViewById(R.id.btnUploadForms)
+
 
 
         // Initialize SearchView
@@ -792,6 +796,14 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
             it.startAnimation(animation)
             it.postDelayed({
                 val intent = Intent(this, LastUpdateActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }, 200)
+        }
+        btnUploadForms.setOnClickListener {
+            val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
+            it.startAnimation(animation)
+            it.postDelayed({
+                val intent = Intent(this, UploadFormsMenuActivity::class.java)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }, 200)
         }
