@@ -43,6 +43,7 @@
             android:name=".LastUpdateActivity"
             android:exported="false" />
 
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.mbkm.telgo.fileprovider"
@@ -107,6 +108,34 @@
             android:name=".UploadProjectActivity"
             android:exported="false"
             android:theme="@style/Theme.TelGO" />
+        <!-- Upload Forms Menu Activity -->
+        <activity
+            android:name=".UploadFormsMenuActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TelGO" />
+
+        <!-- BA Survey Mini OLT Activity -->
+        <activity
+            android:name=".BaSurveyMiniOltActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TelGO" />
+
+        <!-- BA Survey Mini OLT Detail Activity -->
+        <activity
+            android:name=".BaSurveyMiniOltDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TelGO" />
+
+        <!-- Signature Activity -->
+        <activity
+            android:name=".SignatureActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TelGO" />
 
         <service
             android:name=".NotificationForegroundService"
@@ -147,6 +176,18 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
+
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.mbkm.telgo.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

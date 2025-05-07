@@ -121,6 +121,22 @@
                             android:textStyle="bold"
                             android:fontFamily="sans-serif-medium"
                             android:elevation="4dp"/>
+
+                        <!-- Add this inside the LinearLayout in the cardView where the other service buttons are -->
+                        <Button
+                            android:id="@+id/btnUploadForms"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ripple_effect"
+                            android:drawableTop="@drawable/upload"
+                            android:drawablePadding="8dp"
+                            android:text="Forms"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            android:elevation="4dp"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
