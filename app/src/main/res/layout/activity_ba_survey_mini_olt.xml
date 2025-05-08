@@ -109,6 +109,21 @@
                             android:textColor="@android:color/black"
                             android:layout_marginBottom="16dp"/>
 
+                        <!-- Header Number -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <EditText
+                                android:id="@+id/etHeaderNo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Header No. (e.g., JBI-PT3-MAB-FY-JAMBI_Kuning Gading)"
+                                android:inputType="text"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
                         <!-- Location -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -139,19 +154,19 @@
                                 android:inputType="text"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- Platform -->
+                        <!-- Platform Dropdown -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-                            <EditText
-                                android:id="@+id/etPlatform"
+                            <AutoCompleteTextView
+                                android:id="@+id/platformDropdown"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="Platform"
-                                android:inputType="text"/>
+                                android:inputType="none"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- Site Provider -->
@@ -159,7 +174,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
                             <AutoCompleteTextView
                                 android:id="@+id/etSiteProvider"
@@ -202,7 +217,7 @@
                                 android:id="@+id/tvCurrentDate"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Wednesday, 7 May 2025"
+                                android:text="Kamis, 8 Mei 2025"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@android:color/black"
@@ -235,12 +250,33 @@
                             android:layout_marginBottom="16dp"/>
 
                         <!-- 1. Rack -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="1. Rack tempat Perangkat MINI OLT &amp; OTB (PM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="1. Rack tempat Perangkat MINI OLT &amp; OTB"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/rackDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -273,12 +309,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 2. Rectifier -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="2. Rectifier (PBM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="2. Rectifier"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/rectifierDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -311,12 +368,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 3. Ketersediaan Daya DC -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="3. Ketersediaan Daya DC (PBM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="3. Ketersediaan Daya DC"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/dcPowerDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -349,12 +427,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 4. Baterai -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="4. Baterai (PBM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="4. Baterai"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/batteryDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -387,12 +486,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 5. MCB -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="5. MCB untuk Pemasangan Mini OLT (PM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="5. MCB untuk Pemasangan Mini OLT"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/mcbDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -425,12 +545,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 6. Grounding -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="6. Grounding (PM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="6. Grounding"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/groundingDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -463,12 +604,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 7. Indoor Room -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="7. Indoor Room (PM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="7. Indoor Room"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/indoorRoomDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -501,12 +663,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 8. AC Power -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="8. Ketersediaan Daya AC (PM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="8. Ketersediaan Daya AC"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/acPowerDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -539,12 +722,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 9. Uplink -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="9. BA Kesiapan Uplink (PBM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="9. BA Kesiapan Uplink"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/uplinkDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -577,12 +781,33 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- 10. Conduit -->
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="10. Conduit (PM)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="8dp"/>
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="10. Conduit"
+                                android:textStyle="bold"/>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/conduitDropdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Type"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
@@ -654,7 +879,7 @@
                                 android:inputType="text"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- ZTE Signature -->
+                        <!-- ZTE/Huawei Signature -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -662,6 +887,7 @@
                             android:layout_marginBottom="16dp">
 
                             <TextView
+                                android:id="@+id/tvZteCompany"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="PT. ZTE INDONESIA - TIM SURVEY"
@@ -679,6 +905,21 @@
                                     android:layout_height="wrap_content"
                                     android:hint="Name"
                                     android:inputType="textPersonName"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- NIK/NIP field -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etZteNik"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="NIK/NIP"
+                                    android:inputType="text"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <Button
@@ -724,6 +965,21 @@
                                     android:inputType="textPersonName"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
+                            <!-- NIK/NIP field -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etTselNopNik"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="NIK/NIP"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
                             <Button
                                 android:id="@+id/btnTselNopSignature"
                                 android:layout_width="match_parent"
@@ -765,6 +1021,21 @@
                                     android:layout_height="wrap_content"
                                     android:hint="Name"
                                     android:inputType="textPersonName"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- NIK/NIP field -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etTselRtpdsNik"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="NIK/NIP"
+                                    android:inputType="text"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <Button
@@ -810,6 +1081,21 @@
                                     android:inputType="textPersonName"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
+                            <!-- NIK/NIP field -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etTselRtpeNfNik"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="NIK/NIP"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
                             <Button
                                 android:id="@+id/btnTselRtpeNfSignature"
                                 android:layout_width="match_parent"
@@ -853,6 +1139,21 @@
                                     android:inputType="textPersonName"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
+                            <!-- NIK/NIP field -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etTelkomNik"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="NIK/NIP"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
                             <Button
                                 android:id="@+id/btnTelkomSignature"
                                 android:layout_width="match_parent"
@@ -893,6 +1194,21 @@
                                     android:layout_height="wrap_content"
                                     android:hint="Name"
                                     android:inputType="textPersonName"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- NIK/NIP field -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etTifNik"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="NIK/NIP"
+                                    android:inputType="text"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <Button
@@ -1026,9 +1342,6 @@
                                 android:visibility="gone"/>
                         </LinearLayout>
 
-                        <!-- Need to add all 15 photo containers following the same pattern -->
-                        <!-- For brevity let's add up to photo 15 -->
-
                         <!-- Photo 4 -->
                         <LinearLayout
                             android:id="@+id/photoContainer4"
@@ -1059,8 +1372,7 @@
                                 android:visibility="gone"/>
                         </LinearLayout>
 
-                        <!-- Continue adding photo containers 5-15 in the same pattern -->
-                        <!-- For brevity, providing containers 5-15 -->
+                        <!-- Photo 5 -->
                         <LinearLayout
                             android:id="@+id/photoContainer5"
                             android:layout_width="match_parent"
@@ -1087,6 +1399,7 @@
                                 android:visibility="gone"/>
                         </LinearLayout>
 
+                        <!-- Photo 6 -->
                         <LinearLayout
                             android:id="@+id/photoContainer6"
                             android:layout_width="match_parent"
@@ -1117,7 +1430,12 @@
                         <LinearLayout android:id="@+id/photoContainer7" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
                             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cabinet Metro-E (ME Room) Metro-E" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto7" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
-                            <ImageView android:id="@+id/imgPhoto7" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
+                            <ImageView android:id="@+id/imgPhoto7"
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:scaleType="centerCrop"
+                                android:background="#EEEEEE"
+                                android:visibility="gone"/>
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer8" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
@@ -1251,50 +1569,4 @@
         android:visibility="gone">
         <!-- Empty state content would go here -->
     </LinearLayout>
-
-    <!-- Upcoming Events Preview -->
-    <LinearLayout
-        android:id="@+id/upcomingEventsPreview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
-        android:visibility="gone">
-        <!-- Preview content would go here -->
-    </LinearLayout>
-
-    <!-- Progress Bar -->
-    <View
-        android:id="@+id/eventsProgressBar"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
-        android:visibility="gone"/>
-
-    <!-- Empty State -->
-    <LinearLayout
-        android:id="@+id/eventsEmptyState"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/eventsEmptyStateText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="No events found"/>
-    </LinearLayout>
-
-    <!-- Filter Chips -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/eventsFilterChips"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
-        android:visibility="gone">
-        <!-- Filter chips would go here -->
-    </com.google.android.material.chip.ChipGroup>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

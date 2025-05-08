@@ -4,4 +4,16 @@
     <external-files-path name="my_images" path="Pictures" />
     <external-path name="external_files" path="." />
     <files-path name="files" path="." />
+    <!-- Internal app storage -->
+    <files-path name="internal_files" path="." />
+    <cache-path name="internal_cache" path="." />
+
+    <external-path name="external" path="." />
+    <external-cache-path name="external_cache" path="." />
+
+    <!-- Specific paths -->
+    <external-files-path name="images" path="Pictures" />
+    <external-files-path name="camera_images" path="DCIM/Camera" />
+
+
 </paths>
