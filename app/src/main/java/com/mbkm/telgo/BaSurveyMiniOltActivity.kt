@@ -12,6 +12,7 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
@@ -1479,7 +1480,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         val page1 = document.startPage(pageInfo1)
         val canvas1 = page1.canvas
 
-        // Draw header table on first page only
+        // Draw header table on first page only, termasuk logo dan judul
         drawHeaderTable(canvas1, etHeaderNo.text.toString())
 
         // Draw main content with appropriate starting position
@@ -1506,7 +1507,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         // Photo pages: 4 photos per page
         val photoCount = photoUris.size
-        val photosPerPage = 4 // Ditingkatkan dari 2 ke 4 foto per halaman
+        val photosPerPage = 4 // 4 foto per halaman
         val photoPages = if (photoCount > 0) (photoCount + photosPerPage - 1) / photosPerPage else 0
 
         for (i in 0 until photoPages) {
@@ -1514,10 +1515,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             val pageInfo = PdfDocument.PageInfo.Builder(612, 842, pageNum).create()
             val page = document.startPage(pageInfo)
 
-            // Draw only simple title, not full header
-            drawSimplePageTitle(page.canvas, "DOKUMENTASI FOTO")
-
-            // Draw photos - tetap menggunakan dua parameter sesuai signature asli
+            // Now drawPhotosPageContent will add the header table and proper spacing
             drawPhotosPageContent(page.canvas, i)
 
             // Draw footer
@@ -1546,10 +1544,11 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         val pageWidth = 612f
         var yPosition = 50f
 
-        // Draw title
-        paint.textSize = 16f
+        // Perbaikan: Ukuran font dikurangi sedikit dan menggunakan typeface normal
+        paint.textSize = 14f // Sebelumnya 16f
+        paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL) // Pastikan menggunakan font normal
         paint.textAlign = Paint.Align.CENTER
-        paint.isFakeBoldText = true
+        paint.isFakeBoldText = true // Masih bold tapi tidak terlalu ekstrim
         canvas.drawText(title, pageWidth / 2, yPosition, paint)
         paint.isFakeBoldText = false
         paint.textAlign = Paint.Align.LEFT
@@ -1810,6 +1809,64 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         return result
     }
 
+    // Fungsi baru khusus untuk menggambar hanya tabel header saja
+    private fun drawHeaderTableOnly(canvas: Canvas, noValue: String) {
+        // Set up paint
+        val paint = Paint()
+        paint.color = Color.BLACK
+        paint.textSize = 10f
+
+        // Dimensi untuk header
+        val pageWidth = 612f
+        val leftMargin = 40f
+        val rightMargin = pageWidth - 40f
+        val tableTop = 40f // Mulai dari posisi yang cukup tinggi
+        val rowHeight = 25f
+
+        paint.strokeWidth = 1f
+
+        // First row
+        paint.style = Paint.Style.STROKE // Just draw borders, not filled rectangles
+
+        // "Prepared" cell
+        canvas.drawRect(leftMargin, tableTop, (leftMargin + rightMargin) / 2, tableTop + rowHeight, paint)
+        paint.style = Paint.Style.FILL // Switch back to fill style for text
+        canvas.drawText("Prepared (also subject responsible if other)", leftMargin + 5f, tableTop + 17f, paint)
+
+        // "No." cell
+        paint.style = Paint.Style.STROKE
+        canvas.drawRect((leftMargin + rightMargin) / 2, tableTop, rightMargin, tableTop + rowHeight, paint)
+        paint.style = Paint.Style.FILL
+        canvas.drawText("No.", (leftMargin + rightMargin) / 2 + 5f, tableTop + 17f, paint)
+        canvas.drawText(noValue, (leftMargin + rightMargin) / 2 + 30f, tableTop + 17f, paint)
+
+        // Second row
+        paint.style = Paint.Style.STROKE
+
+        // "Approved" cell
+        canvas.drawRect(leftMargin, tableTop + rowHeight, (leftMargin + rightMargin) / 3, tableTop + rowHeight * 2, paint)
+        paint.style = Paint.Style.FILL
+        canvas.drawText("Approved", leftMargin + 5f, tableTop + rowHeight + 17f, paint)
+
+        // "Checked" cell
+        paint.style = Paint.Style.STROKE
+        canvas.drawRect((leftMargin + rightMargin) / 3, tableTop + rowHeight, (leftMargin + rightMargin) * 2/3, tableTop + rowHeight * 2, paint)
+        paint.style = Paint.Style.FILL
+        canvas.drawText("Checked", (leftMargin + rightMargin) / 3 + 5f, tableTop + rowHeight + 17f, paint)
+
+        // "Date" cell
+        paint.style = Paint.Style.STROKE
+        canvas.drawRect((leftMargin + rightMargin) * 2/3, tableTop + rowHeight, (leftMargin + rightMargin) * 5/6, tableTop + rowHeight * 2, paint)
+        paint.style = Paint.Style.FILL
+        canvas.drawText("Date", (leftMargin + rightMargin) * 2/3 + 5f, tableTop + rowHeight + 17f, paint)
+
+        // "Ref" cell
+        paint.style = Paint.Style.STROKE
+        canvas.drawRect((leftMargin + rightMargin) * 5/6, tableTop + rowHeight, rightMargin, tableTop + rowHeight * 2, paint)
+        paint.style = Paint.Style.FILL
+        canvas.drawText("Reference", (leftMargin + rightMargin) * 5/6 + 5f, tableTop + rowHeight + 17f, paint)
+    }
+
     private fun drawTableHeader(canvas: Canvas, paint: Paint, x: Float, y: Float) {
         val pageWidth = 612f
         val leftMargin = x
@@ -1933,23 +1990,20 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         val pageWidth = 612f
         val leftMargin = 40f
         val rightMargin = pageWidth - 40f
-        var yPosition = 60f
-
-        // Draw page title
-        paint.textSize = 16f
-        paint.isFakeBoldText = true
-        paint.textAlign = Paint.Align.CENTER
-        canvas.drawText("TANDA TANGAN PERSETUJUAN", pageWidth / 2, yPosition, paint)
-        paint.isFakeBoldText = false
-        paint.textAlign = Paint.Align.LEFT
-        yPosition += 40f
+        var yPosition = 80f  // Start lower below the title
 
         // Calculate dimensions for a 3×2 grid layout with improved spacing
         val availableWidth = rightMargin - leftMargin
-        val boxWidth = availableWidth / 3f - 10f  // Slightly wider boxes
-        val boxHeight = 150f  // Taller boxes for better signature display
+        val boxWidth = availableWidth / 3f - 10f
+        val boxHeight = 150f
         val horizontalGap = 15f
         val verticalGap = 20f
+
+        // Perbaikan: Tambahkan deskripsi singkat tentang halaman
+        paint.textSize = 11f
+        canvas.drawText("Berikut adalah tanda tangan persetujuan dari pihak-pihak yang terlibat dalam survey ini:",
+            leftMargin, yPosition, paint)
+        yPosition += 30f
 
         // First row: Platform company, Telkom, TIF
         drawSignatureBox(canvas, paint,
@@ -2089,16 +2143,30 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
     // Fungsi yang direvisi untuk menampilkan 4 foto per halaman dalam grid 2
     private fun drawPhotosPageContent(canvas: Canvas, photoPageIndex: Int) {
-        // Hard-coded 4 foto per halaman
+        // Tetapkan photosPerPage = 4 untuk layout 2x2
         val photosPerPage = 4
 
         val paint = Paint()
         paint.color = Color.BLACK
-        // Set positions and constants
+
+        // Tambahkan tabel header dulu
+        drawHeaderTableOnly(canvas, etHeaderNo.text.toString())
+
+        // Set positions and constants - mulai dari posisi yang lebih rendah agar tidak tumpang tindih dengan header
         val pageWidth = 612f
         val leftMargin = 40f
         val rightMargin = pageWidth - 40f
-        var yPosition = 80f  // Start below simple title
+        var yPosition = 120f  // Posisi awal yang lebih rendah untuk menghindari tumpang tindih dengan tabel header
+
+        // Judul halaman foto
+        paint.textSize = 14f
+        paint.textAlign = Paint.Align.CENTER
+        paint.isFakeBoldText = true
+        canvas.drawText("DOKUMENTASI FOTO", pageWidth / 2, yPosition, paint)
+        paint.textAlign = Paint.Align.LEFT
+        paint.isFakeBoldText = false
+
+        yPosition += 30f // Tambah jarak setelah judul
 
         // Calculate available photos for this page
         val startPhotoIndex = photoPageIndex * photosPerPage
@@ -2126,7 +2194,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Calculate dimensions for a 2x2 grid layout
         val availableWidth = rightMargin - leftMargin
         val columnWidth = availableWidth / 2 - 10f  // 2 columns with small gap
-        val photoHeight = 250f  // Maximum height for photos
+        val photoHeight = 230f  // Sedikit dikurangi agar muat di halaman dengan tabel header
 
         // Draw each photo in a 2x2 grid
         for (i in photosOnThisPage.indices) {
