@@ -21,7 +21,6 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -45,15 +44,15 @@ import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.min
-
 
 class BaSurveyMiniOltActivity : AppCompatActivity() {
 
@@ -66,10 +65,22 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     // Form input fields
     private lateinit var etLocation: EditText
     private lateinit var etNoIhld: EditText
-    private lateinit var etPlatform: EditText
+    private lateinit var platformDropdown: AutoCompleteTextView
     private lateinit var etSiteProvider: AutoCompleteTextView
     private lateinit var etContractNumber: EditText
     private lateinit var tvCurrentDate: TextView
+
+    // PM/PBM Dropdowns
+    private lateinit var rackDropdown: AutoCompleteTextView
+    private lateinit var rectifierDropdown: AutoCompleteTextView
+    private lateinit var dcPowerDropdown: AutoCompleteTextView
+    private lateinit var batteryDropdown: AutoCompleteTextView
+    private lateinit var mcbDropdown: AutoCompleteTextView
+    private lateinit var groundingDropdown: AutoCompleteTextView
+    private lateinit var indoorRoomDropdown: AutoCompleteTextView
+    private lateinit var acPowerDropdown: AutoCompleteTextView
+    private lateinit var uplinkDropdown: AutoCompleteTextView
+    private lateinit var conduitDropdown: AutoCompleteTextView
 
     // Table inputs
     private lateinit var etRackResult: EditText
@@ -101,6 +112,17 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     private lateinit var etTelkomName: EditText
     private lateinit var etTifName: EditText
     private lateinit var tvTselRegion: EditText
+
+    // NIK fields
+    private lateinit var etZteNik: EditText
+    private lateinit var etTselNopNik: EditText
+    private lateinit var etTselRtpdsNik: EditText
+    private lateinit var etTselRtpeNfNik: EditText
+    private lateinit var etTelkomNik: EditText
+    private lateinit var etTifNik: EditText
+
+    // Company Name TextViews
+    private lateinit var tvZteCompany: TextView
 
     // Signature image buttons
     private lateinit var btnZteSignature: Button
@@ -159,7 +181,10 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     private var pendingGalleryLaunch = false
     private var permissionExplanationShown = false
 
-    private lateinit var etTselRegion: EditText
+    private var currentPhotoUri: Uri? = null
+
+    // Signature keys for Firebase
+    private val signatureKeys = arrayOf("zte", "tselNop", "tselRtpds", "tselRtpeNf", "telkom", "tif")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -196,8 +221,8 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
 
-        // Set current date
-        val sdf = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault())
+        // Set current date using Indonesian locale
+        val sdf = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("id", "ID"))
         tvCurrentDate.text = sdf.format(Date())
 
         // Set up button listeners
@@ -206,8 +231,10 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Set up search adapter
         setupSearchAdapter()
 
-        // Set up dropdown for site provider
+        // Set up dropdowns
         setupSiteProviderDropdown()
+        setupPlatformDropdown()
+        setupPmPbmDropdowns()
     }
 
     private fun requestRequiredPermissions() {
@@ -292,10 +319,22 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Form input fields
         etLocation = findViewById(R.id.etLocation)
         etNoIhld = findViewById(R.id.etNoIhld)
-        etPlatform = findViewById(R.id.etPlatform)
+        platformDropdown = findViewById(R.id.platformDropdown)
         etSiteProvider = findViewById(R.id.etSiteProvider)
         etContractNumber = findViewById(R.id.etContractNumber)
         tvCurrentDate = findViewById(R.id.tvCurrentDate)
+
+        // PM/PBM dropdowns
+        rackDropdown = findViewById(R.id.rackDropdown)
+        rectifierDropdown = findViewById(R.id.rectifierDropdown)
+        dcPowerDropdown = findViewById(R.id.dcPowerDropdown)
+        batteryDropdown = findViewById(R.id.batteryDropdown)
+        mcbDropdown = findViewById(R.id.mcbDropdown)
+        groundingDropdown = findViewById(R.id.groundingDropdown)
+        indoorRoomDropdown = findViewById(R.id.indoorRoomDropdown)
+        acPowerDropdown = findViewById(R.id.acPowerDropdown)
+        uplinkDropdown = findViewById(R.id.uplinkDropdown)
+        conduitDropdown = findViewById(R.id.conduitDropdown)
 
         // Table inputs
         etRackResult = findViewById(R.id.etRackResult)
@@ -328,6 +367,17 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         etTifName = findViewById(R.id.etTifName)
         tvTselRegion = findViewById(R.id.etTselRegion)
 
+        // NIK fields
+        etZteNik = findViewById(R.id.etZteNik)
+        etTselNopNik = findViewById(R.id.etTselNopNik)
+        etTselRtpdsNik = findViewById(R.id.etTselRtpdsNik)
+        etTselRtpeNfNik = findViewById(R.id.etTselRtpeNfNik)
+        etTelkomNik = findViewById(R.id.etTelkomNik)
+        etTifNik = findViewById(R.id.etTifNik)
+
+        // Company name TextView
+        tvZteCompany = findViewById(R.id.tvZteCompany)
+
         // Signature buttons
         btnZteSignature = findViewById(R.id.btnZteSignature)
         btnTselNopSignature = findViewById(R.id.btnTselNopSignature)
@@ -344,10 +394,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         imgTelkomSignature = findViewById(R.id.imgTelkomSignature)
         imgTifSignature = findViewById(R.id.imgTifSignature)
 
-        // Signature fields
-        etTselRegion = findViewById(R.id.etTselRegion)
-
-        // Photo containers, buttons and image views - with error handling
+        // Photo containers, buttons and image views
         try {
             photoContainers = Array(15) { findViewById(resources.getIdentifier("photoContainer${it+1}", "id", packageName)) }
             photoButtons = Array(15) { findViewById(resources.getIdentifier("btnUploadPhoto${it+1}", "id", packageName)) }
@@ -375,13 +422,58 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         rvSearchResults = findViewById(R.id.rvSearchResults)
     }
 
+    private fun setupPlatformDropdown() {
+        val platformOptions = listOf(
+            "PT. ZTE INDONESIA",
+            "PT. Huawei Tech Investment"
+        )
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, platformOptions)
+        platformDropdown.setAdapter(adapter)
+
+        // Update signature company name when platform changes
+        platformDropdown.setOnItemClickListener { _, _, position, _ ->
+            val selectedPlatform = platformOptions[position]
+            tvZteCompany.text = "$selectedPlatform - TIM SURVEY"
+        }
+    }
+
+    private fun setupPmPbmDropdowns() {
+        val pmPbmOptions = listOf("PM", "PBM")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, pmPbmOptions)
+
+        // Set up each dropdown with the PM/PBM adapter
+        rackDropdown.setAdapter(adapter)
+        rectifierDropdown.setAdapter(adapter)
+        dcPowerDropdown.setAdapter(adapter)
+        batteryDropdown.setAdapter(adapter)
+        mcbDropdown.setAdapter(adapter)
+        groundingDropdown.setAdapter(adapter)
+        indoorRoomDropdown.setAdapter(adapter)
+        acPowerDropdown.setAdapter(adapter)
+        uplinkDropdown.setAdapter(adapter)
+        conduitDropdown.setAdapter(adapter)
+
+        // Set default values
+        rackDropdown.setText("PM", false)
+        rectifierDropdown.setText("PBM", false)
+        dcPowerDropdown.setText("PBM", false)
+        batteryDropdown.setText("PBM", false)
+        mcbDropdown.setText("PM", false)
+        groundingDropdown.setText("PM", false)
+        indoorRoomDropdown.setText("PM", false)
+        acPowerDropdown.setText("PM", false)
+        uplinkDropdown.setText("PBM", false)
+        conduitDropdown.setText("PM", false)
+    }
+
     private fun setupSiteProviderDropdown() {
         val siteProviderOptions = listOf(
             "DMT", "DMT - Bifurcation", "DMT- Reseller", "IBS", "NO NEED SITAC",
             "NOT READY", "PROTELINDO", "PT Centratama Menara Indonesia",
             "PT Gihon Telekomunikasi Indonesia", "PT Quattro International",
             "PT.Era Bangun Towerindo", "PT.Protelindo", "READY", "STO ROOM",
-            "STP", "TBG", "TELKOM", "TELKOMSEL", "TSEL"
+            "STP", "TBG", "TELKOM", "TELKOMSEL", "TSEL", "PT Daya Mitra Telekomunikasi"
         )
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, siteProviderOptions)
@@ -632,10 +724,38 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(packageManager)?.also {
+        // Create a temporary file for the full-resolution photo
+        val photoFile = try {
+            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val fileName = "JPEG_${timeStamp}_"
+            val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+
+            File.createTempFile(fileName, ".jpg", storageDir)
+        } catch (e: IOException) {
+            Log.e("Camera", "Error creating image file: ${e.message}")
+            null
+        }
+
+        photoFile?.let {
+            val photoURI = FileProvider.getUriForFile(
+                this,
+                "com.mbkm.telgo.fileprovider",
+                it
+            )
+
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+
+            try {
+                // Store the URI temporarily to retrieve it in onActivityResult
+                currentPhotoUri = photoURI
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            } catch (e: Exception) {
+                Log.e("Camera", "Error launching camera: ${e.message}")
+                Toast.makeText(this, "Could not open camera app", Toast.LENGTH_SHORT).show()
             }
+        } ?: run {
+            Toast.makeText(this, "Error creating image file", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -707,25 +827,57 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
                     try {
-                        val imageBitmap = data?.extras?.get("data") as? Bitmap
-                        if (imageBitmap != null) {
-                            // Save high-quality bitmap
-                            val uri = getImageUriFromBitmap(imageBitmap)
+                        // Process the full resolution image from URI
+                        val uri = currentPhotoUri
+                        if (uri != null) {
+                            // Store URI for later use with high-quality retrieval
                             photoUris[currentPhotoIndex] = uri
 
-                            // Display optimized for UI
-                            photoImageViews[currentPhotoIndex].apply {
-                                scaleType = ImageView.ScaleType.FIT_CENTER
-                                setImageBitmap(imageBitmap)
-                                visibility = View.VISIBLE
+                            // Properly decode for maximum quality
+                            val options = BitmapFactory.Options().apply {
+                                inPreferredConfig = Bitmap.Config.ARGB_8888
+                                inSampleSize = 1  // Full resolution
                             }
 
-                            Log.d("Camera", "Photo captured successfully")
+                            contentResolver.openInputStream(uri)?.use { input ->
+                                val bitmap = BitmapFactory.decodeStream(input, null, options)
+                                if (bitmap != null) {
+                                    // Display high quality image
+                                    photoImageViews[currentPhotoIndex].apply {
+                                        scaleType = ImageView.ScaleType.FIT_CENTER
+                                        setImageBitmap(bitmap)
+                                        visibility = View.VISIBLE
+                                    }
+                                    Log.d("Camera", "Full resolution photo loaded successfully")
+                                } else {
+                                    // Fallback to simple URI display if bitmap loading fails
+                                    photoImageViews[currentPhotoIndex].apply {
+                                        scaleType = ImageView.ScaleType.FIT_CENTER
+                                        setImageURI(uri)
+                                        visibility = View.VISIBLE
+                                    }
+                                    Log.d("Camera", "Fallback to URI display")
+                                }
+                            }
                         } else {
-                            Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show()
+                            // Fallback to thumbnail if URI approach failed
+                            val imageBitmap = data?.extras?.get("data") as? Bitmap
+                            if (imageBitmap != null) {
+                                val uri = getImageUriFromBitmap(imageBitmap)
+                                photoUris[currentPhotoIndex] = uri
+
+                                photoImageViews[currentPhotoIndex].apply {
+                                    scaleType = ImageView.ScaleType.FIT_CENTER
+                                    setImageBitmap(imageBitmap)
+                                    visibility = View.VISIBLE
+                                }
+                            } else {
+                                Toast.makeText(this, "Failed to capture image", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     } catch (e: Exception) {
                         Log.e("Camera", "Error processing camera image: ${e.message}")
+                        e.printStackTrace()
                         Toast.makeText(this, "Error processing camera image", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -737,7 +889,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                             photoUris[currentPhotoIndex] = uri
 
                             // Load a high-quality but memory-efficient bitmap for UI display
-                            val bitmap = ImageUtils.loadBitmapForUI(this, uri)
+                            val bitmap = loadBitmapFromUri(uri)
 
                             if (bitmap != null) {
                                 // Set up the ImageView
@@ -772,59 +924,114 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                         openGalleryInternal()
                     }
                 }
-                REQUEST_SIGNATURE_ZTE -> {
-                    val uri = data?.getParcelableExtra<Uri>("signature_uri")
-                    if (uri != null) {
-                        signatureUris[0] = uri
-                        imgZteSignature.setImageURI(uri)
-                        imgZteSignature.visibility = View.VISIBLE
-                    }
-                }
-                REQUEST_SIGNATURE_TSEL_NOP -> {
-                    val uri = data?.getParcelableExtra<Uri>("signature_uri")
-                    if (uri != null) {
-                        signatureUris[1] = uri
-                        imgTselNopSignature.setImageURI(uri)
-                        imgTselNopSignature.visibility = View.VISIBLE
-                    }
-                }
-                REQUEST_SIGNATURE_TSEL_RTPDS -> {
-                    val uri = data?.getParcelableExtra<Uri>("signature_uri")
-                    if (uri != null) {
-                        signatureUris[2] = uri
-                        imgTselRtpdsSignature.setImageURI(uri)
-                        imgTselRtpdsSignature.visibility = View.VISIBLE
-                    }
-                }
-                REQUEST_SIGNATURE_TSEL_RTPE -> {
-                    val uri = data?.getParcelableExtra<Uri>("signature_uri")
-                    if (uri != null) {
-                        signatureUris[3] = uri
-                        imgTselRtpeNfSignature.setImageURI(uri)
-                        imgTselRtpeNfSignature.visibility = View.VISIBLE
-                    }
-                }
-                REQUEST_SIGNATURE_TELKOM -> {
-                    val uri = data?.getParcelableExtra<Uri>("signature_uri")
-                    if (uri != null) {
-                        signatureUris[4] = uri
-                        imgTelkomSignature.setImageURI(uri)
-                        imgTelkomSignature.visibility = View.VISIBLE
-                    }
-                }
+                REQUEST_SIGNATURE_ZTE,
+                REQUEST_SIGNATURE_TSEL_NOP,
+                REQUEST_SIGNATURE_TSEL_RTPDS,
+                REQUEST_SIGNATURE_TSEL_RTPE,
+                REQUEST_SIGNATURE_TELKOM,
                 REQUEST_SIGNATURE_TIF -> {
+                    // Get URI from result
                     val uri = data?.getParcelableExtra<Uri>("signature_uri")
+
                     if (uri != null) {
-                        signatureUris[5] = uri
-                        imgTifSignature.setImageURI(uri)
-                        imgTifSignature.visibility = View.VISIBLE
+                        // Determine which signature we're handling
+                        val signatureIndex = when (requestCode) {
+                            REQUEST_SIGNATURE_ZTE -> 0
+                            REQUEST_SIGNATURE_TSEL_NOP -> 1
+                            REQUEST_SIGNATURE_TSEL_RTPDS -> 2
+                            REQUEST_SIGNATURE_TSEL_RTPE -> 3
+                            REQUEST_SIGNATURE_TELKOM -> 4
+                            REQUEST_SIGNATURE_TIF -> 5
+                            else -> -1
+                        }
+
+                        if (signatureIndex >= 0) {
+                            try {
+                                // Take a persistent permission to access this URI
+                                val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                contentResolver.takePersistableUriPermission(uri, takeFlags)
+                            } catch (e: Exception) {
+                                // Not all URIs support persistable permissions, which is OK
+                                Log.d("Signature", "Could not take persistable permission: ${e.message}")
+                            }
+
+                            // Create a local copy if possible to avoid permission issues
+                            val localUri = try {
+                                // Try to make a local copy of the URI content
+                                contentResolver.openInputStream(uri)?.use { input ->
+                                    // Create a temporary file in the app's cache directory
+                                    val file = File(cacheDir, "signature_${signatureIndex}_${System.currentTimeMillis()}.png")
+                                    FileOutputStream(file).use { output ->
+                                        input.copyTo(output)
+                                    }
+                                    Uri.fromFile(file) // Use the file URI which we fully control
+                                }
+                            } catch (e: Exception) {
+                                // If copying fails, use the original URI
+                                Log.e("Signature", "Failed to copy URI to local file: ${e.message}")
+                                uri
+                            }
+
+                            // Store URI for upload
+                            signatureUris[signatureIndex] = localUri ?: uri
+
+                            // Show the signature in the corresponding ImageView
+                            val imageView = when (signatureIndex) {
+                                0 -> imgZteSignature
+                                1 -> imgTselNopSignature
+                                2 -> imgTselRtpdsSignature
+                                3 -> imgTselRtpeNfSignature
+                                4 -> imgTelkomSignature
+                                5 -> imgTifSignature
+                                else -> null
+                            }
+
+                            imageView?.setImageURI(localUri ?: uri)
+                            imageView?.visibility = View.VISIBLE
+                        }
                     }
                 }
             }
         }
     }
 
-    // Improved method to get high quality image URI from bitmap
+    // Helper method to load bitmap from URI
+    private fun loadBitmapFromUri(uri: Uri): Bitmap? {
+        return try {
+            val options = BitmapFactory.Options().apply {
+                inPreferredConfig = Bitmap.Config.ARGB_8888
+                // First decode with inJustDecodeBounds=true to check dimensions
+                inJustDecodeBounds = true
+            }
+
+            contentResolver.openInputStream(uri)?.use { input ->
+                BitmapFactory.decodeStream(input, null, options)
+            }
+
+            // Calculate inSampleSize to load a scaled bitmap that is not too large
+            val maxDimension = 1024
+            var inSampleSize = 1
+            if (options.outHeight > maxDimension || options.outWidth > maxDimension) {
+                val heightRatio = Math.round(options.outHeight.toFloat() / maxDimension.toFloat())
+                val widthRatio = Math.round(options.outWidth.toFloat() / maxDimension.toFloat())
+                inSampleSize = Math.max(heightRatio, widthRatio)
+            }
+
+            // Decode bitmap with inSampleSize set
+            options.apply {
+                inJustDecodeBounds = false
+                inSampleSize = inSampleSize
+            }
+
+            contentResolver.openInputStream(uri)?.use { input ->
+                BitmapFactory.decodeStream(input, null, options)
+            }
+        } catch (e: Exception) {
+            Log.e("BitmapLoader", "Error loading bitmap: ${e.message}")
+            null
+        }
+    }
+
     private fun getImageUriFromBitmap(bitmap: Bitmap): Uri {
         val bytes = ByteArrayOutputStream()
         // Use 100% quality JPEG compression
@@ -847,8 +1054,8 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             isValid = false
         }
 
-        if (etPlatform.text.toString().isEmpty()) {
-            etPlatform.error = "Required field"
+        if (platformDropdown.text.toString().isEmpty()) {
+            platformDropdown.error = "Required field"
             isValid = false
         }
 
@@ -859,6 +1066,12 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         if (etContractNumber.text.toString().isEmpty()) {
             etContractNumber.error = "Required field"
+            isValid = false
+        }
+
+        // Check if region is entered
+        if (tvTselRegion.text.toString().isEmpty()) {
+            tvTselRegion.error = "Required field"
             isValid = false
         }
 
@@ -903,125 +1116,140 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Basic info
         surveyData["location"] = etLocation.text.toString().trim()
         surveyData["noIhld"] = etNoIhld.text.toString().trim()
-        surveyData["platform"] = etPlatform.text.toString().trim()
+        surveyData["platform"] = platformDropdown.text.toString().trim()
         surveyData["siteProvider"] = etSiteProvider.text.toString().trim()
         surveyData["contractNumber"] = etContractNumber.text.toString().trim()
         surveyData["surveyDate"] = tvCurrentDate.text.toString()
         surveyData["createdBy"] = currentUser.email ?: "unknown"
         surveyData["createdAt"] = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
 
-        // Table results
+        // Table results with PM/PBM selections
         val tableResults = HashMap<String, HashMap<String, String>>()
 
         // Rack
         val rackData = HashMap<String, String>()
-        rackData["responsibility"] = "PM"
+        rackData["responsibility"] = rackDropdown.text.toString()
         rackData["surveyResult"] = etRackResult.text.toString().trim()
         rackData["proposed"] = etRackProposed.text.toString().trim()
         tableResults["rack"] = rackData
 
         // Rectifier
         val rectifierData = HashMap<String, String>()
-        rectifierData["responsibility"] = "PBM"
+        rectifierData["responsibility"] = rectifierDropdown.text.toString()
         rectifierData["surveyResult"] = etRectifierResult.text.toString().trim()
         rectifierData["proposed"] = etRectifierProposed.text.toString().trim()
         tableResults["rectifier"] = rectifierData
 
         // DC Power
         val dcPowerData = HashMap<String, String>()
-        dcPowerData["responsibility"] = "PBM"
+        dcPowerData["responsibility"] = dcPowerDropdown.text.toString()
         dcPowerData["surveyResult"] = etDcPowerResult.text.toString().trim()
         dcPowerData["proposed"] = etDcPowerProposed.text.toString().trim()
         tableResults["dcPower"] = dcPowerData
 
         // Battery
         val batteryData = HashMap<String, String>()
-        batteryData["responsibility"] = "PBM"
+        batteryData["responsibility"] = batteryDropdown.text.toString()
         batteryData["surveyResult"] = etBatteryResult.text.toString().trim()
         batteryData["proposed"] = etBatteryProposed.text.toString().trim()
         tableResults["battery"] = batteryData
 
         // MCB
         val mcbData = HashMap<String, String>()
-        mcbData["responsibility"] = "PM"
+        mcbData["responsibility"] = mcbDropdown.text.toString()
         mcbData["surveyResult"] = etMcbResult.text.toString().trim()
         mcbData["proposed"] = etMcbProposed.text.toString().trim()
         tableResults["mcb"] = mcbData
 
         // Grounding
         val groundingData = HashMap<String, String>()
-        groundingData["responsibility"] = "PM"
+        groundingData["responsibility"] = groundingDropdown.text.toString()
         groundingData["surveyResult"] = etGroundingResult.text.toString().trim()
         groundingData["proposed"] = etGroundingProposed.text.toString().trim()
         tableResults["grounding"] = groundingData
 
         // Indoor Room
         val indoorRoomData = HashMap<String, String>()
-        indoorRoomData["responsibility"] = "PM"
+        indoorRoomData["responsibility"] = indoorRoomDropdown.text.toString()
         indoorRoomData["surveyResult"] = etIndoorRoomResult.text.toString().trim()
         indoorRoomData["proposed"] = etIndoorRoomProposed.text.toString().trim()
         tableResults["indoorRoom"] = indoorRoomData
 
         // AC Power
         val acPowerData = HashMap<String, String>()
-        acPowerData["responsibility"] = "PM"
+        acPowerData["responsibility"] = acPowerDropdown.text.toString()
         acPowerData["surveyResult"] = etAcPowerResult.text.toString().trim()
         acPowerData["proposed"] = etAcPowerProposed.text.toString().trim()
         tableResults["acPower"] = acPowerData
 
         // Uplink
         val uplinkData = HashMap<String, String>()
-        uplinkData["responsibility"] = "PBM"
+        uplinkData["responsibility"] = uplinkDropdown.text.toString()
         uplinkData["surveyResult"] = etUplinkResult.text.toString().trim()
         uplinkData["proposed"] = etUplinkProposed.text.toString().trim()
         tableResults["uplink"] = uplinkData
 
         // Conduit
         val conduitData = HashMap<String, String>()
-        conduitData["responsibility"] = "PM"
+        conduitData["responsibility"] = conduitDropdown.text.toString()
         conduitData["surveyResult"] = etConduitResult.text.toString().trim()
         conduitData["proposed"] = etConduitProposed.text.toString().trim()
         tableResults["conduit"] = conduitData
 
         surveyData["tableResults"] = tableResults
 
-        // Signatures
+        // Signatures including NIK data
         val signaturesData = HashMap<String, HashMap<String, String>>()
 
-        // ZTE
+        // ZTE/Huawei
         val zteData = HashMap<String, String>()
         zteData["name"] = etZteName.text.toString().trim()
-        zteData["role"] = "PT. ZTE INDONESIA\nTIM SURVEY"
+        zteData["nik"] = etZteNik.text.toString().trim()
+        zteData["role"] = "TIM SURVEY"
+        zteData["company"] = platformDropdown.text.toString()
         signaturesData["zte"] = zteData
 
         // TSEL NOP
         val tselNopData = HashMap<String, String>()
         tselNopData["name"] = etTselNopName.text.toString().trim()
-        tselNopData["role"] = "PT. TELKOMSEL\nMGR NOP\n${tvTselRegion.text}"
+        tselNopData["nik"] = etTselNopNik.text.toString().trim()
+        tselNopData["role"] = "MGR NOP"
+        tselNopData["company"] = "PT. TELKOMSEL"
+        tselNopData["region"] = tvTselRegion.text.toString().trim()
         signaturesData["tselNop"] = tselNopData
 
         // TSEL RTPDS
         val tselRtpdsData = HashMap<String, String>()
         tselRtpdsData["name"] = etTselRtpdsName.text.toString().trim()
-        tselRtpdsData["role"] = "PT. TELKOMSEL\nMGR RTPDS\n${tvTselRegion.text}"
+        tselRtpdsData["nik"] = etTselRtpdsNik.text.toString().trim()
+        tselRtpdsData["role"] = "MGR RTPDS"
+        tselRtpdsData["company"] = "PT. TELKOMSEL"
+        tselRtpdsData["region"] = tvTselRegion.text.toString().trim()
         signaturesData["tselRtpds"] = tselRtpdsData
 
         // TSEL RTPE/NF
         val tselRtpeNfData = HashMap<String, String>()
         tselRtpeNfData["name"] = etTselRtpeNfName.text.toString().trim()
-        tselRtpeNfData["role"] = "PT. TELKOMSEL\nMGR RTPE\n${tvTselRegion.text}"
+        tselRtpeNfData["nik"] = etTselRtpeNfNik.text.toString().trim()
+        tselRtpeNfData["role"] = "MGR RTPE"
+        tselRtpeNfData["company"] = "PT. TELKOMSEL"
+        tselRtpeNfData["region"] = tvTselRegion.text.toString().trim()
         signaturesData["tselRtpeNf"] = tselRtpeNfData
 
         // TELKOM
         val telkomData = HashMap<String, String>()
         telkomData["name"] = etTelkomName.text.toString().trim()
-        telkomData["role"] = "PT. TELKOM\nMGR NDPS TR1"
+        telkomData["nik"] = etTelkomNik.text.toString().trim()
+        telkomData["role"] = "MGR NDPS TR1"
+        telkomData["company"] = "PT. TELKOM"
         signaturesData["telkom"] = telkomData
 
         // TIF
         val tifData = HashMap<String, String>()
         tifData["name"] = etTifName.text.toString().trim()
-        tifData["role"] = "PT. TIF\nTIM SURVEY"
+        tifData["nik"] = etTifNik.text.toString().trim()
+        tifData["role"] = "TIM SURVEY"
+        tifData["company"] = "PT. TIF"
         signaturesData["tif"] = tifData
 
         surveyData["signatures"] = signaturesData
@@ -1072,67 +1300,113 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Upload photos
         for ((index, uri) in photoUris) {
             val photoRef = storage.reference.child("ba_survey_mini_olt/$surveyId/photos/photo${index+1}.jpg")
-
-            photoRef.putFile(uri)
-                .addOnSuccessListener {
-                    photoRef.downloadUrl.addOnSuccessListener { downloadUrl ->
-                        // Update document with download URL
-                        firestore.collection("ba_survey_mini_olt").document(surveyId)
-                            .update("photos.photo${index+1}", downloadUrl.toString())
-                            .addOnSuccessListener {
-                                completedUploads++
-                                if (completedUploads + failedUploads == totalUploads) {
-                                    callback(failedUploads == 0)
-                                }
+            uploadImageFromUri(uri, photoRef) { success, downloadUrl ->
+                if (success && downloadUrl != null) {
+                    firestore.collection("ba_survey_mini_olt").document(surveyId)
+                        .update("photos.photo${index+1}", downloadUrl)
+                        .addOnSuccessListener {
+                            completedUploads++
+                            if (completedUploads + failedUploads == totalUploads) {
+                                callback(failedUploads == 0)
                             }
-                            .addOnFailureListener {
-                                failedUploads++
-                                if (completedUploads + failedUploads == totalUploads) {
-                                    callback(failedUploads == 0)
-                                }
+                        }
+                        .addOnFailureListener {
+                            failedUploads++
+                            if (completedUploads + failedUploads == totalUploads) {
+                                callback(failedUploads == 0)
                             }
-                    }
-                }
-                .addOnFailureListener {
+                        }
+                } else {
                     failedUploads++
                     if (completedUploads + failedUploads == totalUploads) {
                         callback(failedUploads == 0)
                     }
                 }
+            }
         }
 
-        // Upload signatures
-        val signatureKeys = arrayOf("zte", "tselNop", "tselRtpds", "tselRtpeNf", "telkom", "tif")
-
+        // Upload signatures - all from gallery now
         for ((index, uri) in signatureUris) {
             val signatureRef = storage.reference.child("ba_survey_mini_olt/$surveyId/signatures/${signatureKeys[index]}.png")
-
-            signatureRef.putFile(uri)
-                .addOnSuccessListener {
-                    signatureRef.downloadUrl.addOnSuccessListener { downloadUrl ->
-                        // Update document with download URL
-                        firestore.collection("ba_survey_mini_olt").document(surveyId)
-                            .update("signatures.${signatureKeys[index]}.signatureUrl", downloadUrl.toString())
-                            .addOnSuccessListener {
-                                completedUploads++
-                                if (completedUploads + failedUploads == totalUploads) {
-                                    callback(failedUploads == 0)
-                                }
+            uploadImageFromUri(uri, signatureRef) { success, downloadUrl ->
+                if (success && downloadUrl != null) {
+                    firestore.collection("ba_survey_mini_olt").document(surveyId)
+                        .update("signatures.${signatureKeys[index]}.signatureUrl", downloadUrl)
+                        .addOnSuccessListener {
+                            completedUploads++
+                            if (completedUploads + failedUploads == totalUploads) {
+                                callback(failedUploads == 0)
                             }
-                            .addOnFailureListener {
-                                failedUploads++
-                                if (completedUploads + failedUploads == totalUploads) {
-                                    callback(failedUploads == 0)
-                                }
+                        }
+                        .addOnFailureListener {
+                            failedUploads++
+                            if (completedUploads + failedUploads == totalUploads) {
+                                callback(failedUploads == 0)
                             }
-                    }
-                }
-                .addOnFailureListener {
+                        }
+                } else {
                     failedUploads++
                     if (completedUploads + failedUploads == totalUploads) {
                         callback(failedUploads == 0)
                     }
                 }
+            }
+        }
+    }
+
+    // A robust helper method that handles all types of URI issues
+    private fun uploadImageFromUri(uri: Uri, storageRef: StorageReference, callback: (Boolean, String?) -> Unit) {
+        try {
+            // First try to get input stream from URI
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                // Read all bytes from input stream
+                val bytes = inputStream.readBytes()
+
+                // Upload bytes directly to Firebase
+                val uploadTask = storageRef.putBytes(bytes)
+                uploadTask
+                    .continueWithTask { task ->
+                        if (!task.isSuccessful) {
+                            throw task.exception ?: Exception("Unknown upload error")
+                        }
+                        storageRef.downloadUrl
+                    }
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            callback(true, task.result.toString())
+                        } else {
+                            Log.e("Upload", "Failed to get download URL: ${task.exception?.message}")
+                            callback(false, null)
+                        }
+                    }
+            } ?: run {
+                // If opening input stream failed, try bitmap approach
+                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                val baos = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+                val imageData = baos.toByteArray()
+
+                // Upload the byte array instead of the file
+                val uploadTask = storageRef.putBytes(imageData)
+                uploadTask
+                    .continueWithTask { task ->
+                        if (!task.isSuccessful) {
+                            throw task.exception ?: Exception("Unknown upload error")
+                        }
+                        storageRef.downloadUrl
+                    }
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            callback(true, task.result.toString())
+                        } else {
+                            Log.e("Upload", "Failed to get download URL: ${task.exception?.message}")
+                            callback(false, null)
+                        }
+                    }
+            }
+        } catch (e: Exception) {
+            Log.e("Upload", "Error processing URI: ${e.message}", e)
+            callback(false, null)
         }
     }
 
@@ -1190,28 +1464,37 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         }
     }
 
-    // Improved PDF generation method with better photo quality and text handling
     private fun generatePdfFile(): File {
         // Create PDF document
         val document = PdfDocument()
 
-        // Create first page for form data
-        val pageInfo1 = PdfDocument.PageInfo.Builder(612, 842, 1).create()
-        val page1 = document.startPage(pageInfo1)
-        val canvas1 = page1.canvas
-        val paint = Paint()
+        // Create pages - with new header table and footers
+        val pageCount = calculateRequiredPages()
+        for (i in 0 until pageCount) {
+            val pageNumber = i + 1
+            val pageInfo = PdfDocument.PageInfo.Builder(612, 842, pageNumber).create()
+            val page = document.startPage(pageInfo)
+            val canvas = page.canvas
 
-        // Draw main form content on first page
-        drawPdfContent(canvas1, paint)
-        document.finishPage(page1)
+            // Draw header table on all pages except signature page
+            if (i != 1) { // Assuming page 2 (index 1) is the signature page
+                drawHeaderTable(canvas, etNoIhld.text.toString())
+            }
 
-        // Draw signatures on a dedicated page
-        drawSignaturesPage(document)
+            // Draw content based on page number
+            when (i) {
+                0 -> drawFirstPageContent(canvas)
+                1 -> drawSignaturesPageContent(canvas)
+                else -> drawPhotosPageContent(canvas, i-2) // Photo pages start from page 3
+            }
 
-        // Draw photos on their own page(s) - with improved quality
-        drawPhotoContentPages(document)
+            // Add footer to all pages
+            drawPageFooter(canvas, pageNumber)
 
-        // Create PDF file
+            document.finishPage(page)
+        }
+
+        // Create file path for PDF
         val fileName = "BA_Survey_Mini_OLT_${etLocation.text}_${System.currentTimeMillis()}.pdf"
         val filePath = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
 
@@ -1224,168 +1507,366 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         }
 
         document.close()
-
         return filePath
     }
 
-    // Content for the first page (basic information and table)
-    private fun drawPdfContent(canvas: Canvas, paint: Paint) {
-        // Set initial positions and constants
+    private fun calculateRequiredPages(): Int {
+        // Calculate required pages for photos
+        val photoCount = photoUris.size
+        val photosPerPage = 2  // 2 photos per page
+        val photoPages = if (photoCount > 0) (photoCount + photosPerPage - 1) / photosPerPage else 0
+
+        // 1 page for form, 1 page for signatures, plus photo pages
+        return 2 + photoPages
+    }
+
+    private fun drawHeaderTable(canvas: Canvas, noIhld: String) {
+        // Set up paint
+        val paint = Paint()
+        paint.color = Color.BLACK
+        paint.textSize = 10f
+
+        // Get logo based on platform choice
+        val logo = when (platformDropdown.text.toString()) {
+            "PT. ZTE INDONESIA" -> BitmapFactory.decodeResource(resources, R.drawable.logo_zte)
+            "PT. Huawei Tech Investment" -> BitmapFactory.decodeResource(resources, R.drawable.logo_huawei)
+            else -> BitmapFactory.decodeResource(resources, R.drawable.logo_zte)
+        }
+
+        // Dimensions
         val pageWidth = 612f
         val leftMargin = 40f
         val rightMargin = pageWidth - 40f
-        var yPosition = 60f
+        var yPosition = 40f
 
-        // Set text properties
-        paint.textSize = 12f
-        paint.color = Color.BLACK
-        paint.textAlign = Paint.Align.LEFT
-
-        // Draw header
-        try {
-            val logo = BitmapFactory.decodeResource(resources, R.drawable.ic_check_circle)
-            if (logo != null) {
-                // Scale logo to appropriate size
-                val scaledLogo = Bitmap.createScaledBitmap(logo, 80, 40, true)
-                canvas.drawBitmap(scaledLogo, leftMargin, yPosition, paint)
-            }
-        } catch (e: Exception) {
-            Log.e("PDF Generation", "Error drawing logo: ${e.message}")
+        // Draw logo
+        if (logo != null) {
+            val logoWidth = 80f
+            val logoHeight = 40f
+            val scaledLogo = Bitmap.createScaledBitmap(logo, logoWidth.toInt(), logoHeight.toInt(), true)
+            canvas.drawBitmap(scaledLogo, leftMargin, yPosition, paint)
         }
 
         // Draw title
         paint.textSize = 16f
-        paint.isFakeBoldText = true
         paint.textAlign = Paint.Align.CENTER
-        canvas.drawText("BERITA ACARA SURVEY MINI OLT", pageWidth / 2, yPosition + 20f, paint)
+        paint.isFakeBoldText = true
+        canvas.drawText("BERITA ACARA SURVEY MINI OLT", pageWidth / 2, yPosition + 30f, paint)
         paint.isFakeBoldText = false
         paint.textAlign = Paint.Align.LEFT
-        yPosition += 60f
+        paint.textSize = 10f
 
-        // Draw separator line
+        // Draw header table
+        val tableTop = yPosition + 45f
+        val rowHeight = 25f
         paint.strokeWidth = 1f
-        canvas.drawLine(leftMargin, yPosition, rightMargin, yPosition, paint)
+
+        // First row
+        // "Prepared" cell
+        canvas.drawRect(leftMargin, tableTop, (leftMargin + rightMargin) / 2, tableTop + rowHeight, paint)
+        canvas.drawText("Prepared (also subject responsible if other)", leftMargin + 5f, tableTop + 17f, paint)
+
+        // "No." cell
+        canvas.drawRect((leftMargin + rightMargin) / 2, tableTop, rightMargin, tableTop + rowHeight, paint)
+        canvas.drawText("No.", (leftMargin + rightMargin) / 2 + 5f, tableTop + 17f, paint)
+        canvas.drawText(noIhld, (leftMargin + rightMargin) / 2 + 30f, tableTop + 17f, paint)
+
+        // Second row
+        // "Approved" cell
+        canvas.drawRect(leftMargin, tableTop + rowHeight, (leftMargin + rightMargin) / 3, tableTop + rowHeight * 2, paint)
+        canvas.drawText("Approved", leftMargin + 5f, tableTop + rowHeight + 17f, paint)
+
+        // "Checked" cell
+        canvas.drawRect((leftMargin + rightMargin) / 3, tableTop + rowHeight, (leftMargin + rightMargin) * 2/3, tableTop + rowHeight * 2, paint)
+        canvas.drawText("Checked", (leftMargin + rightMargin) / 3 + 5f, tableTop + rowHeight + 17f, paint)
+
+        // "Date" cell
+        canvas.drawRect((leftMargin + rightMargin) * 2/3, tableTop + rowHeight, (leftMargin + rightMargin) * 5/6, tableTop + rowHeight * 2, paint)
+        canvas.drawText("Date", (leftMargin + rightMargin) * 2/3 + 5f, tableTop + rowHeight + 17f, paint)
+
+        // "Ref" cell
+        canvas.drawRect((leftMargin + rightMargin) * 5/6, tableTop + rowHeight, rightMargin, tableTop + rowHeight * 2, paint)
+        canvas.drawText("Reference", (leftMargin + rightMargin) * 5/6 + 5f, tableTop + rowHeight + 17f, paint)
+    }
+
+    private fun drawPageFooter(canvas: Canvas, pageNumber: Int) {
+        val pageWidth = 612f
+        val footerY = 800f // Position near bottom
+        val leftMargin = 40f
+
+        // Set footer text properties
+        val paint = Paint()
+        paint.textSize = 8f
+        paint.color = Color.GRAY
+        paint.strokeWidth = 0.5f
+
+        // Draw footer line
+        canvas.drawLine(leftMargin, footerY - 10f, pageWidth - leftMargin, footerY - 10f, paint)
+
+        // Draw footer text
+        canvas.drawText("Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku",
+            leftMargin, footerY, paint)
+
+        // Draw page number on right side
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText("Halaman $pageNumber", pageWidth - leftMargin, footerY, paint)
+        paint.textAlign = Paint.Align.LEFT
+    }
+
+    private fun drawFirstPageContent(canvas: Canvas) {
+        val paint = Paint()
+        paint.color = Color.BLACK
+
+        // Set initial positions and constants
+        val pageWidth = 612f
+        val leftMargin = 40f
+        var yPosition = 120f // Start below the header table
+
+        // Draw basic information with improved formatting
+        paint.textSize = 11f
+
+        // Column width parameters
+        val labelWidth = 100f
+        val colonX = leftMargin + labelWidth
+
+        // Lokasi
+        canvas.drawText("Lokasi", leftMargin, yPosition, paint)
+        canvas.drawText(":", colonX, yPosition, paint)
+        canvas.drawText(etLocation.text.toString(), colonX + 10f, yPosition, paint)
         yPosition += 20f
 
-        // Draw basic information
-        paint.textSize = 14f
-        paint.isFakeBoldText = true
-        canvas.drawText("Basic Information", leftMargin, yPosition, paint)
-        paint.isFakeBoldText = false
+        // NO IHLD/LOP
+        canvas.drawText("NO IHLD / LOP", leftMargin, yPosition, paint)
+        canvas.drawText(":", colonX, yPosition, paint)
+        canvas.drawText(etNoIhld.text.toString(), colonX + 10f, yPosition, paint)
         yPosition += 20f
 
-        paint.textSize = 12f
-        canvas.drawText("Lokasi: " + etLocation.text.toString(), leftMargin, yPosition, paint)
-        yPosition += 15f
+        // Platform
+        canvas.drawText("Platform", leftMargin, yPosition, paint)
+        canvas.drawText(":", colonX, yPosition, paint)
+        canvas.drawText(platformDropdown.text.toString(), colonX + 10f, yPosition, paint)
+        yPosition += 20f
 
-        canvas.drawText("NO IHLD/LOP: " + etNoIhld.text.toString(), leftMargin, yPosition, paint)
-        yPosition += 15f
+        // Site Provider
+        canvas.drawText("Site Provider", leftMargin, yPosition, paint)
+        canvas.drawText(":", colonX, yPosition, paint)
+        canvas.drawText(etSiteProvider.text.toString(), colonX + 10f, yPosition, paint)
+        yPosition += 20f
 
-        canvas.drawText("Platform: " + etPlatform.text.toString(), leftMargin, yPosition, paint)
-        yPosition += 15f
+        // Nomor Kontrak
+        canvas.drawText("Nomor Kontrak", leftMargin, yPosition, paint)
+        canvas.drawText(":", colonX, yPosition, paint)
+        canvas.drawText(etContractNumber.text.toString(), colonX + 10f, yPosition, paint)
+        yPosition += 30f
 
-        canvas.drawText("Site Provider: " + etSiteProvider.text.toString(), leftMargin, yPosition, paint)
-        yPosition += 15f
+        // Introduction text in Indonesian
+        val introText = "Pada hari ini ${tvCurrentDate.text} telah dilaksanakan survey sarana penunjang (SARPEN) dengan hasil sebagai berikut:"
 
-        canvas.drawText("Nomor Kontrak: " + etContractNumber.text.toString(), leftMargin, yPosition, paint)
-        yPosition += 15f
-
-        // Fix for "pada hari ini..." text visibility - make it wrap properly with shorter line
-        val dateText = "Pada hari ini " + tvCurrentDate.text.toString() + " telah dilaksanakan"
-        canvas.drawText(dateText, leftMargin, yPosition, paint)
-        yPosition += 15f
-        canvas.drawText("survey sarana penunjang (SARANA) dengan hasil sebagai berikut:", leftMargin, yPosition, paint)
-        yPosition += 25f
+        // Draw text with proper wrapping for longer lines
+        val maxWidth = pageWidth - (2 * leftMargin)
+        val lines = wrapText(introText, paint, maxWidth)
+        for (line in lines) {
+            canvas.drawText(line, leftMargin, yPosition, paint)
+            yPosition += 20f
+        }
+        yPosition += 10f
 
         // Draw table header
-        val tableWidth = rightMargin - leftMargin
-        val col1Width = tableWidth * 0.35f  // Specification column - slightly wider
-        val col2Width = tableWidth * 0.1f   // PM/PBM column
-        val col3Width = tableWidth * 0.275f // Result column
-        val col4Width = tableWidth * 0.275f // Proposed column
-
-        // Fix header text overlap issue
-        drawTableHeader(canvas, paint, leftMargin, yPosition, col1Width, col2Width, col3Width, col4Width)
+        drawTableHeader(canvas, paint, leftMargin, yPosition)
         yPosition += 25f
 
-        // Draw table rows
+        // Draw table rows with PM/PBM selections
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "1. Rack tempat Perangkat MINI OLT & OTB", "PM",
-            etRackResult.text.toString(), etRackProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "1. Rack tempat Perangkat MINI OLT & OTB", rackDropdown.text.toString(),
+            etRackResult.text.toString(), etRackProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "2. Rectifier", "PBM",
-            etRectifierResult.text.toString(), etRectifierProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "2. Rectifier", rectifierDropdown.text.toString(),
+            etRectifierResult.text.toString(), etRectifierProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "3. Ketersediaan Daya DC", "PBM",
-            etDcPowerResult.text.toString(), etDcPowerProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "3. Ketersediaan Daya DC", dcPowerDropdown.text.toString(),
+            etDcPowerResult.text.toString(), etDcPowerProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "4. Baterai", "PBM",
-            etBatteryResult.text.toString(), etBatteryProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "4. Baterai", batteryDropdown.text.toString(),
+            etBatteryResult.text.toString(), etBatteryProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "5. MCB untuk Pemasangan Mini OLT", "PM",
-            etMcbResult.text.toString(), etMcbProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "5. MCB untuk Pemasangan Mini OLT", mcbDropdown.text.toString(),
+            etMcbResult.text.toString(), etMcbProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "6. Grounding", "PM",
-            etGroundingResult.text.toString(), etGroundingProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "6. Grounding", groundingDropdown.text.toString(),
+            etGroundingResult.text.toString(), etGroundingProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "7. Indoor Room", "PM",
-            etIndoorRoomResult.text.toString(), etIndoorRoomProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "7. Indoor Room", indoorRoomDropdown.text.toString(),
+            etIndoorRoomResult.text.toString(), etIndoorRoomProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "8. Ketersediaan Daya AC", "PM",
-            etAcPowerResult.text.toString(), etAcPowerProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "8. Ketersediaan Daya AC", acPowerDropdown.text.toString(),
+            etAcPowerResult.text.toString(), etAcPowerProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "9. BA Kesiapan Uplink", "PBM",
-            etUplinkResult.text.toString(), etUplinkProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "9. BA Kesiapan Uplink", uplinkDropdown.text.toString(),
+            etUplinkResult.text.toString(), etUplinkProposed.text.toString())
 
         yPosition = drawTableRow(canvas, paint, leftMargin, yPosition,
-            "10. Conduit", "PM",
-            etConduitResult.text.toString(), etConduitProposed.text.toString(),
-            col1Width, col2Width, col3Width, col4Width)
+            "10. Conduit", conduitDropdown.text.toString(),
+            etConduitResult.text.toString(), etConduitProposed.text.toString())
 
-        // Add PM/PBM legend below the table
+        // Add PM/PBM legend
         yPosition += 15f
         paint.textSize = 10f
         canvas.drawText("*PM : Permintaan Memungkinkan", leftMargin, yPosition, paint)
         yPosition += 12f
         canvas.drawText("**PBM : Permintaan Belum Memungkinkan", leftMargin, yPosition, paint)
-        yPosition += 20f
-        // Add Attachments section
-        paint.textSize = 12f
-        paint.isFakeBoldText = true
-        canvas.drawText("Lampiran:", leftMargin, yPosition, paint)
-        paint.isFakeBoldText = false
-        yPosition += 15f
-
-        canvas.drawText("1. Layout Lokasi", leftMargin + 10f, yPosition, paint)
-        yPosition += 12f
-        canvas.drawText("2. Foto Dokumentasi", leftMargin + 10f, yPosition, paint)
-        yPosition += 12f
-        canvas.drawText("3. Proposed Penempatan", leftMargin + 10f, yPosition, paint)
     }
 
-    // Create a separate page for signatures to ensure they all fit and aren't cut off
-    private fun drawSignaturesPage(document: PdfDocument) {
-        val pageInfo = PdfDocument.PageInfo.Builder(612, 842, 2).create()
-        val page = document.startPage(pageInfo)
-        val canvas = page.canvas
+    private fun wrapText(text: String, paint: Paint, maxWidth: Float): List<String> {
+        val result = ArrayList<String>()
+        val words = text.split(" ")
+
+        var currentLine = StringBuilder()
+
+        for (word in words) {
+            val testLine = if (currentLine.isEmpty()) word else "${currentLine} $word"
+            val testWidth = paint.measureText(testLine)
+
+            if (testWidth <= maxWidth) {
+                currentLine = StringBuilder(testLine)
+            } else {
+                result.add(currentLine.toString())
+                currentLine = StringBuilder(word)
+            }
+        }
+
+        if (currentLine.isNotEmpty()) {
+            result.add(currentLine.toString())
+        }
+
+        return result
+    }
+
+    private fun drawTableHeader(canvas: Canvas, paint: Paint, x: Float, y: Float) {
+        val pageWidth = 612f
+        val leftMargin = x
+        val rightMargin = pageWidth - x
+        val headerHeight = 30f
+
+        // Draw header background
+        paint.color = Color.parseColor("#1e88e5")
+        canvas.drawRect(leftMargin, y, rightMargin, y + headerHeight, paint)
+
+        // Calculate column widths
+        val availableWidth = rightMargin - leftMargin
+        val col1Width = availableWidth * 0.35f
+        val col2Width = availableWidth * 0.15f
+        val col3Width = availableWidth * 0.25f
+        val col4Width = availableWidth * 0.25f
+
+        // Draw header text
+        paint.color = Color.WHITE
+        paint.textSize = 10f
+        paint.isFakeBoldText = true
+
+        canvas.drawText("SPESIFIKASI DAN KEBUTUHAN", leftMargin + 5f, y + 20f, paint)
+        canvas.drawText("PM/PBM", leftMargin + col1Width + 5f, y + 20f, paint)
+        canvas.drawText("HASIL SURVEY", leftMargin + col1Width + col2Width + 5f, y + 20f, paint)
+        canvas.drawText("KESEPAKATAN/PROPOSED", leftMargin + col1Width + col2Width + col3Width + 5f, y + 20f, paint)
+
+        paint.isFakeBoldText = false
+
+        // Draw header borders
+        paint.color = Color.BLACK
+        paint.strokeWidth = 1f
+
+        // Horizontal lines
+        canvas.drawLine(leftMargin, y, rightMargin, y, paint)
+        canvas.drawLine(leftMargin, y + headerHeight, rightMargin, y + headerHeight, paint)
+
+        // Vertical lines
+        canvas.drawLine(leftMargin, y, leftMargin, y + headerHeight, paint)
+        canvas.drawLine(leftMargin + col1Width, y, leftMargin + col1Width, y + headerHeight, paint)
+        canvas.drawLine(leftMargin + col1Width + col2Width, y, leftMargin + col1Width + col2Width, y + headerHeight, paint)
+        canvas.drawLine(leftMargin + col1Width + col2Width + col3Width, y, leftMargin + col1Width + col2Width + col3Width, y + headerHeight, paint)
+        canvas.drawLine(rightMargin, y, rightMargin, y + headerHeight, paint)
+    }
+
+    private fun drawTableRow(canvas: Canvas, paint: Paint, x: Float, y: Float,
+                             spec: String, pmPbm: String, result: String, proposed: String): Float {
+        val pageWidth = 612f
+        val leftMargin = x
+        val rightMargin = pageWidth - x
+
+        // Calculate column widths
+        val availableWidth = rightMargin - leftMargin
+        val col1Width = availableWidth * 0.35f
+        val col2Width = availableWidth * 0.15f
+        val col3Width = availableWidth * 0.25f
+        val col4Width = availableWidth * 0.25f
+
+        paint.textSize = 9f
+
+        // Split text for each column to handle wrapping
+        val specLines = wrapText(spec, paint, col1Width - 10f)
+        val resultLines = wrapText(result, paint, col3Width - 10f)
+        val proposedLines = wrapText(proposed, paint, col4Width - 10f)
+
+        // Calculate row height based on content
+        val lineHeight = 12f
+        val maxLines = maxOf(specLines.size, resultLines.size, proposedLines.size, 1)
+        val rowHeight = maxOf(maxLines * lineHeight + 6f, 30f) // Minimum height
+
+        // Draw cell backgrounds
+        paint.color = Color.WHITE
+        canvas.drawRect(leftMargin, y, rightMargin, y + rowHeight, paint)
+
+        // Draw text
+        paint.color = Color.BLACK
+
+        // Draw specification text
+        for (i in specLines.indices) {
+            canvas.drawText(specLines[i], leftMargin + 5f, y + 15f + (i * lineHeight), paint)
+        }
+
+        // Draw PM/PBM text (centered)
+        val pmPbmX = leftMargin + col1Width + (col2Width / 2) - (paint.measureText(pmPbm) / 2)
+        canvas.drawText(pmPbm, pmPbmX, y + 15f, paint)
+
+        // Draw result text
+        for (i in resultLines.indices) {
+            canvas.drawText(resultLines[i], leftMargin + col1Width + col2Width + 5f, y + 15f + (i * lineHeight), paint)
+        }
+
+        // Draw proposed text
+        for (i in proposedLines.indices) {
+            canvas.drawText(proposedLines[i], leftMargin + col1Width + col2Width + col3Width + 5f, y + 15f + (i * lineHeight), paint)
+        }
+
+        // Draw cell borders
+        paint.color = Color.BLACK
+        paint.strokeWidth = 1f
+
+        // Horizontal lines
+        canvas.drawLine(leftMargin, y, rightMargin, y, paint)
+        canvas.drawLine(leftMargin, y + rowHeight, rightMargin, y + rowHeight, paint)
+
+        // Vertical lines
+        canvas.drawLine(leftMargin, y, leftMargin, y + rowHeight, paint)
+        canvas.drawLine(leftMargin + col1Width, y, leftMargin + col1Width, y + rowHeight, paint)
+        canvas.drawLine(leftMargin + col1Width + col2Width, y, leftMargin + col1Width + col2Width, y + rowHeight, paint)
+        canvas.drawLine(leftMargin + col1Width + col2Width + col3Width, y, leftMargin + col1Width + col2Width + col3Width, y + rowHeight, paint)
+        canvas.drawLine(rightMargin, y, rightMargin, y + rowHeight, paint)
+
+        // Return next y position
+        return y + rowHeight
+    }
+
+    private fun drawSignaturesPageContent(canvas: Canvas) {
         val paint = Paint()
+        paint.color = Color.BLACK
 
         // Set initial positions and constants
         val pageWidth = 612f
@@ -1395,461 +1876,328 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         // Draw page title
         paint.textSize = 16f
-        paint.color = Color.BLACK
         paint.isFakeBoldText = true
         paint.textAlign = Paint.Align.CENTER
-        canvas.drawText("Signatures", pageWidth / 2, yPosition, paint)
+        canvas.drawText("TANDA TANGAN PERSETUJUAN", pageWidth / 2, yPosition, paint)
         paint.isFakeBoldText = false
         paint.textAlign = Paint.Align.LEFT
         yPosition += 40f
 
-        // Get Telkomsel Region text safely
-        val tselRegionText = try {
-            findViewById<EditText>(R.id.etTselRegion)?.text?.toString() ?: "REGION"
-        } catch (e: Exception) {
-            "REGION"
-        }
+        // Calculate dimensions for a 3×2 grid layout with improved spacing
+        val availableWidth = rightMargin - leftMargin
+        val boxWidth = availableWidth / 3f - 10f  // Slightly wider boxes
+        val boxHeight = 150f  // Taller boxes for better signature display
+        val horizontalGap = 15f
+        val verticalGap = 20f
 
-        // Draw signature boxes with actual signatures - use a 2x3 grid for better visibility
-        val tableWidth = rightMargin - leftMargin
-        val signatureWidth = (tableWidth - 20f) / 2  // 2 columns
+        // First row: Platform company, Telkom, TIF
+        drawSignatureBox(canvas, paint,
+            leftMargin, yPosition,
+            platformDropdown.text.toString(), "TIM SURVEY",
+            etZteName.text.toString(), boxWidth, boxHeight,
+            imgZteSignature,
+            "NIP. " + etZteNik.text.toString())
 
-        // First row of signatures - 2 signatures per row
-        drawSignatureBoxWithImage(canvas, paint, leftMargin, yPosition,
-            "PT. ZTE INDONESIA", "TIM SURVEY",
-            etZteName.text.toString(), signatureWidth,
-            imgZteSignature)
-
-        drawSignatureBoxWithImage(canvas, paint, leftMargin + signatureWidth + 20f, yPosition,
-            "PT. TELKOMSEL", "MGR NOP\n" + tselRegionText,
-            etTselNopName.text.toString(), signatureWidth,
-            imgTselNopSignature)
-
-        yPosition += 120f // More space between rows
-
-        // Second row of signatures
-        drawSignatureBoxWithImage(canvas, paint, leftMargin, yPosition,
-            "PT. TELKOMSEL", "MGR RTPDS\n" + tselRegionText,
-            etTselRtpdsName.text.toString(), signatureWidth,
-            imgTselRtpdsSignature)
-
-        drawSignatureBoxWithImage(canvas, paint, leftMargin + signatureWidth + 20f, yPosition,
-            "PT. TELKOMSEL", "MGR RTPE\n" + tselRegionText,
-            etTselRtpeNfName.text.toString(), signatureWidth,
-            imgTselRtpeNfSignature)
-
-        yPosition += 120f // More space between rows
-
-        // Third row of signatures
-        drawSignatureBoxWithImage(canvas, paint, leftMargin, yPosition,
+        drawSignatureBox(canvas, paint,
+            leftMargin + boxWidth + horizontalGap, yPosition,
             "PT. TELKOM", "MGR NDPS TR1",
-            etTelkomName.text.toString(), signatureWidth,
-            imgTelkomSignature)
+            etTelkomName.text.toString(), boxWidth, boxHeight,
+            imgTelkomSignature,
+            "NIK. " + etTelkomNik.text.toString())
 
-        drawSignatureBoxWithImage(canvas, paint, leftMargin + signatureWidth + 20f, yPosition,
+        drawSignatureBox(canvas, paint,
+            leftMargin + (boxWidth + horizontalGap) * 2, yPosition,
             "PT. TIF", "TIM SURVEY",
-            etTifName.text.toString(), signatureWidth,
-            imgTifSignature)
+            etTifName.text.toString(), boxWidth, boxHeight,
+            imgTifSignature,
+            "NIK. " + etTifNik.text.toString())
 
-        document.finishPage(page)
+        // Second row: Telkomsel positions
+        yPosition += boxHeight + verticalGap
+
+        drawSignatureBox(canvas, paint,
+            leftMargin, yPosition,
+            "PT. TELKOMSEL", "MGR NOP\n" + tvTselRegion.text,
+            etTselNopName.text.toString(), boxWidth, boxHeight,
+            imgTselNopSignature,
+            "NIP. " + etTselNopNik.text.toString())
+
+        drawSignatureBox(canvas, paint,
+            leftMargin + boxWidth + horizontalGap, yPosition,
+            "PT. TELKOMSEL", "MGR RTPDS\n" + tvTselRegion.text,
+            etTselRtpdsName.text.toString(), boxWidth, boxHeight,
+            imgTselRtpdsSignature,
+            "NIP. " + etTselRtpdsNik.text.toString())
+
+        drawSignatureBox(canvas, paint,
+            leftMargin + (boxWidth + horizontalGap) * 2, yPosition,
+            "PT. TELKOMSEL", "MGR RTPE\n" + tvTselRegion.text,
+            etTselRtpeNfName.text.toString(), boxWidth, boxHeight,
+            imgTselRtpeNfSignature,
+            "NIP. " + etTselRtpeNfNik.text.toString())
     }
 
-    // High-quality signature image rendering
-    private fun drawSignatureBoxWithImage(canvas: Canvas, paint: Paint, x: Float, y: Float,
-                                          company: String, role: String, name: String, width: Float,
-                                          signatureImageView: ImageView) {
-
-        val height = 100f
-
-        // Draw box
-        paint.color = Color.WHITE
+    private fun drawSignatureBox(canvas: Canvas, paint: Paint, x: Float, y: Float,
+                                 company: String, role: String, name: String, width: Float, height: Float,
+                                 signatureImageView: ImageView, nipText: String) {
+        // Draw box with border
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 1f
         canvas.drawRect(x, y, x + width, y + height, paint)
 
-        // Draw border
-        paint.color = Color.BLACK
-        paint.strokeWidth = 1f
-        canvas.drawLine(x, y, x + width, y, paint)
-        canvas.drawLine(x, y, x, y + height, paint)
-        canvas.drawLine(x + width, y, x + width, y + height, paint)
-        canvas.drawLine(x, y + height, x + width, y + height, paint)
+        // Set text style
+        paint.style = Paint.Style.FILL
+        paint.textSize = 11f
 
-        // Draw text
-        paint.textSize = 10f
+        // Draw company name
         paint.isFakeBoldText = true
         canvas.drawText(company, x + 5f, y + 15f, paint)
         paint.isFakeBoldText = false
 
-        // Draw role on multiple lines if needed
+        // Draw role (with multi-line support)
         val roleLines = role.split("\n")
         for (i in roleLines.indices) {
-            canvas.drawText(roleLines[i], x + 5f, y + 30f + (i * 12f), paint)
+            canvas.drawText(roleLines[i], x + 5f, y + 30f + (i * 15f), paint)
         }
 
-        // Draw signature image if available - IMPROVED QUALITY
+        // Draw signature if available
         try {
             if (signatureImageView.visibility == View.VISIBLE && signatureImageView.drawable != null) {
-                // Convert ImageView's drawable to bitmap with high quality
                 val drawable = signatureImageView.drawable
                 if (drawable is BitmapDrawable && drawable.bitmap != null && !drawable.bitmap.isRecycled) {
-                    // Get original bitmap at full quality
+                    // Create high-quality signature rendering
                     val originalBitmap = drawable.bitmap
-
-                    // Scale the bitmap to fit in the box while maintaining quality
                     val signatureWidth = width - 20f
-                    val signatureHeight = 40f
+                    val signatureHeight = 60f // Make taller for better display
 
                     // Create a matrix for high-quality scaling
                     val matrix = Matrix()
                     val scaleX = signatureWidth / originalBitmap.width
                     val scaleY = signatureHeight / originalBitmap.height
-                    matrix.setScale(scaleX, scaleY)
+                    val scale = Math.min(scaleX, scaleY) // Maintain aspect ratio
+                    matrix.setScale(scale, scale)
 
-                    // Create a new bitmap with the correct size and high quality
+                    // Create a new bitmap with proper quality
                     val scaledBitmap = Bitmap.createBitmap(
                         signatureWidth.toInt(),
                         signatureHeight.toInt(),
                         Bitmap.Config.ARGB_8888
                     )
 
-                    // Draw the original bitmap onto the scaled bitmap using a canvas
+                    // Draw the bitmap with high quality
                     val tempCanvas = Canvas(scaledBitmap)
-                    tempCanvas.drawBitmap(originalBitmap, matrix, paint)
+                    tempCanvas.drawColor(Color.WHITE) // White background
+                    val xOffset = (signatureWidth - (originalBitmap.width * scale)) / 2
+                    val yOffset = (signatureHeight - (originalBitmap.height * scale)) / 2
+                    matrix.postTranslate(xOffset, yOffset)
 
-                    // Draw with anti-aliasing to make it smoother
-                    paint.isAntiAlias = true
-                    paint.isFilterBitmap = true
+                    // Anti-aliased drawing
+                    val renderPaint = Paint().apply {
+                        isAntiAlias = true
+                        isFilterBitmap = true
+                        isDither = true
+                    }
 
-                    // Draw the high-quality scaled bitmap
-                    canvas.drawBitmap(scaledBitmap, x + 10f, y + 40f, paint)
+                    tempCanvas.drawBitmap(originalBitmap, matrix, renderPaint)
+
+                    // Draw the signature onto the PDF
+                    canvas.drawBitmap(scaledBitmap, x + 10f, y + 45f, renderPaint)
                 } else {
                     // Draw signature line if bitmap not available
-                    canvas.drawLine(x + 10f, y + 60f, x + width - 10f, y + 60f, paint)
+                    canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
                 }
             } else {
-                // Draw signature line if no image
-                canvas.drawLine(x + 10f, y + 60f, x + width - 10f, y + 60f, paint)
+                // Draw signature line
+                canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
             }
         } catch (e: Exception) {
-            Log.e("PDF Generation", "Error drawing signature: ${e.message}")
-            // If we can't draw the signature, add a signature line instead
-            canvas.drawLine(x + 10f, y + 60f, x + width - 10f, y + 60f, paint)
+            // Draw signature line as fallback
+            canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
+            Log.e("PDF", "Error drawing signature: ${e.message}")
         }
 
         // Draw name
-        canvas.drawText(name, x + 5f, y + 85f, paint)
+        paint.textSize = 11f
+        canvas.drawText(name, x + 5f, y + height - 25f, paint)
+
+        // Draw NIP/NIK
+        paint.textSize = 9f
+        canvas.drawText(nipText, x + 5f, y + height - 10f, paint)
     }
 
-    // Completely revised photo rendering method for PDF - 2 photos per page for better quality
-    private fun drawPhotoContentPages(document: PdfDocument) {
-        // Count available photos
-        val availablePhotos = ArrayList<Int>()
-        for (i in 0 until photoImageViews.size) {
-            if (photoImageViews[i].visibility == View.VISIBLE &&
-                photoUris.containsKey(i) &&
-                photoImageViews[i].drawable != null) {
-                availablePhotos.add(i)
-            }
-        }
+    private fun drawPhotosPageContent(canvas: Canvas, photoPageIndex: Int) {
+        val paint = Paint()
+        paint.color = Color.BLACK
 
-        // Return if no photos
-        if (availablePhotos.isEmpty()) {
-            val pageInfo = PdfDocument.PageInfo.Builder(612, 842, 3).create()
-            val page = document.startPage(pageInfo)
-            val canvas = page.canvas
-            val paint = Paint()
-
-            paint.textSize = 16f
-            paint.color = Color.BLACK
-            paint.isFakeBoldText = true
-            paint.textAlign = Paint.Align.CENTER
-            canvas.drawText("FOTO DOKUMENTASI", 612f / 2, 60f, paint)
-            paint.isFakeBoldText = false
-            paint.textAlign = Paint.Align.LEFT
-
-            paint.textSize = 12f
-            canvas.drawText("No photos have been uploaded.", 40f, 100f, paint)
-
-            document.finishPage(page)
-            return
-        }
-
-        // Constants for photo layout - 2 photos per page
-        val photosPerPage = 2
+        // Set positions and constants
         val pageWidth = 612f
         val leftMargin = 40f
         val rightMargin = pageWidth - 40f
-        val availableWidth = rightMargin - leftMargin
-        val columnWidth = (availableWidth - 20f) / 2  // Split width with 20pt gap
-        val maxPhotoHeight = 320f  // Taller for better quality
+        var yPosition = 120f  // Start below header
 
-        // Process photos in pairs
-        var pageCount = 3
-        var currentPhotoIndex = 0
+        // Draw page title
+        paint.textSize = 16f
+        paint.isFakeBoldText = true
+        paint.textAlign = Paint.Align.CENTER
+        canvas.drawText("DOKUMENTASI FOTO", pageWidth / 2, yPosition, paint)
+        paint.isFakeBoldText = false
+        paint.textAlign = Paint.Align.LEFT
+        yPosition += 40f
 
-        while (currentPhotoIndex < availablePhotos.size) {
-            // Create a new page
-            val pageInfo = PdfDocument.PageInfo.Builder(612, 842, pageCount++).create()
-            val page = document.startPage(pageInfo)
-            val canvas = page.canvas
-            val paint = Paint()
+        // Calculate available photos for this page
+        val photosPerPage = 2
+        val startPhotoIndex = photoPageIndex * photosPerPage
+        val availablePhotos = ArrayList<Int>()
 
-            // Draw page title
-            paint.textSize = 16f
-            paint.color = Color.BLACK
+        // Collect available photo indices
+        for (i in photoUris.keys) {
+            availablePhotos.add(i)
+        }
+
+        availablePhotos.sort()
+
+        // Draw photos for this page (up to 2)
+        val photosOnThisPage = availablePhotos.filter {
+            it >= startPhotoIndex && it < startPhotoIndex + photosPerPage
+        }
+
+        if (photosOnThisPage.isEmpty()) {
+            // No photos to show on this page
+            paint.textSize = 12f
+            canvas.drawText("No more photos available.", leftMargin, yPosition + 50f, paint)
+            return
+        }
+
+        // Initialize photo dimensions
+        val photoWidth = (rightMargin - leftMargin)
+        val photoHeight = 250f
+
+        // Draw each photo
+        for (i in photosOnThisPage.indices) {
+            val photoIndex = photosOnThisPage[i]
+            val uri = photoUris[photoIndex]
+
+            // Draw photo label
+            val photoNum = photoIndex + 1
+            val photoLabel = if (photoIndex < photoLabels.size) photoLabels[photoIndex] else "Photo $photoNum"
+
+            paint.textSize = 12f
             paint.isFakeBoldText = true
-            paint.textAlign = Paint.Align.CENTER
-            canvas.drawText("FOTO DOKUMENTASI", pageWidth / 2, 60f, paint)
+            canvas.drawText("$photoNum. $photoLabel", leftMargin, yPosition, paint)
             paint.isFakeBoldText = false
-            paint.textAlign = Paint.Align.LEFT
-            var yPosition = 100f
+            yPosition += 20f
 
-            // Process photos for this page (up to 2)
-            for (column in 0 until photosPerPage) {
-                if (currentPhotoIndex >= availablePhotos.size) break
-
-                val photoIdx = availablePhotos[currentPhotoIndex]
-                val uri = photoUris[photoIdx] ?: continue
-                val xStart = leftMargin + (column * (columnWidth + 20f))
-
+            // Draw photo
+            if (uri != null) {
                 try {
-                    // Draw label
-                    paint.textSize = 12f
-                    paint.isFakeBoldText = true
-                    val label = if (photoIdx < photoLabels.size) photoLabels[photoIdx] else "Photo ${photoIdx+1}"
-                    canvas.drawText("${photoIdx+1}. $label", xStart, yPosition, paint)
-                    paint.isFakeBoldText = false
+                    // Load photo bitmap with optimal quality
+                    val options = BitmapFactory.Options().apply {
+                        inPreferredConfig = Bitmap.Config.ARGB_8888
+                        inJustDecodeBounds = true
+                    }
 
-                    // Load high quality bitmap for PDF
-                    val bitmap = ImageUtils.loadBitmapForPDF(this, uri)
+                    // Get dimensions first
+                    contentResolver.openInputStream(uri)?.use { input ->
+                        BitmapFactory.decodeStream(input, null, options)
+                    }
 
-                    if (bitmap != null) {
-                        // Calculate dimensions preserving aspect ratio
-                        val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
-                        var finalWidth: Float
-                        var finalHeight: Float
+                    // Calculate scaling
+                    val photoScaleFactor = calculateScaleFactor(
+                        options.outWidth, options.outHeight,
+                        photoWidth.toInt(), photoHeight.toInt()
+                    )
 
-                        if (aspectRatio > 1) { // Landscape
-                            finalWidth = columnWidth
-                            finalHeight = finalWidth / aspectRatio
-                            if (finalHeight > maxPhotoHeight) {
-                                finalHeight = maxPhotoHeight
-                                finalWidth = finalHeight * aspectRatio
-                            }
+                    // Load actual bitmap
+                    options.apply {
+                        inJustDecodeBounds = false
+                        inSampleSize = photoScaleFactor
+                    }
+
+                    val photoBitmap = contentResolver.openInputStream(uri)?.use { input ->
+                        BitmapFactory.decodeStream(input, null, options)
+                    }
+
+                    if (photoBitmap != null) {
+                        // Calculate display dimensions maintaining aspect ratio
+                        val displayWidth: Float
+                        val displayHeight: Float
+
+                        val bitmapRatio = photoBitmap.width.toFloat() / photoBitmap.height.toFloat()
+
+                        if (bitmapRatio > 1) { // Landscape
+                            displayWidth = photoWidth.coerceAtMost(photoBitmap.width.toFloat())
+                            displayHeight = displayWidth / bitmapRatio
                         } else { // Portrait
-                            finalHeight = maxPhotoHeight
-                            finalWidth = finalHeight * aspectRatio
-                            if (finalWidth > columnWidth) {
-                                finalWidth = columnWidth
-                                finalHeight = finalWidth / aspectRatio
-                            }
+                            displayHeight = photoHeight.coerceAtMost(photoBitmap.height.toFloat())
+                            displayWidth = displayHeight * bitmapRatio
                         }
 
-                        // Center image in column
-                        val xOffset = xStart + ((columnWidth - finalWidth) / 2)
-                        val imageY = yPosition + 20f
+                        // Center the photo
+                        val xOffset = leftMargin + (photoWidth - displayWidth) / 2
 
-                        // HIGH-QUALITY RENDERING
-                        val renderOptions = Paint().apply {
+                        // Draw with high quality
+                        val renderPaint = Paint().apply {
                             isFilterBitmap = true
                             isAntiAlias = true
-                            isDither = true
                         }
 
-                        // Draw the bitmap using RectF for smoother scaling
-                        val rect = RectF(xOffset, imageY, xOffset + finalWidth, imageY + finalHeight)
-                        canvas.drawBitmap(bitmap, null, rect, renderOptions)
+                        val displayRect = RectF(
+                            xOffset,
+                            yPosition,
+                            xOffset + displayWidth,
+                            yPosition + displayHeight
+                        )
 
-                        // Draw border
+                        canvas.drawBitmap(photoBitmap, null, displayRect, renderPaint)
+
+                        // Add border
                         paint.style = Paint.Style.STROKE
-                        paint.color = Color.BLACK
                         paint.strokeWidth = 1f
-                        canvas.drawRect(rect, paint)
+                        paint.color = Color.BLACK
+                        canvas.drawRect(displayRect, paint)
                         paint.style = Paint.Style.FILL
 
-                        // Recycle the bitmap to prevent memory leaks
-                        bitmap.recycle()
+                        // Move to next position
+                        yPosition += displayHeight + 30f
+
                     } else {
-                        canvas.drawText("Error loading image", xStart, yPosition + 30f, paint)
+                        // Draw placeholder text
+                        canvas.drawText("Unable to load photo", leftMargin, yPosition + 50f, paint)
+                        yPosition += 100f
                     }
+
                 } catch (e: Exception) {
-                    Log.e("PDF Photos", "Error processing photo ${photoIdx+1}: ${e.message}")
-                    canvas.drawText("Error processing image", xStart, yPosition + 30f, paint)
+                    // Draw error text
+                    canvas.drawText("Error loading photo: ${e.message}", leftMargin, yPosition + 50f, paint)
+                    yPosition += 100f
                 }
-
-                currentPhotoIndex++
-            }
-
-            document.finishPage(page)
-        }
-    }
-
-    // Fixed table header function to prevent text overlap
-    private fun drawTableHeader(canvas: Canvas, paint: Paint, x: Float, y: Float, col1Width: Float, col2Width: Float, col3Width: Float, col4Width: Float) {
-        val headerHeight = 25f
-
-        // Draw header background
-        paint.color = Color.parseColor("#1e88e5")
-        canvas.drawRect(x, y, x + col1Width + col2Width + col3Width + col4Width, y + headerHeight, paint)
-
-        // Draw header text - use smaller font size to prevent overlap
-        paint.color = Color.WHITE
-        paint.textSize = 8f  // Smaller text size
-        paint.isFakeBoldText = true
-
-        canvas.drawText("SPESIFIKASI DAN KEBUTUHAN", x + 5f, y + 17f, paint)
-        canvas.drawText("PM/PBM", x + col1Width + 5f, y + 17f, paint)
-        canvas.drawText("HASIL SURVEY", x + col1Width + col2Width + 5f, y + 17f, paint)
-        canvas.drawText("KESEPAKATAN/PROPOSED", x + col1Width + col2Width + col3Width + 5f, y + 17f, paint)
-
-        paint.isFakeBoldText = false
-
-        // Draw header borders
-        paint.color = Color.BLACK
-        paint.strokeWidth = 1f
-        canvas.drawLine(x, y, x + col1Width + col2Width + col3Width + col4Width, y, paint)
-        canvas.drawLine(x, y + headerHeight, x + col1Width + col2Width + col3Width + col4Width, y + headerHeight, paint)
-        canvas.drawLine(x, y, x, y + headerHeight, paint)
-        canvas.drawLine(x + col1Width, y, x + col1Width, y + headerHeight, paint)
-        canvas.drawLine(x + col1Width + col2Width, y, x + col1Width + col2Width, y + headerHeight, paint)
-        canvas.drawLine(x + col1Width + col2Width + col3Width, y, x + col1Width + col2Width + col3Width, y + headerHeight, paint)
-        canvas.drawLine(x + col1Width + col2Width + col3Width + col4Width, y, x + col1Width + col2Width + col3Width + col4Width, y + headerHeight, paint)
-    }
-
-    // Fixed table row function to properly handle long text
-    private fun drawTableRow(canvas: Canvas, paint: Paint, x: Float, y: Float,
-                             spec: String, pmPbm: String, result: String, proposed: String,
-                             col1Width: Float, col2Width: Float, col3Width: Float, col4Width: Float): Float {
-
-        // Set smaller font size for potentially long text
-        paint.textSize = 8f  // Smaller text to fit more content
-
-        // Calculate row height based on content length with improved text wrapping
-        val textWidth1 = col1Width - 10f
-        val textWidth3 = col3Width - 10f
-        val textWidth4 = col4Width - 10f
-
-        // Split text into multiple lines with proper word wrapping
-        val specLines = getMultiLineTextImproved(spec, paint, textWidth1)
-        val resultLines = getMultiLineTextImproved(result, paint, textWidth3)
-        val proposedLines = getMultiLineTextImproved(proposed, paint, textWidth4)
-
-        val maxLines = maxOf(specLines.size, resultLines.size, proposedLines.size, 1)
-        val lineHeight = 12f  // Slightly smaller line height for compact text
-        val rowHeight = maxLines * lineHeight + 10f
-
-        // Draw row background
-        paint.color = Color.WHITE
-        canvas.drawRect(x, y, x + col1Width + col2Width + col3Width + col4Width, y + rowHeight, paint)
-
-        // Draw row text
-        paint.color = Color.BLACK
-
-        // Draw spec text
-        for (i in specLines.indices) {
-            canvas.drawText(specLines[i], x + 5f, y + 12f + (i * lineHeight), paint)
-        }
-
-        // Draw PM/PBM
-        canvas.drawText(pmPbm, x + col1Width + 5f, y + 12f, paint)
-
-        // Draw result text
-        for (i in resultLines.indices) {
-            canvas.drawText(resultLines[i], x + col1Width + col2Width + 5f, y + 12f + (i * lineHeight), paint)
-        }
-
-        // Draw proposed text
-        for (i in proposedLines.indices) {
-            canvas.drawText(proposedLines[i], x + col1Width + col2Width + col3Width + 5f, y + 12f + (i * lineHeight), paint)
-        }
-
-        // Draw row borders
-        paint.color = Color.BLACK
-        paint.strokeWidth = 1f
-        canvas.drawLine(x, y, x + col1Width + col2Width + col3Width + col4Width, y, paint)
-        canvas.drawLine(x, y + rowHeight, x + col1Width + col2Width + col3Width + col4Width, y + rowHeight, paint)
-        canvas.drawLine(x, y, x, y + rowHeight, paint)
-        canvas.drawLine(x + col1Width, y, x + col1Width, y + rowHeight, paint)
-        canvas.drawLine(x + col1Width + col2Width, y, x + col1Width + col2Width, y + rowHeight, paint)
-        canvas.drawLine(x + col1Width + col2Width + col3Width, y, x + col1Width + col2Width + col3Width, y + rowHeight, paint)
-        canvas.drawLine(x + col1Width + col2Width + col3Width + col4Width, y, x + col1Width + col2Width + col3Width + col4Width, y + rowHeight, paint)
-
-        return y + rowHeight
-    }
-
-    // Improved text wrapping function that handles long text better
-    private fun getMultiLineTextImproved(text: String, paint: Paint, maxWidth: Float): List<String> {
-        val lines = ArrayList<String>()
-        if (text.isEmpty()) {
-            lines.add("")
-            return lines
-        }
-
-        // Handle very long text with no spaces
-        if (!text.contains(" ")) {
-            val chars = text.toCharArray()
-            val stringBuilder = StringBuilder()
-
-            for (char in chars) {
-                val testStr = stringBuilder.toString() + char
-                if (paint.measureText(testStr) <= maxWidth) {
-                    stringBuilder.append(char)
-                } else {
-                    lines.add(stringBuilder.toString())
-                    stringBuilder.clear()
-                    stringBuilder.append(char)
-                }
-            }
-
-            if (stringBuilder.isNotEmpty()) {
-                lines.add(stringBuilder.toString())
-            }
-
-            return lines
-        }
-
-        // Normal word-based wrapping
-        val words = text.split(" ")
-        var currentLine = StringBuilder(words[0])
-
-        for (i in 1 until words.size) {
-            val word = words[i]
-            val testLine = "${currentLine} $word"
-            val testWidth = paint.measureText(testLine)
-
-            if (testWidth <= maxWidth) {
-                currentLine.append(" ").append(word)
             } else {
-                // Check if single word is too long
-                if (currentLine.isEmpty() || currentLine.toString() == words[i-1]) {
-                    val longWord = word
-                    var subWord = ""
+                // Draw placeholder
+                paint.style = Paint.Style.STROKE
+                canvas.drawRect(leftMargin, yPosition, leftMargin + photoWidth, yPosition + photoHeight, paint)
+                paint.style = Paint.Style.FILL
+                canvas.drawText("No photo available", leftMargin + 50f, yPosition + 50f, paint)
+                yPosition += photoHeight + 30f
+            }
+        }
+    }
 
-                    for (char in longWord) {
-                        if (paint.measureText(subWord + char) <= maxWidth) {
-                            subWord += char
-                        } else {
-                            lines.add(subWord)
-                            subWord = char.toString()
-                        }
-                    }
+    // Helper function to calculate optimal scale factor for bitmap decoding
+    private fun calculateScaleFactor(originalWidth: Int, originalHeight: Int, targetWidth: Int, targetHeight: Int): Int {
+        var inSampleSize = 1
 
-                    if (subWord.isNotEmpty()) {
-                        currentLine = StringBuilder(subWord)
-                    } else {
-                        currentLine = StringBuilder()
-                    }
-                } else {
-                    lines.add(currentLine.toString())
-                    currentLine = StringBuilder(word)
-                }
+        if (originalHeight > targetHeight || originalWidth > targetWidth) {
+            val halfHeight = originalHeight / 2
+            val halfWidth = originalWidth / 2
+
+            // Calculate the largest inSampleSize that is a power of 2 and keeps both
+            // height and width larger than the requested height and width
+            while ((halfHeight / inSampleSize) >= targetHeight && (halfWidth / inSampleSize) >= targetWidth) {
+                inSampleSize *= 2
             }
         }
 
-        if (currentLine.isNotEmpty()) {
-            lines.add(currentLine.toString())
-        }
-
-        return lines
+        return inSampleSize
     }
 
     private fun showSuccessDialog() {
@@ -1867,9 +2215,21 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Clear all form fields
         etLocation.text.clear()
         etNoIhld.text.clear()
-        etPlatform.text.clear()
+        platformDropdown.text.clear()
         etSiteProvider.text.clear()
         etContractNumber.text.clear()
+
+        // Reset PM/PBM dropdowns
+        rackDropdown.setText("PM", false)
+        rectifierDropdown.setText("PBM", false)
+        dcPowerDropdown.setText("PBM", false)
+        batteryDropdown.setText("PBM", false)
+        mcbDropdown.setText("PM", false)
+        groundingDropdown.setText("PM", false)
+        indoorRoomDropdown.setText("PM", false)
+        acPowerDropdown.setText("PM", false)
+        uplinkDropdown.setText("PBM", false)
+        conduitDropdown.setText("PM", false)
 
         // Clear table inputs
         etRackResult.text.clear()
@@ -1901,6 +2261,14 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         etTelkomName.text.clear()
         etTifName.text.clear()
         tvTselRegion.text.clear()
+
+        // Clear NIK fields
+        etZteNik.text.clear()
+        etTselNopNik.text.clear()
+        etTselRtpdsNik.text.clear()
+        etTselRtpeNfNik.text.clear()
+        etTelkomNik.text.clear()
+        etTifNik.text.clear()
 
         // Clear signature image views
         imgZteSignature.visibility = View.GONE
