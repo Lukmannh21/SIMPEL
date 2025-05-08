@@ -109,6 +109,21 @@
                             android:textColor="@android:color/black"
                             android:layout_marginBottom="16dp"/>
 
+                        <!-- Header Number -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <EditText
+                                android:id="@+id/etHeaderNo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Header No. (e.g., JBI-PT3-MAB-FY-JAMBI_Kuning Gading)"
+                                android:inputType="text"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
                         <!-- Location -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"

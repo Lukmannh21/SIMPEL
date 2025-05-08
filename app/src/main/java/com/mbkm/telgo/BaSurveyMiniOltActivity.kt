@@ -62,6 +62,8 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     private lateinit var searchContainer: CardView
     private lateinit var btnBack: ImageButton
 
+    private lateinit var etHeaderNo: EditText
+
     // Form input fields
     private lateinit var etLocation: EditText
     private lateinit var etNoIhld: EditText
@@ -393,6 +395,10 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         imgTselRtpeNfSignature = findViewById(R.id.imgTselRtpeNfSignature)
         imgTelkomSignature = findViewById(R.id.imgTelkomSignature)
         imgTifSignature = findViewById(R.id.imgTifSignature)
+
+
+        // Dan inisialisasi di initializeUI()
+        etHeaderNo = findViewById(R.id.etHeaderNo)
 
         // Photo containers, buttons and image views
         try {
@@ -1468,46 +1474,85 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Create PDF document
         val document = PdfDocument()
 
-        // Create pages - with new header table and footers
-        val pageCount = calculateRequiredPages()
-        for (i in 0 until pageCount) {
-            val pageNumber = i + 1
-            val pageInfo = PdfDocument.PageInfo.Builder(612, 842, pageNumber).create()
+        // Page 1: Form content with complete header
+        val pageInfo1 = PdfDocument.PageInfo.Builder(612, 842, 1).create()
+        val page1 = document.startPage(pageInfo1)
+        val canvas1 = page1.canvas
+
+        // Draw header table on first page only
+        drawHeaderTable(canvas1, etHeaderNo.text.toString())
+
+        // Draw main content with appropriate starting position
+        drawFirstPageContent(canvas1)
+
+        // Draw footer
+        drawPageFooter(canvas1, 1)
+        document.finishPage(page1)
+
+        // Page 2: Signatures (without header table, only title)
+        val pageInfo2 = PdfDocument.PageInfo.Builder(612, 842, 2).create()
+        val page2 = document.startPage(pageInfo2)
+        val canvas2 = page2.canvas
+
+        // Draw only simple title, not full header
+        drawSimplePageTitle(canvas2, "TANDA TANGAN PERSETUJUAN")
+
+        // Draw signatures content
+        drawSignaturesPageContent(canvas2)
+
+        // Draw footer
+        drawPageFooter(canvas2, 2)
+        document.finishPage(page2)
+
+        // Photo pages: 4 photos per page
+        val photoCount = photoUris.size
+        val photosPerPage = 4 // Ditingkatkan dari 2 ke 4 foto per halaman
+        val photoPages = if (photoCount > 0) (photoCount + photosPerPage - 1) / photosPerPage else 0
+
+        for (i in 0 until photoPages) {
+            val pageNum = i + 3
+            val pageInfo = PdfDocument.PageInfo.Builder(612, 842, pageNum).create()
             val page = document.startPage(pageInfo)
-            val canvas = page.canvas
 
-            // Draw header table on all pages except signature page
-            if (i != 1) { // Assuming page 2 (index 1) is the signature page
-                drawHeaderTable(canvas, etNoIhld.text.toString())
-            }
+            // Draw only simple title, not full header
+            drawSimplePageTitle(page.canvas, "DOKUMENTASI FOTO")
 
-            // Draw content based on page number
-            when (i) {
-                0 -> drawFirstPageContent(canvas)
-                1 -> drawSignaturesPageContent(canvas)
-                else -> drawPhotosPageContent(canvas, i-2) // Photo pages start from page 3
-            }
+            // Draw photos - tetap menggunakan dua parameter sesuai signature asli
+            drawPhotosPageContent(page.canvas, i)
 
-            // Add footer to all pages
-            drawPageFooter(canvas, pageNumber)
-
+            // Draw footer
+            drawPageFooter(page.canvas, pageNum)
             document.finishPage(page)
         }
 
-        // Create file path for PDF
+        // Tulis PDF ke file
         val fileName = "BA_Survey_Mini_OLT_${etLocation.text}_${System.currentTimeMillis()}.pdf"
         val filePath = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
 
-        try {
-            val fos = FileOutputStream(filePath)
+        FileOutputStream(filePath).use { fos ->
             document.writeTo(fos)
-            fos.close()
-        } catch (e: Exception) {
-            Log.e("PDF Generation", "Error writing to PDF: ${e.message}")
         }
 
         document.close()
         return filePath
+    }
+
+    // Fungsi baru untuk judul sederhana tanpa tabel header kompleks
+    private fun drawSimplePageTitle(canvas: Canvas, title: String) {
+        val paint = Paint()
+        paint.color = Color.BLACK
+
+        // Set dimensions
+        val pageWidth = 612f
+        var yPosition = 50f
+
+        // Draw title
+        paint.textSize = 16f
+        paint.textAlign = Paint.Align.CENTER
+        paint.isFakeBoldText = true
+        canvas.drawText(title, pageWidth / 2, yPosition, paint)
+        paint.isFakeBoldText = false
+        paint.textAlign = Paint.Align.LEFT
     }
 
     private fun calculateRequiredPages(): Int {
@@ -1526,18 +1571,18 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         paint.color = Color.BLACK
         paint.textSize = 10f
 
+        // Dimensi untuk header
+        val pageWidth = 612f
+        val leftMargin = 40f
+        val rightMargin = pageWidth - 40f
+        var yPosition = 40f
+
         // Get logo based on platform choice
         val logo = when (platformDropdown.text.toString()) {
             "PT. ZTE INDONESIA" -> BitmapFactory.decodeResource(resources, R.drawable.logo_zte)
             "PT. Huawei Tech Investment" -> BitmapFactory.decodeResource(resources, R.drawable.logo_huawei)
             else -> BitmapFactory.decodeResource(resources, R.drawable.logo_zte)
         }
-
-        // Dimensions
-        val pageWidth = 612f
-        val leftMargin = 40f
-        val rightMargin = pageWidth - 40f
-        var yPosition = 40f
 
         // Draw logo
         if (logo != null) {
@@ -1562,30 +1607,44 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         paint.strokeWidth = 1f
 
         // First row
+        paint.style = Paint.Style.STROKE // Just draw borders, not filled rectangles
+
         // "Prepared" cell
         canvas.drawRect(leftMargin, tableTop, (leftMargin + rightMargin) / 2, tableTop + rowHeight, paint)
+        paint.style = Paint.Style.FILL // Switch back to fill style for text
         canvas.drawText("Prepared (also subject responsible if other)", leftMargin + 5f, tableTop + 17f, paint)
 
         // "No." cell
+        paint.style = Paint.Style.STROKE
         canvas.drawRect((leftMargin + rightMargin) / 2, tableTop, rightMargin, tableTop + rowHeight, paint)
+        paint.style = Paint.Style.FILL
         canvas.drawText("No.", (leftMargin + rightMargin) / 2 + 5f, tableTop + 17f, paint)
-        canvas.drawText(noIhld, (leftMargin + rightMargin) / 2 + 30f, tableTop + 17f, paint)
+        canvas.drawText(etHeaderNo.text.toString(), (leftMargin + rightMargin) / 2 + 30f, tableTop + 17f, paint)
 
         // Second row
+        paint.style = Paint.Style.STROKE
+
         // "Approved" cell
         canvas.drawRect(leftMargin, tableTop + rowHeight, (leftMargin + rightMargin) / 3, tableTop + rowHeight * 2, paint)
+        paint.style = Paint.Style.FILL
         canvas.drawText("Approved", leftMargin + 5f, tableTop + rowHeight + 17f, paint)
 
         // "Checked" cell
+        paint.style = Paint.Style.STROKE
         canvas.drawRect((leftMargin + rightMargin) / 3, tableTop + rowHeight, (leftMargin + rightMargin) * 2/3, tableTop + rowHeight * 2, paint)
+        paint.style = Paint.Style.FILL
         canvas.drawText("Checked", (leftMargin + rightMargin) / 3 + 5f, tableTop + rowHeight + 17f, paint)
 
         // "Date" cell
+        paint.style = Paint.Style.STROKE
         canvas.drawRect((leftMargin + rightMargin) * 2/3, tableTop + rowHeight, (leftMargin + rightMargin) * 5/6, tableTop + rowHeight * 2, paint)
+        paint.style = Paint.Style.FILL
         canvas.drawText("Date", (leftMargin + rightMargin) * 2/3 + 5f, tableTop + rowHeight + 17f, paint)
 
         // "Ref" cell
+        paint.style = Paint.Style.STROKE
         canvas.drawRect((leftMargin + rightMargin) * 5/6, tableTop + rowHeight, rightMargin, tableTop + rowHeight * 2, paint)
+        paint.style = Paint.Style.FILL
         canvas.drawText("Reference", (leftMargin + rightMargin) * 5/6 + 5f, tableTop + rowHeight + 17f, paint)
     }
 
@@ -1620,7 +1679,9 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Set initial positions and constants
         val pageWidth = 612f
         val leftMargin = 40f
-        var yPosition = 120f // Start below the header table
+
+        // PENTING: Mulai yPosition lebih jauh setelah header table
+        var yPosition = 180f // Sebelumnya 120f - tambahkan jarak yang cukup
 
         // Draw basic information with improved formatting
         paint.textSize = 11f
@@ -1960,50 +2021,52 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             canvas.drawText(roleLines[i], x + 5f, y + 30f + (i * 15f), paint)
         }
 
-        // Draw signature if available
+        // IMPROVED SIGNATURE RENDERING - Higher quality
         try {
             if (signatureImageView.visibility == View.VISIBLE && signatureImageView.drawable != null) {
                 val drawable = signatureImageView.drawable
                 if (drawable is BitmapDrawable && drawable.bitmap != null && !drawable.bitmap.isRecycled) {
-                    // Create high-quality signature rendering
+                    // Get the original bitmap in full quality
                     val originalBitmap = drawable.bitmap
-                    val signatureWidth = width - 20f
-                    val signatureHeight = 60f // Make taller for better display
 
-                    // Create a matrix for high-quality scaling
-                    val matrix = Matrix()
-                    val scaleX = signatureWidth / originalBitmap.width
-                    val scaleY = signatureHeight / originalBitmap.height
-                    val scale = Math.min(scaleX, scaleY) // Maintain aspect ratio
-                    matrix.setScale(scale, scale)
-
-                    // Create a new bitmap with proper quality
-                    val scaledBitmap = Bitmap.createBitmap(
-                        signatureWidth.toInt(),
-                        signatureHeight.toInt(),
-                        Bitmap.Config.ARGB_8888
-                    )
-
-                    // Draw the bitmap with high quality
-                    val tempCanvas = Canvas(scaledBitmap)
-                    tempCanvas.drawColor(Color.WHITE) // White background
-                    val xOffset = (signatureWidth - (originalBitmap.width * scale)) / 2
-                    val yOffset = (signatureHeight - (originalBitmap.height * scale)) / 2
-                    matrix.postTranslate(xOffset, yOffset)
-
-                    // Anti-aliased drawing
+                    // Prepare high-quality rendering
                     val renderPaint = Paint().apply {
-                        isAntiAlias = true
-                        isFilterBitmap = true
-                        isDither = true
+                        isAntiAlias = true  // Anti-aliasing for smoother edges
+                        isFilterBitmap = true  // Enable bitmap filtering for better scaling
+                        isDither = true  // Improve color rendering when downsampling
                     }
 
-                    tempCanvas.drawBitmap(originalBitmap, matrix, renderPaint)
+                    // Calculate dimensions maintaining aspect ratio
+                    val signatureWidth = width - 20f
+                    val signatureHeight = 60f
 
-                    // Draw the signature onto the PDF
-                    canvas.drawBitmap(scaledBitmap, x + 10f, y + 45f, renderPaint)
+                    // Determine scaling to fit while maintaining aspect ratio
+                    val originalRatio = originalBitmap.width.toFloat() / originalBitmap.height.toFloat()
+                    val targetRatio = signatureWidth / signatureHeight
+
+                    val scaledWidth: Float
+                    val scaledHeight: Float
+
+                    if (originalRatio > targetRatio) {
+                        // Width constrained
+                        scaledWidth = signatureWidth
+                        scaledHeight = signatureWidth / originalRatio
+                    } else {
+                        // Height constrained
+                        scaledHeight = signatureHeight
+                        scaledWidth = signatureHeight * originalRatio
+                    }
+
+                    // Position signature centered in available space
+                    val xOffset = x + 10f + (signatureWidth - scaledWidth) / 2
+                    val yOffset = y + 45f + (signatureHeight - scaledHeight) / 2
+
+                    // Define the target rectangle for drawing
+                    val destRect = RectF(xOffset, yOffset, xOffset + scaledWidth, yOffset + scaledHeight)
+
+                    // Draw with high quality rendering
+                    canvas.drawBitmap(originalBitmap, null, destRect, renderPaint)
                 } else {
-                    // Draw signature line if bitmap not available
                     canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
                 }
             } else {
@@ -2011,7 +2074,6 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                 canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
             }
         } catch (e: Exception) {
-            // Draw signature line as fallback
             canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
             Log.e("PDF", "Error drawing signature: ${e.message}")
         }
@@ -2025,27 +2087,20 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         canvas.drawText(nipText, x + 5f, y + height - 10f, paint)
     }
 
+    // Fungsi yang direvisi untuk menampilkan 4 foto per halaman dalam grid 2
     private fun drawPhotosPageContent(canvas: Canvas, photoPageIndex: Int) {
+        // Hard-coded 4 foto per halaman
+        val photosPerPage = 4
+
         val paint = Paint()
         paint.color = Color.BLACK
-
         // Set positions and constants
         val pageWidth = 612f
         val leftMargin = 40f
         val rightMargin = pageWidth - 40f
-        var yPosition = 120f  // Start below header
-
-        // Draw page title
-        paint.textSize = 16f
-        paint.isFakeBoldText = true
-        paint.textAlign = Paint.Align.CENTER
-        canvas.drawText("DOKUMENTASI FOTO", pageWidth / 2, yPosition, paint)
-        paint.isFakeBoldText = false
-        paint.textAlign = Paint.Align.LEFT
-        yPosition += 40f
+        var yPosition = 80f  // Start below simple title
 
         // Calculate available photos for this page
-        val photosPerPage = 2
         val startPhotoIndex = photoPageIndex * photosPerPage
         val availablePhotos = ArrayList<Int>()
 
@@ -2056,7 +2111,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         availablePhotos.sort()
 
-        // Draw photos for this page (up to 2)
+        // Photos on this page
         val photosOnThisPage = availablePhotos.filter {
             it >= startPhotoIndex && it < startPhotoIndex + photosPerPage
         }
@@ -2068,35 +2123,41 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             return
         }
 
-        // Initialize photo dimensions
-        val photoWidth = (rightMargin - leftMargin)
-        val photoHeight = 250f
+        // Calculate dimensions for a 2x2 grid layout
+        val availableWidth = rightMargin - leftMargin
+        val columnWidth = availableWidth / 2 - 10f  // 2 columns with small gap
+        val photoHeight = 250f  // Maximum height for photos
 
-        // Draw each photo
+        // Draw each photo in a 2x2 grid
         for (i in photosOnThisPage.indices) {
             val photoIndex = photosOnThisPage[i]
             val uri = photoUris[photoIndex]
+
+            // Calculate position in 2x2 grid
+            val column = i % 2  // 0 for left column, 1 for right column
+            val row = i / 2     // 0 for top row, 1 for bottom row
+
+            val xPos = leftMargin + column * (columnWidth + 20f)
+            val yPos = yPosition + row * (photoHeight + 70f)
 
             // Draw photo label
             val photoNum = photoIndex + 1
             val photoLabel = if (photoIndex < photoLabels.size) photoLabels[photoIndex] else "Photo $photoNum"
 
-            paint.textSize = 12f
+            paint.textSize = 11f
             paint.isFakeBoldText = true
-            canvas.drawText("$photoNum. $photoLabel", leftMargin, yPosition, paint)
+            canvas.drawText("$photoNum. $photoLabel", xPos, yPos, paint)
             paint.isFakeBoldText = false
-            yPosition += 20f
 
             // Draw photo
             if (uri != null) {
                 try {
-                    // Load photo bitmap with optimal quality
+                    // Load photo bitmap
                     val options = BitmapFactory.Options().apply {
                         inPreferredConfig = Bitmap.Config.ARGB_8888
                         inJustDecodeBounds = true
                     }
 
-                    // Get dimensions first
                     contentResolver.openInputStream(uri)?.use { input ->
                         BitmapFactory.decodeStream(input, null, options)
                     }
@@ -2104,7 +2165,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                     // Calculate scaling
                     val photoScaleFactor = calculateScaleFactor(
                         options.outWidth, options.outHeight,
-                        photoWidth.toInt(), photoHeight.toInt()
+                        columnWidth.toInt(), (photoHeight - 20f).toInt()
                     )
 
                     // Load actual bitmap
@@ -2119,21 +2180,22 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
                     if (photoBitmap != null) {
                         // Calculate display dimensions maintaining aspect ratio
+                        val bitmapRatio = photoBitmap.width.toFloat() / photoBitmap.height.toFloat()
+
                         val displayWidth: Float
                         val displayHeight: Float
 
-                        val bitmapRatio = photoBitmap.width.toFloat() / photoBitmap.height.toFloat()
-
                         if (bitmapRatio > 1) { // Landscape
-                            displayWidth = photoWidth.coerceAtMost(photoBitmap.width.toFloat())
+                            displayWidth = columnWidth.coerceAtMost(photoBitmap.width.toFloat())
                             displayHeight = displayWidth / bitmapRatio
                         } else { // Portrait
-                            displayHeight = photoHeight.coerceAtMost(photoBitmap.height.toFloat())
+                            displayHeight = (photoHeight - 40f).coerceAtMost(photoBitmap.height.toFloat())
                             displayWidth = displayHeight * bitmapRatio
                         }
 
                         // Center the photo
-                        val xOffset = leftMargin + (photoWidth - displayWidth) / 2
+                        val xOffset = xPos + (columnWidth - displayWidth) / 2
+                        val yOffset = yPos + 20f
 
                         // Draw with high quality
                         val renderPaint = Paint().apply {
@@ -2143,9 +2205,9 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
                         val displayRect = RectF(
                             xOffset,
-                            yPosition,
+                            yOffset,
                             xOffset + displayWidth,
-                            yPosition + displayHeight
+                            yOffset + displayHeight
                         )
 
                         canvas.drawBitmap(photoBitmap, null, displayRect, renderPaint)
@@ -2156,28 +2218,20 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                         paint.color = Color.BLACK
                         canvas.drawRect(displayRect, paint)
                         paint.style = Paint.Style.FILL
-
-                        // Move to next position
-                        yPosition += displayHeight + 30f
-
                     } else {
                         // Draw placeholder text
-                        canvas.drawText("Unable to load photo", leftMargin, yPosition + 50f, paint)
-                        yPosition += 100f
+                        canvas.drawText("Unable to load photo", xPos, yPos + 50f, paint)
                     }
-
                 } catch (e: Exception) {
                     // Draw error text
-                    canvas.drawText("Error loading photo: ${e.message}", leftMargin, yPosition + 50f, paint)
-                    yPosition += 100f
+                    canvas.drawText("Error loading photo: ${e.message}", xPos, yPos + 50f, paint)
                 }
             } else {
                 // Draw placeholder
                 paint.style = Paint.Style.STROKE
-                canvas.drawRect(leftMargin, yPosition, leftMargin + photoWidth, yPosition + photoHeight, paint)
+                canvas.drawRect(xPos, yPos + 20f, xPos + columnWidth, yPos + 20f + photoHeight - 40f, paint)
                 paint.style = Paint.Style.FILL
-                canvas.drawText("No photo available", leftMargin + 50f, yPosition + 50f, paint)
-                yPosition += photoHeight + 30f
+                canvas.drawText("No photo available", xPos + 20f, yPos + 50f, paint)
             }
         }
     }
