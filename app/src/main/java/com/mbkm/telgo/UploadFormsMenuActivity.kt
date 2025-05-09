@@ -48,12 +48,13 @@ class UploadFormsMenuActivity : AppCompatActivity() {
             }, 200)
         }
 
+        // In UploadFormsMenuActivity.kt
         btnCAF.setOnClickListener {
             val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
             it.startAnimation(animation)
             it.postDelayed({
-                // Will implement later
-                showToast("Feature coming soon")
+                val intent = Intent(this, CAFActivity::class.java)
+                startActivity(intent)
             }, 200)
         }
 
