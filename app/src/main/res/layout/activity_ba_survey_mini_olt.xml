@@ -1263,7 +1263,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Akses gerbang"
+                                android:text="AKSES GERBANG"
                                 android:textStyle="bold"/>
 
                             <Button
@@ -1293,7 +1293,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Name plate"
+                                android:text="NAME PLATE"
                                 android:textStyle="bold"/>
 
                             <Button
@@ -1323,7 +1323,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Outdoor"
+                                android:text="OUTDOOR"
                                 android:textStyle="bold"/>
 
                             <Button
@@ -1353,7 +1353,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Pengukuran Catuan Power AC"
+                                android:text="SHELTER"
                                 android:textStyle="bold"/>
 
                             <Button
@@ -1382,7 +1382,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Catuan Power DC"
+                                android:text="PONDASI"
                                 android:textStyle="bold"/>
                             <Button
                                 android:id="@+id/btnUploadPhoto5"
@@ -1409,7 +1409,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Port OTB Exciting"
+                                android:text="GROUNDING BASBAR"
                                 android:textStyle="bold"/>
                             <Button
                                 android:id="@+id/btnUploadPhoto6"
@@ -1481,9 +1481,15 @@
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer15" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Rectifier" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="R" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto15" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto15" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
+                        </LinearLayout>
+                        <!-- Ini perlu ditambahkan di dalam bagian photo containers di activity_ba_survey_mini_olt.xml -->
+                        <LinearLayout android:id="@+id/photoContainer16" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="DI AREA ODC" android:textStyle="bold"/>
+                            <Button android:id="@+id/btnUploadPhoto16" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
+                            <ImageView android:id="@+id/imgPhoto16" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
