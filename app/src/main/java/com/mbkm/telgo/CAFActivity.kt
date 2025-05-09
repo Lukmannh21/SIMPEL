@@ -29,6 +29,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
+
 class CAFActivity : AppCompatActivity() {
 
     // UI components
@@ -92,15 +93,19 @@ class CAFActivity : AppCompatActivity() {
     // Signature components
     private lateinit var btnAccountManagerSignature: Button
     private lateinit var imgAccountManagerSignature: ImageView
+    private lateinit var etAccountManagerName: EditText // Added signature name field
     private lateinit var etAccountManagerDate: EditText
     private lateinit var btnQualityControlSignature: Button
     private lateinit var imgQualityControlSignature: ImageView
+    private lateinit var etQualityControlName: EditText // Added signature name field
     private lateinit var etQualityControlDate: EditText
     private lateinit var btnColocationSignature: Button
     private lateinit var imgColocationSignature: ImageView
+    private lateinit var etColocationName: EditText // Added signature name field
     private lateinit var etColocationDate: EditText
     private lateinit var btnClientSignature: Button
     private lateinit var imgClientSignature: ImageView
+    private lateinit var etClientName: EditText // Added signature name field
     private lateinit var etClientDate: EditText
 
     // Submit buttons
@@ -152,15 +157,15 @@ class CAFActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         tvTodayDate.text = sdf.format(Date())
 
-        // Populate tables with initial rows
+        // Populate tables with initial rows (FIXED: sequential numbering)
         addBtsAntennaRow("1.1")
-        addBtsAntennaRow("1.8")
+        addBtsAntennaRow("1.2")
 
         addMwAntennaRow("2.1")
-        addMwAntennaRow("2.11")
+        addMwAntennaRow("2.2")
 
         addAmplifierRow("3.1")
-        addAmplifierRow("3.5")
+        addAmplifierRow("3.2")
     }
 
     private fun initializeUI() {
@@ -225,15 +230,22 @@ class CAFActivity : AppCompatActivity() {
         // Signature components
         btnAccountManagerSignature = findViewById(R.id.btnAccountManagerSignature)
         imgAccountManagerSignature = findViewById(R.id.imgAccountManagerSignature)
+        etAccountManagerName = findViewById(R.id.etAccountManagerName) // Initialize name field
         etAccountManagerDate = findViewById(R.id.etAccountManagerDate)
+
         btnQualityControlSignature = findViewById(R.id.btnQualityControlSignature)
         imgQualityControlSignature = findViewById(R.id.imgQualityControlSignature)
+        etQualityControlName = findViewById(R.id.etQualityControlName) // Initialize name field
         etQualityControlDate = findViewById(R.id.etQualityControlDate)
+
         btnColocationSignature = findViewById(R.id.btnColocationSignature)
         imgColocationSignature = findViewById(R.id.imgColocationSignature)
+        etColocationName = findViewById(R.id.etColocationName) // Initialize name field
         etColocationDate = findViewById(R.id.etColocationDate)
+
         btnClientSignature = findViewById(R.id.btnClientSignature)
         imgClientSignature = findViewById(R.id.imgClientSignature)
+        etClientName = findViewById(R.id.etClientName) // Initialize name field
         etClientDate = findViewById(R.id.etClientDate)
 
         // Submit buttons
@@ -734,10 +746,14 @@ class CAFActivity : AppCompatActivity() {
             gensetWidth = etGensetWidth.text.toString().trim(),
             remarks = etShelterRemarks.text.toString().trim(),
 
-            // Signatures - dates
+            // Signatures - names and dates (IMPORTANT FIX: Collect names from input fields)
+            accountManagerName = etAccountManagerName.text.toString().trim(),
             accountManagerDate = etAccountManagerDate.text.toString().trim(),
+            qualityControlName = etQualityControlName.text.toString().trim(),
             qualityControlDate = etQualityControlDate.text.toString().trim(),
+            colocationName = etColocationName.text.toString().trim(),
             colocationDate = etColocationDate.text.toString().trim(),
+            clientName = etClientName.text.toString().trim(),
             clientDate = etClientDate.text.toString().trim(),
 
             // Metadata
@@ -976,7 +992,7 @@ class CAFActivity : AppCompatActivity() {
         }
     }
 
-    // Improved PDF document creation function
+    // Improved PDF document creation function with fixes
     private fun createPdfDocument(cafData: CAFModel): PdfDocument {
         val pdfDocument = PdfDocument()
 
@@ -985,7 +1001,7 @@ class CAFActivity : AppCompatActivity() {
         val page = pdfDocument.startPage(pageInfo)
         val canvas = page.canvas
 
-        // Define styling with improved text sizes for better readability
+        // Styling definitions
         val titlePaint = Paint().apply {
             color = Color.BLACK
             textSize = 16f
@@ -1016,11 +1032,11 @@ class CAFActivity : AppCompatActivity() {
         }
 
         val grayFillPaint = Paint().apply {
-            color = Color.parseColor("#DDDDDD") // Lighter gray for better readability
+            color = Color.parseColor("#DDDDDD")
             style = Paint.Style.FILL
         }
 
-        // Start drawing content - margins
+        // Margins and dimensions
         val leftMargin = 40f
         val topMargin = 40f
         val pageWidth = 515f
@@ -1028,7 +1044,7 @@ class CAFActivity : AppCompatActivity() {
         // Title centered
         canvas.drawText("Colocation Application", leftMargin + pageWidth/2, topMargin + 12, titlePaint)
 
-        // Draw the top table for dates - 2x3 grid (fixed layout)
+        // Draw the top table for dates
         val dateTableTop = topMargin + 25
 
         // Row 1: Today's Date
@@ -1048,64 +1064,76 @@ class CAFActivity : AppCompatActivity() {
         canvas.drawText("Revision:", leftMargin + 395, dateTableTop + 42, headerPaint)
         canvas.drawText(cafData.revision, leftMargin + 445, dateTableTop + 42, textPaint)
 
-        // Site Information section - EXACT LAYOUT MATCH WITH THE IMAGE
+        // Site Information section - COMPLETELY FIXED LAYOUT
         val siteInfoTop = dateTableTop + 60
 
-        // LAYOUT BASED ON IMAGE:
         // Row 1: SITE ID, Island+Province, City
         canvas.drawRect(leftMargin, siteInfoTop, leftMargin + 175, siteInfoTop + 25, linePaint) // SITE ID
-        canvas.drawRect(leftMargin + 175, siteInfoTop, leftMargin + 442, siteInfoTop + 25, linePaint) // Island+Province
-        canvas.drawRect(leftMargin + 442, siteInfoTop, leftMargin + pageWidth, siteInfoTop + 25, linePaint) // City
+        canvas.drawRect(leftMargin + 175, siteInfoTop, leftMargin + 430, siteInfoTop + 25, linePaint) // Province
+        canvas.drawRect(leftMargin + 430, siteInfoTop, leftMargin + pageWidth, siteInfoTop + 25, linePaint) // City
 
         canvas.drawText("SITE ID:", leftMargin + 5, siteInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.siteId, leftMargin + 80, siteInfoTop + 17, textPaint)
+        drawTruncatedText(canvas, cafData.siteId, leftMargin + 65, siteInfoTop + 17, 105f, textPaint)
 
-        canvas.drawText("Island:", leftMargin + 180, siteInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.island, leftMargin + 220, siteInfoTop + 17, textPaint)
+        canvas.drawText("Province:", leftMargin + 180, siteInfoTop + 17, headerPaint)
+        drawTruncatedText(canvas, cafData.province, leftMargin + 235, siteInfoTop + 17, 185f, textPaint)
 
-        canvas.drawText("Province:", leftMargin + 300, siteInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.province, leftMargin + 350, siteInfoTop + 17, textPaint)
+        canvas.drawText("City:", leftMargin + 435, siteInfoTop + 17, headerPaint)
+        drawTruncatedText(canvas, cafData.city, leftMargin + 465, siteInfoTop + 17, 45f, textPaint)
 
-        canvas.drawText("City:", leftMargin + 447, siteInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.city, leftMargin + 475, siteInfoTop + 17, textPaint)
+        // Row 2: Latitude, Longitude, Site Type - FIXED LAYOUT WITH CLEAR SEPARATION
+        canvas.drawRect(leftMargin, siteInfoTop + 25, leftMargin + 175, siteInfoTop + 50, linePaint) // Latitude
+        canvas.drawRect(leftMargin + 175, siteInfoTop + 25, leftMargin + 355, siteInfoTop + 50, linePaint) // Longitude
+        canvas.drawRect(leftMargin + 355, siteInfoTop + 25, leftMargin + pageWidth, siteInfoTop + 50, linePaint) // Site Type
 
-        // Row 2: Latitude, Longitude, Site Type
-        canvas.drawRect(leftMargin, siteInfoTop + 25, leftMargin + 310, siteInfoTop + 50, linePaint) // Latitude
-        canvas.drawRect(leftMargin + 310, siteInfoTop + 25, leftMargin + pageWidth, siteInfoTop + 50, linePaint) // Longitude+Site Type
-
+        // Add latitude back with proper positioning
         canvas.drawText("Latitude (Decimal/DMS):", leftMargin + 5, siteInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.latitude, leftMargin + 130, siteInfoTop + 42, textPaint)
+        drawTruncatedText(canvas, cafData.latitude, leftMargin + 130, siteInfoTop + 42, 40f, textPaint)
 
-        canvas.drawText("Longitude (Decimal/DMS):", leftMargin + 315, siteInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.longitude, leftMargin + 445, siteInfoTop + 42, textPaint)
+        canvas.drawText("Longitude (Decimal/DMS):", leftMargin + 180, siteInfoTop + 42, headerPaint)
+        drawTruncatedText(canvas, cafData.longitude, leftMargin + 305, siteInfoTop + 42, 45f, textPaint)
 
-        canvas.drawText("Site Type:", leftMargin + 455, siteInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.siteType, leftMargin + 490, siteInfoTop + 42, textPaint)
+        // Clear separation for Site Type
+        canvas.drawText("Site Type:", leftMargin + 360, siteInfoTop + 42, headerPaint)
+        drawTruncatedText(canvas, cafData.siteType, leftMargin + 410, siteInfoTop + 42, 100f, textPaint)
 
         // Row 3: Building Height, Tower Type
-        canvas.drawRect(leftMargin, siteInfoTop + 50, leftMargin + 310, siteInfoTop + 75, linePaint) // Building Height
-        canvas.drawRect(leftMargin + 310, siteInfoTop + 50, leftMargin + pageWidth, siteInfoTop + 75, linePaint) // Tower Type
+        canvas.drawRect(leftMargin, siteInfoTop + 50, leftMargin + 260, siteInfoTop + 75, linePaint) // Building Height
+        canvas.drawRect(leftMargin + 260, siteInfoTop + 50, leftMargin + pageWidth, siteInfoTop + 75, linePaint) // Tower Type
 
         canvas.drawText("Building Height:", leftMargin + 5, siteInfoTop + 67, headerPaint)
-        canvas.drawText(cafData.buildingHeight, leftMargin + 95, siteInfoTop + 67, textPaint)
+        drawTruncatedText(canvas, cafData.buildingHeight, leftMargin + 95, siteInfoTop + 67, 160f, textPaint)
 
-        canvas.drawText("Tower Type:", leftMargin + 315, siteInfoTop + 67, headerPaint)
-        canvas.drawText(cafData.towerType, leftMargin + 385, siteInfoTop + 67, textPaint)
+        canvas.drawText("Tower Type:", leftMargin + 265, siteInfoTop + 67, headerPaint)
+        drawTruncatedText(canvas, cafData.towerType, leftMargin + 335, siteInfoTop + 67, 175f, textPaint)
 
         // Row 4: Tower Height, Tower Extension
-        canvas.drawRect(leftMargin, siteInfoTop + 75, leftMargin + 310, siteInfoTop + 100, linePaint) // Tower Height
-        canvas.drawRect(leftMargin + 310, siteInfoTop + 75, leftMargin + pageWidth, siteInfoTop + 100, linePaint) // Tower Extension
+        canvas.drawRect(leftMargin, siteInfoTop + 75, leftMargin + 260, siteInfoTop + 100, linePaint) // Tower Height
+        canvas.drawRect(leftMargin + 260, siteInfoTop + 75, leftMargin + pageWidth, siteInfoTop + 100, linePaint) // Tower Extension
 
         canvas.drawText("Tower Height:", leftMargin + 5, siteInfoTop + 92, headerPaint)
-        canvas.drawText(cafData.towerHeight, leftMargin + 85, siteInfoTop + 92, textPaint)
+        drawTruncatedText(canvas, cafData.towerHeight, leftMargin + 90, siteInfoTop + 92, 165f, textPaint)
 
-        canvas.drawText("Tower Extension Required:", leftMargin + 315, siteInfoTop + 92, headerPaint)
+        canvas.drawText("Tower Extension Required:", leftMargin + 265, siteInfoTop + 92, headerPaint)
 
         // YES checkbox with clearer marks
         val boxSize = 12f
-        canvas.drawRect(leftMargin + 455, siteInfoTop + 86, leftMargin + 455 + boxSize, siteInfoTop + 86 + boxSize, linePaint)
+        canvas.drawRect(leftMargin + 410, siteInfoTop + 86, leftMargin + 410 + boxSize, siteInfoTop + 86 + boxSize, linePaint)
         if (cafData.towerExtensionRequired) {
-            // Draw X more clearly
+            // Draw X mark
+            val x1 = leftMargin + 410
+            val y1 = siteInfoTop + 86
+            val x2 = leftMargin + 410 + boxSize
+            val y2 = siteInfoTop + 86 + boxSize
+            canvas.drawLine(x1, y1, x2, y2, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
+            canvas.drawLine(x1, y2, x2, y1, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
+        }
+        canvas.drawText("YES", leftMargin + 425, siteInfoTop + 92, textPaint)
+
+        // NO checkbox
+        canvas.drawRect(leftMargin + 455, siteInfoTop + 86, leftMargin + 455 + boxSize, siteInfoTop + 86 + boxSize, linePaint)
+        if (!cafData.towerExtensionRequired) {
+            // Draw X mark
             val x1 = leftMargin + 455
             val y1 = siteInfoTop + 86
             val x2 = leftMargin + 455 + boxSize
@@ -1113,63 +1141,43 @@ class CAFActivity : AppCompatActivity() {
             canvas.drawLine(x1, y1, x2, y2, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
             canvas.drawLine(x1, y2, x2, y1, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
         }
-        canvas.drawText("YES", leftMargin + 470, siteInfoTop + 92, textPaint)
+        canvas.drawText("NO", leftMargin + 470, siteInfoTop + 92, textPaint)
 
-        // NO checkbox
-        canvas.drawRect(leftMargin + 495, siteInfoTop + 86, leftMargin + 495 + boxSize, siteInfoTop + 86 + boxSize, linePaint)
-        if (!cafData.towerExtensionRequired) {
-            // Draw X more clearly
-            val x1 = leftMargin + 495
-            val y1 = siteInfoTop + 86
-            val x2 = leftMargin + 495 + boxSize
-            val y2 = siteInfoTop + 86 + boxSize
-            canvas.drawLine(x1, y1, x2, y2, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
-            canvas.drawLine(x1, y2, x2, y1, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
-        }
-        canvas.drawText("NO", leftMargin + 510, siteInfoTop + 92, textPaint)
-
-        // Client Information section - IMPROVED BASED ON IMAGE
+        // Client Information section - FIXED LAYOUT WITH NO OVERLAPPING TEXT
         val clientInfoTop = siteInfoTop + 110
 
         // Row 1: CLIENT, Client Site ID, Client Site Name
         canvas.drawRect(leftMargin, clientInfoTop, leftMargin + 175, clientInfoTop + 25, linePaint) // CLIENT
-        canvas.drawRect(leftMargin + 175, clientInfoTop, leftMargin + 310, clientInfoTop + 25, linePaint) // Client Site ID
-        canvas.drawRect(leftMargin + 310, clientInfoTop, leftMargin + pageWidth, clientInfoTop + 25, linePaint) // Client Site Name
+        canvas.drawRect(leftMargin + 175, clientInfoTop, leftMargin + 345, clientInfoTop + 25, linePaint) // Client Site ID
+        canvas.drawRect(leftMargin + 345, clientInfoTop, leftMargin + pageWidth, clientInfoTop + 25, linePaint) // Client Site Name
 
         canvas.drawText("CLIENT:", leftMargin + 5, clientInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.client, leftMargin + 60, clientInfoTop + 17, textPaint)
+        drawTruncatedText(canvas, cafData.client, leftMargin + 60, clientInfoTop + 17, 110f, textPaint)
 
         canvas.drawText("Client Site ID:", leftMargin + 180, clientInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.clientSiteId, leftMargin + 245, clientInfoTop + 17, textPaint)
+        drawTruncatedText(canvas, cafData.clientSiteId, leftMargin + 245, clientInfoTop + 17, 95f, textPaint)
 
-        canvas.drawText("Client Site Name:", leftMargin + 315, clientInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.clientSiteName, leftMargin + 400, clientInfoTop + 17, textPaint)
+        canvas.drawText("Client Site Name:", leftMargin + 350, clientInfoTop + 17, headerPaint)
+        drawTruncatedText(canvas, cafData.clientSiteName, leftMargin + 435, clientInfoTop + 17, 75f, textPaint)
 
-        // Row 2: Application valid + Client Contact, Contact Phone
-        canvas.drawRect(leftMargin, clientInfoTop + 25, leftMargin + 310, clientInfoTop + 50, linePaint) // App valid + Contact
-        canvas.drawRect(leftMargin + 310, clientInfoTop + 25, leftMargin + pageWidth, clientInfoTop + 50, linePaint) // Phone
+        // Row 2: Client Contact, Contact Phone - with validation text properly placed
+        canvas.drawRect(leftMargin, clientInfoTop + 25, leftMargin + 345, clientInfoTop + 50, linePaint) // Client Contact
+        canvas.drawRect(leftMargin + 345, clientInfoTop + 25, leftMargin + pageWidth, clientInfoTop + 50, linePaint) // Phone
 
-        // Position this text according to image
-        canvas.drawText("This application is valid for 15 calendar days.", leftMargin + 5, clientInfoTop + 40, smallTextPaint)
+        // Small validation text in upper part of cell
+        canvas.drawText("This application is valid for 15 calendar days.", leftMargin + 5, clientInfoTop + 37, smallTextPaint)
 
+        // Client contact properly placed with adequate spacing from validation text
         canvas.drawText("Client Contact:", leftMargin + 180, clientInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.clientContact, leftMargin + 255, clientInfoTop + 42, textPaint)
+        drawTruncatedText(canvas, cafData.clientContact, leftMargin + 250, clientInfoTop + 42, 90f, textPaint)
 
-        canvas.drawText("Contact Phone #:", leftMargin + 315, clientInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.contactPhone, leftMargin + 395, clientInfoTop + 42, textPaint)
+        canvas.drawText("Contact Phone #:", leftMargin + 350, clientInfoTop + 42, headerPaint)
+        drawTruncatedText(canvas, cafData.contactPhone, leftMargin + 430, clientInfoTop + 42, 80f, textPaint)
 
         // Row 3: SITE ADDRESS
         canvas.drawRect(leftMargin, clientInfoTop + 50, leftMargin + pageWidth, clientInfoTop + 75, linePaint)
-
         canvas.drawText("SITE ADDRESS:", leftMargin + 5, clientInfoTop + 67, headerPaint)
-
-        // Handle multiline site address
-        val addressLines = cafData.siteAddress.split("\n")
-        var addressY = clientInfoTop + 67
-        for (line in addressLines) {
-            canvas.drawText(line, leftMargin + 85, addressY, textPaint)
-            addressY += 12
-        }
+        drawTruncatedText(canvas, cafData.siteAddress, leftMargin + 95, clientInfoTop + 67, 415f, textPaint)
 
         // BTS ANTENNAS Table
         val btsTableTop = clientInfoTop + 85
@@ -1229,7 +1237,6 @@ class CAFActivity : AppCompatActivity() {
         // Draw the last vertical line
         canvas.drawLine(leftMargin + pageWidth, headerY,
             leftMargin + pageWidth, headerY + 20 + (cafData.btsAntennas.size * 20), linePaint)
-
         // Draw horizontal line after headers
         canvas.drawLine(leftMargin, headerY + 20, leftMargin + pageWidth, headerY + 20, linePaint)
 
@@ -1238,15 +1245,17 @@ class CAFActivity : AppCompatActivity() {
         for (item in cafData.btsAntennas) {
             // Draw row data
             canvas.drawText(item.itemNo, columnStartPositions[0] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.status, columnStartPositions[1] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.height, columnStartPositions[2] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.quantity, columnStartPositions[3] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.manufacturer, columnStartPositions[4] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.model, columnStartPositions[5] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.dimensions, columnStartPositions[6] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.azimuth, columnStartPositions[7] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.cableQuantity, columnStartPositions[8] + 2, rowY + 14, smallTextPaint)
-            canvas.drawText(item.cableSize, columnStartPositions[9] + 2, rowY + 14, smallTextPaint)
+
+            // Use truncated text drawing for all cells to prevent overflow
+            drawTruncatedText(canvas, item.status, columnStartPositions[1] + 2, rowY + 14, columnWidths[1] - 4, smallTextPaint)
+            drawTruncatedText(canvas, item.height, columnStartPositions[2] + 2, rowY + 14, columnWidths[2] - 4, smallTextPaint)
+            drawTruncatedText(canvas, item.quantity, columnStartPositions[3] + 2, rowY + 14, columnWidths[3] - 4, smallTextPaint)
+            drawTruncatedText(canvas, item.manufacturer, columnStartPositions[4] + 2, rowY + 14, columnWidths[4] - 4, smallTextPaint)
+            drawTruncatedText(canvas, item.model, columnStartPositions[5] + 2, rowY + 14, columnWidths[5] - 4, smallTextPaint)
+            drawTruncatedText(canvas, item.dimensions, columnStartPositions[6] + 2, rowY + 14, columnWidths[6] - 4, smallTextPaint)
+            drawTruncatedText(canvas, item.azimuth, columnStartPositions[7] + 2, rowY + 14, columnWidths[7] - 4, smallTextPaint)
+            drawTruncatedText(canvas, item.cableQuantity, columnStartPositions[8] + 2, rowY + 14, columnWidths[8] - 4, smallTextPaint)
+            drawTruncatedText(canvas, item.cableSize, columnStartPositions[9] + 2, rowY + 14, columnWidths[9] - 4, smallTextPaint)
 
             // Draw horizontal line after row
             rowY += 20
@@ -1255,10 +1264,10 @@ class CAFActivity : AppCompatActivity() {
 
         // Draw remarks row
         canvas.drawText("Remarks:", leftMargin + 5, rowY + 15, smallTextPaint)
-        canvas.drawText(etBtsRemarks.text.toString(), leftMargin + 60, rowY + 15, smallTextPaint)
+        drawTruncatedText(canvas, etBtsRemarks.text.toString(), leftMargin + 60, rowY + 15, pageWidth - 65, smallTextPaint)
 
         // Check if we need a new page for MW Antennas
-        if (rowY > 650) {
+        if (rowY > 600) {
             // Finish first page and create second page
             pdfDocument.finishPage(page)
             val pageInfo2 = PageInfo.Builder(595, 842, 2).create()
@@ -1284,6 +1293,9 @@ class CAFActivity : AppCompatActivity() {
             // Draw signature section with names
             drawSignatureSectionWithNames(canvas2, cafData, topMargin + 500, leftMargin, pageWidth,
                 linePaint, headerPaint, textPaint)
+
+            // Add electronic signature footer
+            addElectronicSignatureFooter(canvas2, leftMargin, pageWidth, 790f, textPaint)
 
             pdfDocument.finishPage(page2)
         } else {
@@ -1315,10 +1327,61 @@ class CAFActivity : AppCompatActivity() {
             drawSignatureSectionWithNames(canvas2, cafData, topMargin + 340, leftMargin, pageWidth,
                 linePaint, headerPaint, textPaint)
 
+            // Add electronic signature footer
+            addElectronicSignatureFooter(canvas2, leftMargin, pageWidth, 790f, textPaint)
+
             pdfDocument.finishPage(page2)
         }
 
         return pdfDocument
+    }
+
+    // Helper function to truncate text that's too long for a cell
+    private fun drawTruncatedText(canvas: Canvas, text: String, x: Float, y: Float, maxWidth: Float, paint: Paint) {
+        if (text.isEmpty()) return
+
+        val originalText = text
+        var truncText = text
+        var textWidth = paint.measureText(truncText)
+
+        // If text fits, just draw it
+        if (textWidth <= maxWidth) {
+            canvas.drawText(truncText, x, y, paint)
+            return
+        }
+
+        // Otherwise, truncate it
+        var ellipsis = "..."
+        var ellipsisWidth = paint.measureText(ellipsis)
+
+        // Find how many characters we can fit
+        var truncateAt = truncText.length - 1
+        while (truncateAt > 0 && paint.measureText(truncText.substring(0, truncateAt) + ellipsis) > maxWidth) {
+            truncateAt--
+        }
+
+        // If we can't even fit ellipsis, just truncate as much as possible
+        if (truncateAt <= 0) {
+            truncateAt = 1
+            ellipsis = ""
+            ellipsisWidth = 0f
+        }
+
+        // Draw the truncated text
+        truncText = truncText.substring(0, truncateAt) + ellipsis
+        canvas.drawText(truncText, x, y, paint)
+    }
+
+    // Add footer for electronic signature
+    private fun addElectronicSignatureFooter(canvas: Canvas, leftMargin: Float, pageWidth: Float, bottomY: Float, textPaint: Paint) {
+        val footerPaint = Paint(textPaint).apply {
+            textAlign = Paint.Align.CENTER
+            textSize = 9f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+        }
+
+        canvas.drawText("Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku",
+            leftMargin + pageWidth/2, bottomY, footerPaint)
     }
 
     // Improved antenna table drawing method with better layout
@@ -1331,7 +1394,6 @@ class CAFActivity : AppCompatActivity() {
     ): Float {
         var yPosition = startY
 
-        // Header with gray background
         // Header with gray background
         val headerRect = RectF(leftMargin, yPosition, leftMargin + pageWidth, yPosition + 20)
         canvas.drawRect(headerRect, grayPaint)
@@ -1397,15 +1459,17 @@ class CAFActivity : AppCompatActivity() {
             if (items[0] is AntennaItem) {
                 for (item in items as List<AntennaItem>) {
                     canvas.drawText(item.itemNo, columnStartPositions[0] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.status, columnStartPositions[1] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.height, columnStartPositions[2] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.quantity, columnStartPositions[3] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.manufacturer, columnStartPositions[4] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.model, columnStartPositions[5] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.dimensions, columnStartPositions[6] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.azimuth, columnStartPositions[7] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.cableQuantity, columnStartPositions[8] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.cableSize, columnStartPositions[9] + 2, rowY + 14, smallTextPaint)
+
+                    // Use truncated text to prevent overflow
+                    drawTruncatedText(canvas, item.status, columnStartPositions[1] + 2, rowY + 14, columnWidths[1] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.height, columnStartPositions[2] + 2, rowY + 14, columnWidths[2] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.quantity, columnStartPositions[3] + 2, rowY + 14, columnWidths[3] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.manufacturer, columnStartPositions[4] + 2, rowY + 14, columnWidths[4] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.model, columnStartPositions[5] + 2, rowY + 14, columnWidths[5] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.dimensions, columnStartPositions[6] + 2, rowY + 14, columnWidths[6] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.azimuth, columnStartPositions[7] + 2, rowY + 14, columnWidths[7] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.cableQuantity, columnStartPositions[8] + 2, rowY + 14, columnWidths[8] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.cableSize, columnStartPositions[9] + 2, rowY + 14, columnWidths[9] - 4, smallTextPaint)
 
                     // Draw horizontal line after row
                     rowY += 20
@@ -1414,15 +1478,17 @@ class CAFActivity : AppCompatActivity() {
             } else if (items[0] is AmplifierItem) {
                 for (item in items as List<AmplifierItem>) {
                     canvas.drawText(item.itemNo, columnStartPositions[0] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.status, columnStartPositions[1] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.height, columnStartPositions[2] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.quantity, columnStartPositions[3] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.manufacturer, columnStartPositions[4] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.model, columnStartPositions[5] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.dimensions, columnStartPositions[6] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.azimuth, columnStartPositions[7] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.cableQuantity, columnStartPositions[8] + 2, rowY + 14, smallTextPaint)
-                    canvas.drawText(item.cableSize, columnStartPositions[9] + 2, rowY + 14, smallTextPaint)
+
+                    // Use truncated text to prevent overflow
+                    drawTruncatedText(canvas, item.status, columnStartPositions[1] + 2, rowY + 14, columnWidths[1] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.height, columnStartPositions[2] + 2, rowY + 14, columnWidths[2] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.quantity, columnStartPositions[3] + 2, rowY + 14, columnWidths[3] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.manufacturer, columnStartPositions[4] + 2, rowY + 14, columnWidths[4] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.model, columnStartPositions[5] + 2, rowY + 14, columnWidths[5] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.dimensions, columnStartPositions[6] + 2, rowY + 14, columnWidths[6] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.azimuth, columnStartPositions[7] + 2, rowY + 14, columnWidths[7] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.cableQuantity, columnStartPositions[8] + 2, rowY + 14, columnWidths[8] - 4, smallTextPaint)
+                    drawTruncatedText(canvas, item.cableSize, columnStartPositions[9] + 2, rowY + 14, columnWidths[9] - 4, smallTextPaint)
 
                     // Draw horizontal line after row
                     rowY += 20
@@ -1431,9 +1497,9 @@ class CAFActivity : AppCompatActivity() {
             }
         }
 
-        // Draw remarks row
+        // Draw remarks row with truncation
         canvas.drawText("Remarks:", leftMargin + 5, rowY + 15, smallTextPaint)
-        canvas.drawText(remarks, leftMargin + 60, rowY + 15, smallTextPaint)
+        drawTruncatedText(canvas, remarks, leftMargin + 60, rowY + 15, pageWidth - 65, smallTextPaint)
 
         return rowY + 30
     }
@@ -1453,8 +1519,8 @@ class CAFActivity : AppCompatActivity() {
         canvas.drawRect(shelterHeaderRect, linePaint)
         canvas.drawText("4. SHELTER/POWER REQUIREMENTS", leftMargin + 10, yPosition + 14, headerPaint)
 
-        // Main content area
-        val contentRect = RectF(leftMargin, yPosition + 20, leftMargin + pageWidth, yPosition + 160)
+        // Main content area - INCREASED HEIGHT for better visibility
+        val contentRect = RectF(leftMargin, yPosition + 20, leftMargin + pageWidth, yPosition + 170)
         canvas.drawRect(contentRect, linePaint)
 
         // Equipment type
@@ -1480,46 +1546,46 @@ class CAFActivity : AppCompatActivity() {
         canvas.drawText("INDOOR (SHELTER)", leftMargin + 185, yPosition + 35, textPaint)
 
         // OUTDOOR checkbox
-        canvas.drawRect(leftMargin + 280, yPosition + 30, leftMargin + 280 + boxSize, yPosition + 30 + boxSize, linePaint)
+        canvas.drawRect(leftMargin + 300, yPosition + 30, leftMargin + 300 + boxSize, yPosition + 30 + boxSize, linePaint)
         if (isOutdoor) {
             // Draw X more clearly
-            val x1 = leftMargin + 280
+            val x1 = leftMargin + 300
             val y1 = yPosition + 30
-            val x2 = leftMargin + 280 + boxSize
+            val x2 = leftMargin + 300 + boxSize
             val y2 = yPosition + 30 + boxSize
             canvas.drawLine(x1, y1, x2, y2, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
             canvas.drawLine(x1, y2, x2, y1, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
         }
-        canvas.drawText("OUTDOOR (CABINET)", leftMargin + 295, yPosition + 35, textPaint)
+        canvas.drawText("OUTDOOR (CABINET)", leftMargin + 315, yPosition + 35, textPaint)
 
         // OTHER checkbox
-        canvas.drawRect(leftMargin + 400, yPosition + 30, leftMargin + 400 + boxSize, yPosition + 30 + boxSize, linePaint)
+        canvas.drawRect(leftMargin + 420, yPosition + 30, leftMargin + 420 + boxSize, yPosition + 30 + boxSize, linePaint)
         if (isOther) {
             // Draw X more clearly
-            val x1 = leftMargin + 400
+            val x1 = leftMargin + 420
             val y1 = yPosition + 30
-            val x2 = leftMargin + 400 + boxSize
+            val x2 = leftMargin + 420 + boxSize
             val y2 = yPosition + 30 + boxSize
             canvas.drawLine(x1, y1, x2, y2, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
             canvas.drawLine(x1, y2, x2, y1, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
         }
-        canvas.drawText("OTHER (See Remarks)", leftMargin + 415, yPosition + 35, textPaint)
+        canvas.drawText("OTHER (See Remarks)", leftMargin + 435, yPosition + 35, textPaint)
 
         // Equipment pad dimensions
         canvas.drawText("EQUIPMENT PAD DIMENSIONS:", leftMargin + 5, yPosition + 55, headerPaint)
         canvas.drawText("Length:", leftMargin + 170, yPosition + 55, textPaint)
         canvas.drawText(cafData.equipmentPadLength + " cm", leftMargin + 210, yPosition + 55, textPaint)
-        canvas.drawText("Width:", leftMargin + 280, yPosition + 55, textPaint)
-        canvas.drawText(cafData.equipmentPadWidth + " cm", leftMargin + 320, yPosition + 55, textPaint)
+        canvas.drawText("Width:", leftMargin + 300, yPosition + 55, textPaint)
+        canvas.drawText(cafData.equipmentPadWidth + " cm", leftMargin + 335, yPosition + 55, textPaint)
 
         // Electricity requirements
         canvas.drawText("ELECTRICITY REQUIREMENTS:", leftMargin + 5, yPosition + 75, headerPaint)
         canvas.drawText("kVA:", leftMargin + 170, yPosition + 75, textPaint)
         canvas.drawText(cafData.electricityKVA, leftMargin + 200, yPosition + 75, textPaint)
-        canvas.drawText("n x A (phases):", leftMargin + 280, yPosition + 75, textPaint)
-        canvas.drawText(cafData.electricityPhases, leftMargin + 350, yPosition + 75, textPaint)
+        canvas.drawText("n x A (phases):", leftMargin + 300, yPosition + 75, textPaint)
+        canvas.drawText(cafData.electricityPhases, leftMargin + 365, yPosition + 75, textPaint)
 
-        // Genset required
+        // Genset required - IMPROVED VISIBILITY
         canvas.drawText("PERMANENT GENSET REQUIRED:", leftMargin + 5, yPosition + 95, headerPaint)
 
         // YES checkbox
@@ -1546,45 +1612,69 @@ class CAFActivity : AppCompatActivity() {
         }
         canvas.drawText("NO", leftMargin + 245, yPosition + 95, textPaint)
 
-        // GENSET DIMENSIONS - clearly displayed
-        canvas.drawText("GENSET DIMENSIONS:", leftMargin + 5, yPosition + 115, headerPaint)
-        canvas.drawText("Length:", leftMargin + 170, yPosition + 115, textPaint)
-        canvas.drawText(cafData.gensetLength, leftMargin + 210, yPosition + 115, textPaint)
-        canvas.drawText("Width:", leftMargin + 280, yPosition + 115, textPaint)
-        canvas.drawText(cafData.gensetWidth, leftMargin + 320, yPosition + 115, textPaint)
+        // GENSET DIMENSIONS - HIGHLIGHT AND MAKE CLEARLY VISIBLE
+        // Background highlight for genset dimensions
+        val gensetRect = RectF(leftMargin + 5, yPosition + 110, leftMargin + 500, yPosition + 130)
+        val highlightPaint = Paint().apply {
+            color = Color.parseColor("#FFFFCC") // Light yellow highlight
+            style = Paint.Style.FILL
+        }
+        canvas.drawRect(gensetRect, highlightPaint)
+
+        // Draw genset dimensions with bold text for better visibility
+        val boldPaint = Paint(headerPaint).apply {
+            color = Color.BLACK
+            textSize = 11f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+        canvas.drawText("GENSET DIMENSIONS:", leftMargin + 5, yPosition + 125, boldPaint)
+        canvas.drawText("Length:", leftMargin + 170, yPosition + 125, textPaint)
+        canvas.drawText(cafData.gensetLength, leftMargin + 210, yPosition + 125, boldPaint)
+        canvas.drawText("Width:", leftMargin + 300, yPosition + 125, textPaint)
+        canvas.drawText(cafData.gensetWidth, leftMargin + 335, yPosition + 125, boldPaint)
 
         // Draw remarks
-        canvas.drawText("Remarks:", leftMargin + 5, yPosition + 135, headerPaint)
-        canvas.drawText(cafData.remarks, leftMargin + 60, yPosition + 135, textPaint)
+        canvas.drawText("Remarks:", leftMargin + 5, yPosition + 150, headerPaint)
+        drawTruncatedText(canvas, cafData.remarks, leftMargin + 60, yPosition + 150, pageWidth - 65, textPaint)
 
         // Note about drawings
-        val drawingRect = RectF(leftMargin, yPosition + 170, leftMargin + pageWidth, yPosition + 190)
+        val drawingRect = RectF(leftMargin, yPosition + 180, leftMargin + pageWidth, yPosition + 200)
         canvas.drawRect(drawingRect, grayPaint)
         canvas.drawRect(drawingRect, linePaint)
 
         // Center the text
         headerPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText("SHELTER DRAWINGS MUST BE ATTACHED", leftMargin + pageWidth/2, yPosition + 184, headerPaint)
+        canvas.drawText("SHELTER DRAWINGS MUST BE ATTACHED", leftMargin + pageWidth/2, yPosition + 194, headerPaint)
         headerPaint.textAlign = Paint.Align.LEFT
     }
 
-    // Signature section with names added
+    // Signature section with names that uses input fields
     private fun drawSignatureSectionWithNames(
         canvas: Canvas, cafData: CAFModel, startY: Float,
         leftMargin: Float, pageWidth: Float,
         linePaint: Paint, headerPaint: Paint, textPaint: Paint
     ) {
         val colWidth = pageWidth / 4
-        val signatureHeight = 100f // Increased height to accommodate names
+        val signatureHeight = 130f
 
-        // Draw signature box with all cells
+        // Draw main outer rectangle
         canvas.drawRect(leftMargin, startY, leftMargin + pageWidth, startY + signatureHeight, linePaint)
 
-        // Draw horizontal divider
-        canvas.drawLine(leftMargin, startY + 20, leftMargin + pageWidth, startY + 20, linePaint)
+        // Draw header row with gray background
+        val headerRect = RectF(leftMargin, startY, leftMargin + pageWidth, startY + 25)
+        val grayPaint = Paint().apply {
+            color = Color.parseColor("#DDDDDD")
+            style = Paint.Style.FILL
+        }
+        canvas.drawRect(headerRect, grayPaint)
+        canvas.drawRect(headerRect, linePaint)
 
-        // Draw vertical dividers
+        // Draw horizontal divider after header
+        canvas.drawLine(leftMargin, startY + 25, leftMargin + pageWidth, startY + 25, linePaint)
+
+        // Draw vertical dividers for all columns
         for (i in 1..3) {
+            // Draw from top to bottom of entire box
             canvas.drawLine(
                 leftMargin + i * colWidth, startY,
                 leftMargin + i * colWidth, startY + signatureHeight,
@@ -1593,7 +1683,7 @@ class CAFActivity : AppCompatActivity() {
         }
 
         // Draw title in each column - centered
-        val headerY = startY + 15
+        val headerY = startY + 17
         headerPaint.textAlign = Paint.Align.CENTER
         canvas.drawText("Account Manager", leftMargin + colWidth/2, headerY, headerPaint)
         canvas.drawText("Quality Control", leftMargin + colWidth + colWidth/2, headerY, headerPaint)
@@ -1601,72 +1691,100 @@ class CAFActivity : AppCompatActivity() {
         canvas.drawText("Client", leftMargin + 3*colWidth + colWidth/2, headerY, headerPaint)
         headerPaint.textAlign = Paint.Align.LEFT
 
-        // Draw signatures with names
+        // Calculate signature box dimensions
+        val signatureBoxHeight = 60f
+        val signatureBoxTop = startY + 35
+        val signatureBoxBottom = signatureBoxTop + signatureBoxHeight
+
+        // Draw signature boxes with borders
+        for (i in 0..3) {
+            val left = leftMargin + (i * colWidth) + 10
+            val right = leftMargin + ((i + 1) * colWidth) - 10
+            canvas.drawRect(left, signatureBoxTop, right, signatureBoxBottom, linePaint)
+        }
+
+        // Draw signatures in the boxes
         // Account Manager
         if (signatureUris.containsKey("accountManager")) {
             drawSignatureImageImproved(canvas, signatureUris["accountManager"]!!,
-                leftMargin + 5, startY + 25, colWidth - 10, 40f)
-            // Add name below signature
-            canvas.drawText("Lukman", leftMargin + colWidth/2 - 20, startY + 75, textPaint)
+                leftMargin + 10, signatureBoxTop, colWidth - 20, signatureBoxHeight)
         }
 
         // Quality Control
         if (signatureUris.containsKey("qualityControl")) {
             drawSignatureImageImproved(canvas, signatureUris["qualityControl"]!!,
-                leftMargin + colWidth + 5, startY + 25, colWidth - 10, 40f)
-            // Add name below signature
-            canvas.drawText("Ahmad", leftMargin + colWidth + colWidth/2 - 20, startY + 75, textPaint)
+                leftMargin + colWidth + 10, signatureBoxTop, colWidth - 20, signatureBoxHeight)
         }
 
         // Colocation
         if (signatureUris.containsKey("colocation")) {
             drawSignatureImageImproved(canvas, signatureUris["colocation"]!!,
-                leftMargin + 2*colWidth + 5, startY + 25, colWidth - 10, 40f)
-            // Add name below signature
-            canvas.drawText("Nurhaliza", leftMargin + 2*colWidth + colWidth/2 - 20, startY + 75, textPaint)
+                leftMargin + 2*colWidth + 10, signatureBoxTop, colWidth - 20, signatureBoxHeight)
         }
 
         // Client
         if (signatureUris.containsKey("client")) {
             drawSignatureImageImproved(canvas, signatureUris["client"]!!,
-                leftMargin + 3*colWidth + 5, startY + 25, colWidth - 10, 40f)
-            // Add name below signature
-            canvas.drawText("Fauzan", leftMargin + 3*colWidth + colWidth/2 - 20, startY + 75, textPaint)
+                leftMargin + 3*colWidth + 10, signatureBoxTop, colWidth - 20, signatureBoxHeight)
         }
 
-        // Draw dates at bottom of each column
-        val dateY = startY + 95
+        // CRITICAL FIX: Draw names using cafData values directly from form input
+        // Use bold text for name display
+        val boldTextPaint = Paint().apply {
+            color = Color.BLACK
+            textSize = 11f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+
+        // Draw names centered below each signature box
+        val nameY = signatureBoxBottom + 15
+
+        // Properly use input fields for names - super important fix!
+        canvas.drawText(cafData.accountManagerName, leftMargin + colWidth/2, nameY, boldTextPaint)
+        canvas.drawText(cafData.qualityControlName, leftMargin + colWidth + colWidth/2, nameY, boldTextPaint)
+        canvas.drawText(cafData.colocationName, leftMargin + 2*colWidth + colWidth/2, nameY, boldTextPaint)
+        canvas.drawText(cafData.clientName, leftMargin + 3*colWidth + colWidth/2, nameY, boldTextPaint)
+
+        // Draw "Date:" labels
+        val dateY = startY + signatureHeight - 10
         textPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText("Date: " + cafData.accountManagerDate, leftMargin + 5, dateY, textPaint)
-        canvas.drawText("Date: " + cafData.qualityControlDate, leftMargin + colWidth + 5, dateY, textPaint)
-        canvas.drawText("Date: " + cafData.colocationDate, leftMargin + 2*colWidth + 5, dateY, textPaint)
-        canvas.drawText("Date: " + cafData.clientDate, leftMargin + 3*colWidth + 5, dateY, textPaint)
+        canvas.drawText("Date:", leftMargin + 5, dateY, textPaint)
+        canvas.drawText("Date:", leftMargin + colWidth + 5, dateY, textPaint)
+        canvas.drawText("Date:", leftMargin + 2*colWidth + 5, dateY, textPaint)
+        canvas.drawText("Date:", leftMargin + 3*colWidth + 5, dateY, textPaint)
 
-        // Draw disclaimer at bottom
-        val disclaimer1 = "* The requested Coax Cable size is greater than the specification allowed in the MLA. Lessee must install the cables using a feeder cable clamp to reduce the wind loading effect on the tower."
-        val disclaimer2 = "Client acknowledges certain sites require permanent genset (no PLN available) and will be responsible for providing its own permanent power."
-
-        textPaint.textSize = 8f
-        canvas.drawText(disclaimer1, leftMargin + 5, startY + signatureHeight + 15, textPaint)
-        canvas.drawText(disclaimer2, leftMargin + 5, startY + signatureHeight + 25, textPaint)
-        textPaint.textSize = 10f
+        // Draw date values
+        canvas.drawText(cafData.accountManagerDate, leftMargin + 35, dateY, textPaint)
+        canvas.drawText(cafData.qualityControlDate, leftMargin + colWidth + 35, dateY, textPaint)
+        canvas.drawText(cafData.colocationDate, leftMargin + 2*colWidth + 35, dateY, textPaint)
+        canvas.drawText(cafData.clientDate, leftMargin + 3*colWidth + 35, dateY, textPaint)
     }
 
-    // Improved signature drawing method with better handling
+    // Improved signature drawing
     private fun drawSignatureImageImproved(canvas: Canvas, uri: Uri, x: Float, y: Float, width: Float, height: Float) {
         try {
-            // Get bitmap from URI
+            // Get bitmap from URI using BitmapFactory for better handling
             val inputStream = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
+            val options = BitmapFactory.Options().apply {
+                inPreferredConfig = Bitmap.Config.ARGB_8888
+            }
+            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
             inputStream?.close()
 
-            // Make sure we have a valid bitmap
             if (bitmap == null) {
                 Log.e("CAFActivity", "Failed to decode signature bitmap")
+                // Draw placeholder if bitmap fails
+                val paint = Paint().apply {
+                    color = Color.BLACK
+                    textSize = 12f
+                    textAlign = Paint.Align.CENTER
+                }
+                canvas.drawText("[Signature]", x + width/2, y + height/2, paint)
                 return
             }
 
-            // Calculate scaling to fit within the designated area while maintaining aspect ratio
+            // Calculate scaling to fit within the designated area
             val scale = Math.min(width / bitmap.width, height / bitmap.height)
 
             // Create matrix for scaling
@@ -1674,23 +1792,14 @@ class CAFActivity : AppCompatActivity() {
             matrix.postScale(scale, scale)
 
             // Create scaled bitmap
-            val scaledBitmap = Bitmap.createBitmap(
-                bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            val scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
             // Calculate position to center the bitmap
             val left = x + (width - scaledBitmap.width) / 2
             val top = y + (height - scaledBitmap.height) / 2
 
-            // Draw the bitmap with clear border
-            val borderPaint = Paint().apply {
-                style = Paint.Style.STROKE
-                strokeWidth = 1f
-                color = Color.BLACK
-            }
-
-            // Draw bitmap with a surrounding rectangle for clarity
+            // Draw the bitmap
             canvas.drawBitmap(scaledBitmap, left, top, Paint())
-            canvas.drawRect(left - 1, top - 1, left + scaledBitmap.width + 1, top + scaledBitmap.height + 1, borderPaint)
 
             // Clean up
             if (bitmap != scaledBitmap) {
@@ -1700,10 +1809,11 @@ class CAFActivity : AppCompatActivity() {
             Log.e("CAFActivity", "Error drawing signature: ${e.message}", e)
 
             // Draw placeholder text as fallback
-            val paint = Paint()
-            paint.color = Color.BLACK
-            paint.textSize = 12f
-            paint.textAlign = Paint.Align.CENTER
+            val paint = Paint().apply {
+                color = Color.BLACK
+                textSize = 12f
+                textAlign = Paint.Align.CENTER
+            }
             canvas.drawText("[Signature]", x + width/2, y + height/2, paint)
         }
     }
@@ -1886,10 +1996,14 @@ class CAFActivity : AppCompatActivity() {
         etShelterRemarks.text.clear()
         tvDrawingFileName.visibility = View.GONE
 
-        // Reset signature dates
+        // Reset signature fields and names
+        etAccountManagerName.text.clear()
         etAccountManagerDate.text.clear()
+        etQualityControlName.text.clear()
         etQualityControlDate.text.clear()
+        etColocationName.text.clear()
         etColocationDate.text.clear()
+        etClientName.text.clear()
         etClientDate.text.clear()
 
         // Reset image views
@@ -1936,7 +2050,7 @@ class CAFActivity : AppCompatActivity() {
         tableMwAntennas.removeAllViews()
         tableAmplifiers.removeAllViews()
 
-        // Add initial rows
+        // Add initial rows with sequential numbering (1.1, 1.2, etc.)
         addBtsAntennaRow("1.1")
         addBtsAntennaRow("1.2")
 
