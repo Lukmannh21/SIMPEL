@@ -8,6 +8,7 @@ data class CAFModel(
     val coloApplicationDate: String = "",
     val revision: String = "",
 
+
     // Site Information
     val siteId: String = "",
     val island: String = "Sumatera", // Default value
@@ -59,7 +60,14 @@ data class CAFModel(
     val createdBy: String = "",
     val createdAt: String = "",
     val excelUrl: String = "",
-    val drawingUrl: String = ""
+    val drawingUrl: String = "",
+    var accountManagerName: String = "",
+
+    var qualityControlName: String = "",
+
+    var colocationName: String = "",
+
+    var clientName: String = ""
 ) : Serializable
 
 // Update the existing data classes in CAFModel.kt
@@ -90,3 +98,4 @@ data class AmplifierItem(
     var cableSize: String = "",
     var remarks: String = ""
 ) : Serializable
+
