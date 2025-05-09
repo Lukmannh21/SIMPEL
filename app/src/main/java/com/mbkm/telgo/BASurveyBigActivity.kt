@@ -1,44 +1,840 @@
 package com.mbkm.telgo
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.ContentValues
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.pdf.PdfDocument
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Spinner
-import android.widget.Toast
+import android.provider.MediaStore
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabLayout
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.google.firebase.firestore.FirebaseFirestore
+import java.util.UUID
+import android.widget.Button
+import kotlin.collections.HashMap
 
 class BASurveyBigActivity : AppCompatActivity() {
 
-    
+    // Firebase instances
+    private lateinit var db: FirebaseFirestore
+    private lateinit var storage: FirebaseStorage
 
+
+    // UI Components
+    private lateinit var tabLayout: TabLayout
+    private lateinit var formContainer: View
+    private lateinit var searchContainer: View
+    private lateinit var searchView: SearchView
+    private lateinit var rvSearchResults: RecyclerView
+
+    // Input fields
+    private lateinit var inputProjectTitle: EditText
+    private lateinit var inputContractNumber: EditText
+    private lateinit var inputExecutor: Spinner
+    private lateinit var inputLocation: EditText
+    private lateinit var inputDescription: EditText
+    private lateinit var etTselRegion: EditText
+
+    // Signature components
+    private lateinit var etZteName: EditText
+    private lateinit var etZteNik: EditText
+    private lateinit var imgZteSignature: ImageView
+    private lateinit var btnZteSignature: Button
+
+    private lateinit var etTifName: EditText
+    private lateinit var etTifNik: EditText
+    private lateinit var imgTifSignature: ImageView
+    private lateinit var btnTifSignature: Button
+
+    private lateinit var etTelkomName: EditText
+    private lateinit var etTelkomNik: EditText
+    private lateinit var imgTelkomSignature: ImageView
+    private lateinit var btnTelkomSignature: Button
+
+    private lateinit var etTselNopName: EditText
+    private lateinit var etTselNopNik: EditText
+    private lateinit var imgTselNopSignature: ImageView
+    private lateinit var btnTselNopSignature: Button
+
+    private lateinit var etTselRtpdsName: EditText
+    private lateinit var etTselRtpdsNik: EditText
+    private lateinit var imgTselRtpdsSignature: ImageView
+    private lateinit var btnTselRtpdsSignature: Button
+
+    private lateinit var etTselRtpeNfName: EditText
+    private lateinit var etTselRtpeNfNik: EditText
+    private lateinit var imgTselRtpeNfSignature: ImageView
+    private lateinit var btnTselRtpeNfSignature: Button
+
+    private lateinit var btnGeneratePdf: Button
+    private lateinit var btnSubmitForm: Button
+
+    // Permissions
+    private val CAMERA_PERMISSION_CODE = 100
+    private val STORAGE_PERMISSION_CODE = 101
+
+    // Temporary file for camera
+    private var tempPhotoUri: Uri? = null
+    private var currentImageView: ImageView? = null
+
+    // Data for search
+    private var surveyList = mutableListOf<SurveyData>()
+    private lateinit var searchAdapter: SurveyAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_basurvey_big)
 
-        val btnGeneratePdf = findViewById<Button>(R.id.btnGeneratePdf)
+        // Initialize Firebase
+        db = FirebaseFirestore.getInstance()
+        storage = FirebaseStorage.getInstance()
+
+        // Initialize UI components
+        initializeUI()
+
+        // Setup TabLayout
+        setupTabs()
+
+        // Setup Search
+        setupSearch()
+
+        // Setup back button
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
+            finish()
+        }
+
+        // Check and request permissions
+        checkAndRequestPermissions()
+    }
+
+    private fun initializeUI() {
+        // Initialize tabs and containers
+        tabLayout = findViewById(R.id.tabLayout)
+        formContainer = findViewById(R.id.formContainer)
+        searchContainer = findViewById(R.id.searchContainer)
+        searchView = findViewById(R.id.searchView)
+        tabLayout = findViewById(R.id.tabLayout)
+        formContainer = findViewById(R.id.formContainer)
+        searchContainer = findViewById(R.id.searchContainer)
+        rvSearchResults = findViewById(R.id.rvSearchResults)
+
+        // Initialize form fields
+        inputProjectTitle = findViewById(R.id.inputProjectTitle)
+        inputContractNumber = findViewById(R.id.inputContractNumber)
+        inputExecutor = findViewById(R.id.inputExecutor)
+        inputLocation = findViewById(R.id.inputLocation)
+        inputDescription = findViewById(R.id.inputDescription)
+        etTselRegion = findViewById(R.id.etTselRegion)
+
+        // Initialize buttons
+        btnGeneratePdf = findViewById(R.id.btnGeneratePdf)
+
+        btnSubmitForm = findViewById(R.id.btnSubmitForm)
+
+        // Setup executor spinner
+        val executors = arrayOf("PT. ZTE INDONESIA", "PT Huawei Tech Investment")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, executors)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        inputExecutor.adapter = adapter
+
+        // Initialize signature fields and buttons
+        etZteName = findViewById(R.id.etZteName)
+        etZteNik = findViewById(R.id.etZteNik)
+        imgZteSignature = findViewById(R.id.imgZteSignature)
+        btnZteSignature = findViewById(R.id.btnZteSignature)
+
+        etTifName = findViewById(R.id.etTifName)
+        etTifNik = findViewById(R.id.etTifNik)
+        imgTifSignature = findViewById(R.id.imgTifSignature)
+        btnTifSignature = findViewById(R.id.btnTifSignature)
+
+        etTelkomName = findViewById(R.id.etTelkomName)
+        etTelkomNik = findViewById(R.id.etTelkomNik)
+        imgTelkomSignature = findViewById(R.id.imgTelkomSignature)
+        btnTelkomSignature = findViewById(R.id.btnTelkomSignature)
+
+        etTselNopName = findViewById(R.id.etTselNopName)
+        etTselNopNik = findViewById(R.id.etTselNopNik)
+        imgTselNopSignature = findViewById(R.id.imgTselNopSignature)
+        btnTselNopSignature = findViewById(R.id.btnTselNopSignature)
+
+        etTselRtpdsName = findViewById(R.id.etTselRtpdsName)
+        etTselRtpdsNik = findViewById(R.id.etTselRtpdsNik)
+        imgTselRtpdsSignature = findViewById(R.id.imgTselRtpdsSignature)
+        btnTselRtpdsSignature = findViewById(R.id.btnTselRtpdsSignature)
+
+        etTselRtpeNfName = findViewById(R.id.etTselRtpeNfName)
+        etTselRtpeNfNik = findViewById(R.id.etTselRtpeNfNik)
+        imgTselRtpeNfSignature = findViewById(R.id.imgTselRtpeNfSignature)
+        btnTselRtpeNfSignature = findViewById(R.id.btnTselRtpeNfSignature)
+
+        inputProjectTitle = findViewById(R.id.inputProjectTitle)
+        inputContractNumber = findViewById(R.id.inputContractNumber)
+        inputExecutor = findViewById(R.id.inputExecutor)
+        inputLocation = findViewById(R.id.inputLocation)
+        inputDescription = findViewById(R.id.inputDescription)
+        etTselRegion = findViewById(R.id.etTselRegion)
+
+        btnGeneratePdf = findViewById(R.id.btnGeneratePdf)
+        btnSubmitForm = findViewById(R.id.btnSubmitForm)  // Tambahkan baris ini
+
+        // Di dalam initializeUI() atau bagian setupButtons()
+        btnSubmitForm.setOnClickListener {
+            if (validateForm()) {
+                submitForm()
+            }
+        }
+
+        // Setup signature button listeners
+        setupSignatureButtons()
+
+        // Setup generate PDF and submit form buttons
         btnGeneratePdf.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                generateStyledPdf()
+            if (validateForm()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    generateStyledPdf()
+                }
+            }
+        }
+
+        btnSubmitForm.setOnClickListener {
+            if (validateForm()) {
+                submitForm()
             }
         }
     }
 
+    private fun setupTabs() {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when(tab?.position) {
+                    0 -> { // Form tab
+                        formContainer.visibility = View.VISIBLE
+                        searchContainer.visibility = View.GONE
+                    }
+                    1 -> { // Search tab
+                        formContainer.visibility = View.GONE
+                        searchContainer.visibility = View.VISIBLE
+                        loadSurveyData()
+                    }
+                }
+            }
 
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+    }
+
+    private fun setupSearch() {
+        // Initialize RecyclerView
+        rvSearchResults.layoutManager = LinearLayoutManager(this)
+        searchAdapter = SurveyAdapter(surveyList) { surveyData ->
+            // Handle item click - load data into form
+            loadSurveyIntoForm(surveyData)
+            tabLayout.getTabAt(0)?.select() // Switch to form tab
+        }
+        rvSearchResults.adapter = searchAdapter
+
+        // Setup SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                filterResults(query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterResults(newText)
+                return false
+            }
+        })
+    }
+
+    private fun filterResults(query: String?) {
+        if (query.isNullOrBlank()) {
+            searchAdapter.updateData(surveyList)
+            return
+        }
+
+        val filteredList = surveyList.filter {
+            it.location.contains(query, ignoreCase = true) ||
+                    it.projectTitle.contains(query, ignoreCase = true) ||
+                    it.contractNumber.contains(query, ignoreCase = true)
+        }
+        searchAdapter.updateData(filteredList)
+    }
+
+    private fun loadSurveyData() {
+        // Show loading UI
+        val loadingView = findViewById<View>(R.id.loadingEventsShimmer)
+        val emptyView = findViewById<View>(R.id.emptyEventsView)
+
+        loadingView.visibility = View.VISIBLE
+        rvSearchResults.visibility = View.GONE
+        emptyView.visibility = View.GONE
+
+        db.collection("big_surveys")
+            .get()
+            .addOnSuccessListener { documents ->
+                surveyList.clear()
+                for (document in documents) {
+                    val data = document.data
+                    val survey = SurveyData(
+                        id = document.id,
+                        projectTitle = data["projectTitle"] as? String ?: "",
+                        contractNumber = data["contractNumber"] as? String ?: "",
+                        executor = data["executor"] as? String ?: "",
+                        location = data["location"] as? String ?: "",
+                        description = data["description"] as? String ?: "",
+                        createdAt = data["createdAt"] as? Long ?: 0
+                    )
+                    surveyList.add(survey)
+                }
+
+                // Sort by creation date, newest first
+                surveyList.sortByDescending { it.createdAt }
+
+                // Update UI
+                loadingView.visibility = View.GONE
+                if (surveyList.isEmpty()) {
+                    emptyView.visibility = View.VISIBLE
+                    rvSearchResults.visibility = View.GONE
+                } else {
+                    emptyView.visibility = View.GONE
+                    rvSearchResults.visibility = View.VISIBLE
+                    searchAdapter.updateData(surveyList)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("BASurveyBig", "Error loading data", e)
+                loadingView.visibility = View.GONE
+                emptyView.visibility = View.VISIBLE
+                rvSearchResults.visibility = View.GONE
+                Toast.makeText(this, "Failed to load data: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun loadSurveyIntoForm(survey: SurveyData) {
+        inputProjectTitle.setText(survey.projectTitle)
+        inputContractNumber.setText(survey.contractNumber)
+        inputLocation.setText(survey.location)
+        inputDescription.setText(survey.description)
+
+        // Set executor spinner
+        val executorAdapter = inputExecutor.adapter as ArrayAdapter<String>
+        val position = (0 until executorAdapter.count).find {
+            executorAdapter.getItem(it) == survey.executor
+        } ?: 0
+        inputExecutor.setSelection(position)
+
+        // Load additional data
+        db.collection("big_surveys").document(survey.id)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    // Load all form field values
+                    val data = document.data ?: return@addOnSuccessListener
+
+                    // Load signatures and other fields
+                    etTselRegion.setText(data["tselRegion"] as? String ?: "")
+
+                    // Load actual and remark fields
+                    loadFieldIfExists(data, "actual1", findViewById(R.id.inputAktual1))
+                    loadFieldIfExists(data, "remark1", findViewById(R.id.inputKeterangan1))
+                    loadFieldIfExists(data, "actual2", findViewById(R.id.inputAktual2))
+                    loadFieldIfExists(data, "remark2", findViewById(R.id.inputKeterangan2))
+                    loadFieldIfExists(data, "actual3", findViewById(R.id.inputAktual3))
+                    loadFieldIfExists(data, "remark3", findViewById(R.id.inputKeterangan3))
+                    loadFieldIfExists(data, "actual4", findViewById(R.id.inputAktual4))
+                    loadFieldIfExists(data, "remark4", findViewById(R.id.inputKeterangan4))
+                    loadFieldIfExists(data, "actual5", findViewById(R.id.inputAktual5))
+                    loadFieldIfExists(data, "remark5", findViewById(R.id.inputKeterangan5))
+                    loadFieldIfExists(data, "actual6", findViewById(R.id.inputAktual6))
+                    loadFieldIfExists(data, "remark6", findViewById(R.id.inputKeterangan6))
+                    loadFieldIfExists(data, "actual7", findViewById(R.id.inputAktual7))
+                    loadFieldIfExists(data, "remark7", findViewById(R.id.inputKeterangan7))
+                    loadFieldIfExists(data, "actual8", findViewById(R.id.inputAktual8))
+                    loadFieldIfExists(data, "remark8", findViewById(R.id.inputKeterangan8))
+                    loadFieldIfExists(data, "actual9", findViewById(R.id.inputAktual9))
+                    loadFieldIfExists(data, "remark9", findViewById(R.id.inputKeterangan9))
+                    loadFieldIfExists(data, "actual10", findViewById(R.id.inputAktual10))
+                    loadFieldIfExists(data, "remark10", findViewById(R.id.inputKeterangan10))
+                    loadFieldIfExists(data, "actual11", findViewById(R.id.inputAktual11))
+                    loadFieldIfExists(data, "remark11", findViewById(R.id.inputKeterangan11))
+                    loadFieldIfExists(data, "actual12", findViewById(R.id.inputAktual12))
+                    loadFieldIfExists(data, "remark12", findViewById(R.id.inputKeterangan12))
+                    loadFieldIfExists(data, "actual13", findViewById(R.id.inputAktual13))
+                    loadFieldIfExists(data, "remark13", findViewById(R.id.inputKeterangan13))
+                    loadFieldIfExists(data, "actual14", findViewById(R.id.inputAktual14))
+                    loadFieldIfExists(data, "remark14", findViewById(R.id.inputKeterangan14))
+                    loadFieldIfExists(data, "actual15", findViewById(R.id.inputAktual15))
+                    loadFieldIfExists(data, "remark15", findViewById(R.id.inputKeterangan15))
+                    loadFieldIfExists(data, "actual16", findViewById(R.id.inputAktual16))
+                    loadFieldIfExists(data, "remark16", findViewById(R.id.inputKeterangan16))
+                    loadFieldIfExists(data, "actual17", findViewById(R.id.inputAktual17))
+                    loadFieldIfExists(data, "remark17", findViewById(R.id.inputKeterangan17))
+                    loadFieldIfExists(data, "actual18", findViewById(R.id.inputAktual18))
+                    loadFieldIfExists(data, "remark18", findViewById(R.id.inputKeterangan18))
+                    loadFieldIfExists(data, "actual19", findViewById(R.id.inputAktual19))
+                    loadFieldIfExists(data, "remark19", findViewById(R.id.inputKeterangan19))
+
+                    // Load signature fields
+                    loadSignatureData(data, "zteName", "zteNik", "zteSignature", etZteName, etZteNik, imgZteSignature)
+                    loadSignatureData(data, "tifName", "tifNik", "tifSignature", etTifName, etTifNik, imgTifSignature)
+                    loadSignatureData(data, "telkomName", "telkomNik", "telkomSignature", etTelkomName, etTelkomNik, imgTelkomSignature)
+                    loadSignatureData(data, "tselNopName", "tselNopNik", "tselNopSignature", etTselNopName, etTselNopNik, imgTselNopSignature)
+                    loadSignatureData(data, "tselRtpdsName", "tselRtpdsNik", "tselRtpdsSignature", etTselRtpdsName, etTselRtpdsNik, imgTselRtpdsSignature)
+                    loadSignatureData(data, "tselRtpeNfName", "tselRtpeNfNik", "tselRtpeNfSignature", etTselRtpeNfName, etTselRtpeNfNik, imgTselRtpeNfSignature)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("BASurveyBig", "Error loading detailed data", e)
+                Toast.makeText(this, "Failed to load detailed data: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun loadFieldIfExists(data: Map<String, Any>, fieldName: String, editText: EditText) {
+        if (data.containsKey(fieldName)) {
+            editText.setText(data[fieldName] as? String ?: "")
+        }
+    }
+
+    private fun loadSignatureData(data: Map<String, Any>, nameField: String, nikField: String, signatureField: String,
+                                  nameEditText: EditText, nikEditText: EditText, signatureImageView: ImageView) {
+        nameEditText.setText(data[nameField] as? String ?: "")
+        nikEditText.setText(data[nikField] as? String ?: "")
+
+        val signatureUrl = data[signatureField] as? String
+        if (!signatureUrl.isNullOrEmpty()) {
+            // Load signature image from URL
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val storageRef = storage.getReferenceFromUrl(signatureUrl)
+                    val ONE_MEGABYTE: Long = 1024 * 1024
+                    val bytes = storageRef.getBytes(ONE_MEGABYTE).await()
+                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+                    withContext(Dispatchers.Main) {
+                        signatureImageView.setImageBitmap(bitmap)
+                        signatureImageView.visibility = View.VISIBLE
+                    }
+                } catch (e: Exception) {
+                    Log.e("BASurveyBig", "Error loading signature image", e)
+                }
+            }
+        }
+    }
+
+    private fun setupSignatureButtons() {
+        // ZTE Signature
+        btnZteSignature.setOnClickListener {
+            showSignatureOptions(imgZteSignature)
+        }
+
+        // TIF Signature
+        btnTifSignature.setOnClickListener {
+            showSignatureOptions(imgTifSignature)
+        }
+
+        // Telkom Signature
+        btnTelkomSignature.setOnClickListener {
+            showSignatureOptions(imgTelkomSignature)
+        }
+
+        // Telkomsel NOP Signature
+        btnTselNopSignature.setOnClickListener {
+            showSignatureOptions(imgTselNopSignature)
+        }
+
+        // Telkomsel RTPDS Signature
+        btnTselRtpdsSignature.setOnClickListener {
+            showSignatureOptions(imgTselRtpdsSignature)
+        }
+
+        // Telkomsel RTPE/NF Signature
+        btnTselRtpeNfSignature.setOnClickListener {
+            showSignatureOptions(imgTselRtpeNfSignature)
+        }
+    }
+
+    private fun showSignatureOptions(imageView: ImageView) {
+        currentImageView = imageView
+
+        // Ubah opsi yang ditampilkan
+        AlertDialog.Builder(this)
+            .setTitle("Add Signature")
+            .setItems(arrayOf("Choose from Gallery", "File Manager")) { _, which ->
+                when (which) {
+                    0 -> openGallery()
+                    1 -> openFileManager()
+                }
+            }
+            .show()
+    }
+
+    // Metode khusus untuk membuka galeri
+    private fun openGallery() {
+        try {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, GALLERY_REQUEST_CODE)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Cannot open gallery: ${e.message}", Toast.LENGTH_SHORT).show()
+            Log.e("BASurveyBig", "Gallery error: ${e.message}")
+        }
+    }
+
+    // Metode untuk membuka file manager
+    private fun openFileManager() {
+        try {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            startActivityForResult(Intent.createChooser(intent, "Select Image"), FILE_MANAGER_REQUEST_CODE)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Cannot open file manager: ${e.message}", Toast.LENGTH_SHORT).show()
+            Log.e("BASurveyBig", "File manager error: ${e.message}")
+        }
+    }
+
+    // Tambahkan kode konstanta untuk request code
+    companion object {
+        private const val GALLERY_REQUEST_CODE = 101
+        private const val FILE_MANAGER_REQUEST_CODE = 102
+    }
+
+    private fun takePhoto() {
+        if (checkCameraPermission()) {
+            val values = ContentValues()
+            values.put(MediaStore.Images.Media.TITLE, "New Picture")
+            values.put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
+
+            tempPhotoUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempPhotoUri)
+            startActivityForResult(cameraIntent, CAMERA_PERMISSION_CODE)
+        } else {
+            requestCameraPermission()
+        }
+    }
+
+    private fun chooseFromGallery() {
+        if (checkStoragePermission()) {
+            val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(galleryIntent, STORAGE_PERMISSION_CODE)
+        } else {
+            requestStoragePermission()
+        }
+    }
+
+    private fun drawSignature() {
+        val signatureDialog = SignatureDialog(this) { bitmap ->
+            currentImageView?.setImageBitmap(bitmap)
+            currentImageView?.visibility = View.VISIBLE
+        }
+        signatureDialog.show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                GALLERY_REQUEST_CODE, FILE_MANAGER_REQUEST_CODE -> {
+                    try {
+                        val selectedImageUri = data?.data
+                        if (selectedImageUri != null && currentImageView != null) {
+                            // Gunakan content resolver untuk membuka stream
+                            val inputStream = contentResolver.openInputStream(selectedImageUri)
+                            val bitmap = BitmapFactory.decodeStream(inputStream)
+                            inputStream?.close()
+
+                            if (bitmap != null) {
+                                // Tampilkan gambar di ImageView
+                                currentImageView?.setImageBitmap(bitmap)
+                                currentImageView?.visibility = View.VISIBLE
+                            } else {
+                                Toast.makeText(this, "Cannot load selected image", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Log.e("BASurveyBig", "Error processing selected image: ${e.message}")
+                        Toast.makeText(this, "Error processing image: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        } else if (resultCode == RESULT_CANCELED) {
+            Toast.makeText(this, "Image selection cancelled", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun checkStoragePermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.CAMERA),
+            CAMERA_PERMISSION_CODE
+        )
+    }
+
+    private fun requestStoragePermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            STORAGE_PERMISSION_CODE
+        )
+    }
+
+    private fun checkAndRequestPermissions() {
+        val permissions = mutableListOf<String>()
+
+        if (!checkCameraPermission()) {
+            permissions.add(Manifest.permission.CAMERA)
+        }
+
+        if (!checkStoragePermission()) {
+            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissions.toTypedArray(),
+                100
+            )
+        }
+    }
+
+    private fun validateForm(): Boolean {
+        var isValid = true
+
+        if (inputProjectTitle.text.isNullOrEmpty()) {
+            inputProjectTitle.error = "Project title cannot be empty"
+            isValid = false
+        }
+
+        if (inputLocation.text.isNullOrEmpty()) {
+            inputLocation.error = "Location cannot be empty"
+            isValid = false
+        }
+
+        if (inputContractNumber.text.isNullOrEmpty()) {
+            inputContractNumber.error = "Contract number cannot be empty"
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    private fun submitForm() {
+        val loadingDialog = AlertDialog.Builder(this)
+            .setMessage("Submitting form...")
+            .setCancelable(false)
+            .create()
+
+        loadingDialog.show()
+
+        // Create data hash map
+        val formData = hashMapOf(
+            "projectTitle" to inputProjectTitle.text.toString(),
+            "contractNumber" to inputContractNumber.text.toString(),
+            "executor" to inputExecutor.selectedItem.toString(),
+            "location" to inputLocation.text.toString(),
+            "description" to inputDescription.text.toString(),
+            "tselRegion" to etTselRegion.text.toString(),
+
+            // Actual and remarks data
+            "actual1" to findViewById<EditText>(R.id.inputAktual1).text.toString(),
+            "remark1" to findViewById<EditText>(R.id.inputKeterangan1).text.toString(),
+            "actual2" to findViewById<EditText>(R.id.inputAktual2).text.toString(),
+            "remark2" to findViewById<EditText>(R.id.inputKeterangan2).text.toString(),
+            "actual3" to findViewById<EditText>(R.id.inputAktual3).text.toString(),
+            "remark3" to findViewById<EditText>(R.id.inputKeterangan3).text.toString(),
+            "actual4" to findViewById<EditText>(R.id.inputAktual4).text.toString(),
+            "remark4" to findViewById<EditText>(R.id.inputKeterangan4).text.toString(),
+            "actual5" to findViewById<EditText>(R.id.inputAktual5).text.toString(),
+            "remark5" to findViewById<EditText>(R.id.inputKeterangan5).text.toString(),
+            "actual6" to findViewById<EditText>(R.id.inputAktual6).text.toString(),
+            "remark6" to findViewById<EditText>(R.id.inputKeterangan6).text.toString(),
+            "actual7" to findViewById<EditText>(R.id.inputAktual7).text.toString(),
+            "remark7" to findViewById<EditText>(R.id.inputKeterangan7).text.toString(),
+            "actual8" to findViewById<EditText>(R.id.inputAktual8).text.toString(),
+            "remark8" to findViewById<EditText>(R.id.inputKeterangan8).text.toString(),
+            "actual9" to findViewById<EditText>(R.id.inputAktual9).text.toString(),
+            "remark9" to findViewById<EditText>(R.id.inputKeterangan9).text.toString(),
+            "actual10" to findViewById<EditText>(R.id.inputAktual10).text.toString(),
+            "remark10" to findViewById<EditText>(R.id.inputKeterangan10).text.toString(),
+            "actual11" to findViewById<EditText>(R.id.inputAktual11).text.toString(),
+            "remark11" to findViewById<EditText>(R.id.inputKeterangan11).text.toString(),
+            "actual12" to findViewById<EditText>(R.id.inputAktual12).text.toString(),
+            "remark12" to findViewById<EditText>(R.id.inputKeterangan12).text.toString(),
+            "actual13" to findViewById<EditText>(R.id.inputAktual13).text.toString(),
+            "remark13" to findViewById<EditText>(R.id.inputKeterangan13).text.toString(),
+            "actual14" to findViewById<EditText>(R.id.inputAktual14).text.toString(),
+            "remark14" to findViewById<EditText>(R.id.inputKeterangan14).text.toString(),
+            "actual15" to findViewById<EditText>(R.id.inputAktual15).text.toString(),
+            "remark15" to findViewById<EditText>(R.id.inputKeterangan15).text.toString(),
+            "actual16" to findViewById<EditText>(R.id.inputAktual16).text.toString(),
+            "remark16" to findViewById<EditText>(R.id.inputKeterangan16).text.toString(),
+            "actual17" to findViewById<EditText>(R.id.inputAktual17).text.toString(),
+            "remark17" to findViewById<EditText>(R.id.inputKeterangan17).text.toString(),
+            "actual18" to findViewById<EditText>(R.id.inputAktual18).text.toString(),
+            "remark18" to findViewById<EditText>(R.id.inputKeterangan18).text.toString(),
+            "actual19" to findViewById<EditText>(R.id.inputAktual19).text.toString(),
+            "remark19" to findViewById<EditText>(R.id.inputKeterangan19).text.toString(),
+
+            // Signature names and NIKs
+            "zteName" to etZteName.text.toString(),
+            "zteNik" to etZteNik.text.toString(),
+
+            "tifName" to etTifName.text.toString(),
+            "tifNik" to etTifNik.text.toString(),
+
+            "telkomName" to etTelkomName.text.toString(),
+            "telkomNik" to etTelkomNik.text.toString(),
+
+            "tselNopName" to etTselNopName.text.toString(),
+            "tselNopNik" to etTselNopNik.text.toString(),
+
+            "tselRtpdsName" to etTselRtpdsName.text.toString(),
+            "tselRtpdsNik" to etTselRtpdsNik.text.toString(),
+
+            "tselRtpeNfName" to etTselRtpeNfName.text.toString(),
+            "tselRtpeNfNik" to etTselRtpeNfNik.text.toString(),
+
+            "createdAt" to System.currentTimeMillis()
+        )
+
+        // Upload signatures first if available
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Upload all signatures
+                val signatureFields = listOf(
+                    Triple("zteSignature", imgZteSignature, "signatures/zte_${UUID.randomUUID()}.jpg"),
+                    Triple("tifSignature", imgTifSignature, "signatures/tif_${UUID.randomUUID()}.jpg"),
+                    Triple("telkomSignature", imgTelkomSignature, "signatures/telkom_${UUID.randomUUID()}.jpg"),
+                    Triple("tselNopSignature", imgTselNopSignature, "signatures/tsel_nop_${UUID.randomUUID()}.jpg"),
+                    Triple("tselRtpdsSignature", imgTselRtpdsSignature, "signatures/tsel_rtpds_${UUID.randomUUID()}.jpg"),
+                    Triple("tselRtpeNfSignature", imgTselRtpeNfSignature, "signatures/tsel_rtpe_${UUID.randomUUID()}.jpg")
+                )
+
+                for ((fieldName, imageView, storagePath) in signatureFields) {
+                    if (imageView.drawable != null && imageView.visibility == View.VISIBLE) {
+                        val bitmap = (imageView.drawable as BitmapDrawable).bitmap
+                        val baos = java.io.ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                        val data = baos.toByteArray()
+
+                        val storageRef = storage.reference.child(storagePath)
+                        val uploadTask = storageRef.putBytes(data).await()
+                        val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
+
+                        formData[fieldName] = downloadUrl
+                    }
+                }
+
+                // Save form data to Firestore
+                db.collection("big_surveys")
+                    .add(formData)
+                    .addOnSuccessListener { documentReference ->
+                        loadingDialog.dismiss()
+                        Toast.makeText(this@BASurveyBigActivity,
+                            "Form submitted successfully with ID: ${documentReference.id}",
+                            Toast.LENGTH_LONG).show()
+                        resetForm()
+                    }
+                    .addOnFailureListener { e ->
+                        loadingDialog.dismiss()
+                        Toast.makeText(this@BASurveyBigActivity,
+                            "Error submitting form: ${e.message}",
+                            Toast.LENGTH_LONG).show()
+                    }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    loadingDialog.dismiss()
+                    Toast.makeText(this@BASurveyBigActivity,
+                        "Error uploading signatures: ${e.message}",
+                        Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun resetForm() {
+        // Reset all form fields
+        inputProjectTitle.text.clear()
+        inputContractNumber.text.clear()
+        inputExecutor.setSelection(0)
+        inputLocation.text.clear()
+        inputDescription.text.clear()
+        etTselRegion.text.clear()
+
+        // Reset actual and remarks fields
+        for (i in 1..19) {
+            try {
+                findViewById<EditText>(resources.getIdentifier("inputAktual$i", "id", packageName)).text.clear()
+                findViewById<EditText>(resources.getIdentifier("inputKeterangan$i", "id", packageName)).text.clear()
+            } catch (e: Exception) {
+                Log.e("BASurveyBig", "Error resetting field $i: ${e.message}")
+            }
+        }
+
+        // Reset signature fields
+        resetSignatureFields(etZteName, etZteNik, imgZteSignature)
+        resetSignatureFields(etTifName, etTifNik, imgTifSignature)
+        resetSignatureFields(etTelkomName, etTelkomNik, imgTelkomSignature)
+        resetSignatureFields(etTselNopName, etTselNopNik, imgTselNopSignature)
+        resetSignatureFields(etTselRtpdsName, etTselRtpdsNik, imgTselRtpdsSignature)
+        resetSignatureFields(etTselRtpeNfName, etTselRtpeNfNik, imgTselRtpeNfSignature)
+    }
+
+    private fun resetSignatureFields(nameField: EditText, nikField: EditText, signatureImage: ImageView) {
+        nameField.text.clear()
+        nikField.text.clear()
+        signatureImage.setImageDrawable(null)
+        signatureImage.visibility = View.GONE
+    }
 
     private fun generateDescription(projectTitle: String, contractNumber: String, executor: String): String {
         val currentDate = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault()).format(Date())
@@ -344,11 +1140,9 @@ class BASurveyBigActivity : AppCompatActivity() {
                     )
                 }
 
-
-
                 drawHeader(executor)
 
-// Informasi Proyek
+                // Informasi Proyek
                 val labelX = marginX
                 val colonX = 180f
                 val valueX = 200f
@@ -1314,14 +2108,13 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val region = findViewById<EditText>(R.id.etTselRegion).text.toString()
                 drawSignaturesWithFormattedTitles(canvas, region, y + 30f, paint, boldPaint)
 
-
                 drawFooter() // Tambahkan footer di halaman terakhir
                 document.finishPage(page)
 
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 if (!downloadsDir.exists()) downloadsDir.mkdirs()
 
-// Cek nama file yang belum digunakan
+                // Cek nama file yang belum digunakan
                 var fileIndex = 1
                 var file: File
                 do {
@@ -1330,7 +2123,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                     fileIndex++
                 } while (file.exists())
 
-// Simpan dokumen
+                // Simpan dokumen
                 document.writeTo(FileOutputStream(file))
                 document.close()
 
@@ -1341,7 +2134,6 @@ class BASurveyBigActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@BASurveyBigActivity, "Gagal membuat PDF: ${e.message}", Toast.LENGTH_LONG).show()
-
                 }
             }
         }
