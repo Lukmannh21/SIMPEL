@@ -29,7 +29,6 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
-
 class CAFActivity : AppCompatActivity() {
 
     // UI components
@@ -977,7 +976,7 @@ class CAFActivity : AppCompatActivity() {
         }
     }
 
-    // Shared function to create and populate a PDF document that matches the provided image layout
+    // Improved PDF document creation function
     private fun createPdfDocument(cafData: CAFModel): PdfDocument {
         val pdfDocument = PdfDocument()
 
@@ -1049,115 +1048,115 @@ class CAFActivity : AppCompatActivity() {
         canvas.drawText("Revision:", leftMargin + 395, dateTableTop + 42, headerPaint)
         canvas.drawText(cafData.revision, leftMargin + 445, dateTableTop + 42, textPaint)
 
-        // Site Information section
+        // Site Information section - EXACT LAYOUT MATCH WITH THE IMAGE
         val siteInfoTop = dateTableTop + 60
 
-        // Row 1: Site ID, Island, Province, City
-        canvas.drawRect(leftMargin, siteInfoTop, leftMargin + 100, siteInfoTop + 25, linePaint)
-        canvas.drawRect(leftMargin + 100, siteInfoTop, leftMargin + 180, siteInfoTop + 25, linePaint)
-        canvas.drawRect(leftMargin + 180, siteInfoTop, leftMargin + 350, siteInfoTop + 25, linePaint)
-        canvas.drawRect(leftMargin + 350, siteInfoTop, leftMargin + pageWidth, siteInfoTop + 25, linePaint)
+        // LAYOUT BASED ON IMAGE:
+        // Row 1: SITE ID, Island+Province, City
+        canvas.drawRect(leftMargin, siteInfoTop, leftMargin + 175, siteInfoTop + 25, linePaint) // SITE ID
+        canvas.drawRect(leftMargin + 175, siteInfoTop, leftMargin + 442, siteInfoTop + 25, linePaint) // Island+Province
+        canvas.drawRect(leftMargin + 442, siteInfoTop, leftMargin + pageWidth, siteInfoTop + 25, linePaint) // City
 
         canvas.drawText("SITE ID:", leftMargin + 5, siteInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.siteId, leftMargin + 105, siteInfoTop + 17, textPaint)
+        canvas.drawText(cafData.siteId, leftMargin + 80, siteInfoTop + 17, textPaint)
 
-        canvas.drawText("Island:", leftMargin + 185, siteInfoTop + 17, headerPaint)
+        canvas.drawText("Island:", leftMargin + 180, siteInfoTop + 17, headerPaint)
         canvas.drawText(cafData.island, leftMargin + 220, siteInfoTop + 17, textPaint)
 
-        canvas.drawText("Province:", leftMargin + 280, siteInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.province, leftMargin + 330, siteInfoTop + 17, textPaint)
+        canvas.drawText("Province:", leftMargin + 300, siteInfoTop + 17, headerPaint)
+        canvas.drawText(cafData.province, leftMargin + 350, siteInfoTop + 17, textPaint)
 
-        canvas.drawText("City:", leftMargin + 355, siteInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.city, leftMargin + 380, siteInfoTop + 17, textPaint)
+        canvas.drawText("City:", leftMargin + 447, siteInfoTop + 17, headerPaint)
+        canvas.drawText(cafData.city, leftMargin + 475, siteInfoTop + 17, textPaint)
 
         // Row 2: Latitude, Longitude, Site Type
-        canvas.drawRect(leftMargin, siteInfoTop + 25, leftMargin + 180, siteInfoTop + 50, linePaint)
-        canvas.drawRect(leftMargin + 180, siteInfoTop + 25, leftMargin + 350, siteInfoTop + 50, linePaint)
-        canvas.drawRect(leftMargin + 350, siteInfoTop + 25, leftMargin + pageWidth, siteInfoTop + 50, linePaint)
+        canvas.drawRect(leftMargin, siteInfoTop + 25, leftMargin + 310, siteInfoTop + 50, linePaint) // Latitude
+        canvas.drawRect(leftMargin + 310, siteInfoTop + 25, leftMargin + pageWidth, siteInfoTop + 50, linePaint) // Longitude+Site Type
 
         canvas.drawText("Latitude (Decimal/DMS):", leftMargin + 5, siteInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.latitude, leftMargin + 120, siteInfoTop + 42, textPaint)
+        canvas.drawText(cafData.latitude, leftMargin + 130, siteInfoTop + 42, textPaint)
 
-        canvas.drawText("Longitude (Decimal/DMS):", leftMargin + 185, siteInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.longitude, leftMargin + 310, siteInfoTop + 42, textPaint)
+        canvas.drawText("Longitude (Decimal/DMS):", leftMargin + 315, siteInfoTop + 42, headerPaint)
+        canvas.drawText(cafData.longitude, leftMargin + 445, siteInfoTop + 42, textPaint)
 
-        canvas.drawText("Site Type:", leftMargin + 355, siteInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.siteType, leftMargin + 410, siteInfoTop + 42, textPaint)
+        canvas.drawText("Site Type:", leftMargin + 455, siteInfoTop + 42, headerPaint)
+        canvas.drawText(cafData.siteType, leftMargin + 490, siteInfoTop + 42, textPaint)
 
         // Row 3: Building Height, Tower Type
-        canvas.drawRect(leftMargin, siteInfoTop + 50, leftMargin + 180, siteInfoTop + 75, linePaint)
-        canvas.drawRect(leftMargin + 180, siteInfoTop + 50, leftMargin + pageWidth, siteInfoTop + 75, linePaint)
+        canvas.drawRect(leftMargin, siteInfoTop + 50, leftMargin + 310, siteInfoTop + 75, linePaint) // Building Height
+        canvas.drawRect(leftMargin + 310, siteInfoTop + 50, leftMargin + pageWidth, siteInfoTop + 75, linePaint) // Tower Type
 
         canvas.drawText("Building Height:", leftMargin + 5, siteInfoTop + 67, headerPaint)
-        canvas.drawText(cafData.buildingHeight, leftMargin + 85, siteInfoTop + 67, textPaint)
+        canvas.drawText(cafData.buildingHeight, leftMargin + 95, siteInfoTop + 67, textPaint)
 
-        canvas.drawText("Tower Type:", leftMargin + 185, siteInfoTop + 67, headerPaint)
-        canvas.drawText(cafData.towerType, leftMargin + 250, siteInfoTop + 67, textPaint)
+        canvas.drawText("Tower Type:", leftMargin + 315, siteInfoTop + 67, headerPaint)
+        canvas.drawText(cafData.towerType, leftMargin + 385, siteInfoTop + 67, textPaint)
 
         // Row 4: Tower Height, Tower Extension
-        canvas.drawRect(leftMargin, siteInfoTop + 75, leftMargin + 180, siteInfoTop + 100, linePaint)
-        canvas.drawRect(leftMargin + 180, siteInfoTop + 75, leftMargin + pageWidth, siteInfoTop + 100, linePaint)
+        canvas.drawRect(leftMargin, siteInfoTop + 75, leftMargin + 310, siteInfoTop + 100, linePaint) // Tower Height
+        canvas.drawRect(leftMargin + 310, siteInfoTop + 75, leftMargin + pageWidth, siteInfoTop + 100, linePaint) // Tower Extension
 
         canvas.drawText("Tower Height:", leftMargin + 5, siteInfoTop + 92, headerPaint)
-        canvas.drawText(cafData.towerHeight, leftMargin + 80, siteInfoTop + 92, textPaint)
+        canvas.drawText(cafData.towerHeight, leftMargin + 85, siteInfoTop + 92, textPaint)
 
-        canvas.drawText("Tower Extension Required:", leftMargin + 185, siteInfoTop + 92, headerPaint)
+        canvas.drawText("Tower Extension Required:", leftMargin + 315, siteInfoTop + 92, headerPaint)
 
         // YES checkbox with clearer marks
-        val boxSize = 10f
-        canvas.drawRect(leftMargin + 320, siteInfoTop + 86, leftMargin + 320 + boxSize, siteInfoTop + 86 + boxSize, linePaint)
+        val boxSize = 12f
+        canvas.drawRect(leftMargin + 455, siteInfoTop + 86, leftMargin + 455 + boxSize, siteInfoTop + 86 + boxSize, linePaint)
         if (cafData.towerExtensionRequired) {
             // Draw X more clearly
-            val x1 = leftMargin + 320
+            val x1 = leftMargin + 455
             val y1 = siteInfoTop + 86
-            val x2 = leftMargin + 320 + boxSize
+            val x2 = leftMargin + 455 + boxSize
             val y2 = siteInfoTop + 86 + boxSize
             canvas.drawLine(x1, y1, x2, y2, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
             canvas.drawLine(x1, y2, x2, y1, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
         }
-        canvas.drawText("YES", leftMargin + 335, siteInfoTop + 92, textPaint)
+        canvas.drawText("YES", leftMargin + 470, siteInfoTop + 92, textPaint)
 
         // NO checkbox
-        canvas.drawRect(leftMargin + 360, siteInfoTop + 86, leftMargin + 360 + boxSize, siteInfoTop + 86 + boxSize, linePaint)
+        canvas.drawRect(leftMargin + 495, siteInfoTop + 86, leftMargin + 495 + boxSize, siteInfoTop + 86 + boxSize, linePaint)
         if (!cafData.towerExtensionRequired) {
             // Draw X more clearly
-            val x1 = leftMargin + 360
+            val x1 = leftMargin + 495
             val y1 = siteInfoTop + 86
-            val x2 = leftMargin + 360 + boxSize
+            val x2 = leftMargin + 495 + boxSize
             val y2 = siteInfoTop + 86 + boxSize
             canvas.drawLine(x1, y1, x2, y2, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
             canvas.drawLine(x1, y2, x2, y1, Paint().apply { color = Color.BLACK; strokeWidth = 2f })
         }
-        canvas.drawText("NO", leftMargin + 375, siteInfoTop + 92, textPaint)
+        canvas.drawText("NO", leftMargin + 510, siteInfoTop + 92, textPaint)
 
-        // Client Information section
+        // Client Information section - IMPROVED BASED ON IMAGE
         val clientInfoTop = siteInfoTop + 110
 
         // Row 1: CLIENT, Client Site ID, Client Site Name
-        canvas.drawRect(leftMargin, clientInfoTop, leftMargin + 100, clientInfoTop + 25, linePaint)
-        canvas.drawRect(leftMargin + 100, clientInfoTop, leftMargin + 250, clientInfoTop + 25, linePaint)
-        canvas.drawRect(leftMargin + 250, clientInfoTop, leftMargin + pageWidth, clientInfoTop + 25, linePaint)
+        canvas.drawRect(leftMargin, clientInfoTop, leftMargin + 175, clientInfoTop + 25, linePaint) // CLIENT
+        canvas.drawRect(leftMargin + 175, clientInfoTop, leftMargin + 310, clientInfoTop + 25, linePaint) // Client Site ID
+        canvas.drawRect(leftMargin + 310, clientInfoTop, leftMargin + pageWidth, clientInfoTop + 25, linePaint) // Client Site Name
 
         canvas.drawText("CLIENT:", leftMargin + 5, clientInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.client, leftMargin + 105, clientInfoTop + 17, textPaint)
+        canvas.drawText(cafData.client, leftMargin + 60, clientInfoTop + 17, textPaint)
 
-        canvas.drawText("Client Site ID:", leftMargin + 185, clientInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.clientSiteId, leftMargin + 240, clientInfoTop + 17, textPaint)
+        canvas.drawText("Client Site ID:", leftMargin + 180, clientInfoTop + 17, headerPaint)
+        canvas.drawText(cafData.clientSiteId, leftMargin + 245, clientInfoTop + 17, textPaint)
 
-        canvas.drawText("Client Site Name:", leftMargin + 255, clientInfoTop + 17, headerPaint)
-        canvas.drawText(cafData.clientSiteName, leftMargin + 340, clientInfoTop + 17, textPaint)
+        canvas.drawText("Client Site Name:", leftMargin + 315, clientInfoTop + 17, headerPaint)
+        canvas.drawText(cafData.clientSiteName, leftMargin + 400, clientInfoTop + 17, textPaint)
 
-        // Row 2: Client Contact, Contact Phone
-        canvas.drawRect(leftMargin, clientInfoTop + 25, leftMargin + 250, clientInfoTop + 50, linePaint)
-        canvas.drawRect(leftMargin + 250, clientInfoTop + 25, leftMargin + pageWidth, clientInfoTop + 50, linePaint)
+        // Row 2: Application valid + Client Contact, Contact Phone
+        canvas.drawRect(leftMargin, clientInfoTop + 25, leftMargin + 310, clientInfoTop + 50, linePaint) // App valid + Contact
+        canvas.drawRect(leftMargin + 310, clientInfoTop + 25, leftMargin + pageWidth, clientInfoTop + 50, linePaint) // Phone
 
-        canvas.drawText("This application is valid for 15 calendar days.", leftMargin + 5, clientInfoTop + 35, smallTextPaint)
+        // Position this text according to image
+        canvas.drawText("This application is valid for 15 calendar days.", leftMargin + 5, clientInfoTop + 40, smallTextPaint)
 
-        canvas.drawText("Client Contact:", leftMargin + 185, clientInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.clientContact, leftMargin + 240, clientInfoTop + 42, textPaint)
+        canvas.drawText("Client Contact:", leftMargin + 180, clientInfoTop + 42, headerPaint)
+        canvas.drawText(cafData.clientContact, leftMargin + 255, clientInfoTop + 42, textPaint)
 
-        canvas.drawText("Contact Phone #:", leftMargin + 355, clientInfoTop + 42, headerPaint)
-        canvas.drawText(cafData.contactPhone, leftMargin + 430, clientInfoTop + 42, textPaint)
+        canvas.drawText("Contact Phone #:", leftMargin + 315, clientInfoTop + 42, headerPaint)
+        canvas.drawText(cafData.contactPhone, leftMargin + 395, clientInfoTop + 42, textPaint)
 
         // Row 3: SITE ADDRESS
         canvas.drawRect(leftMargin, clientInfoTop + 50, leftMargin + pageWidth, clientInfoTop + 75, linePaint)
@@ -1278,12 +1277,12 @@ class CAFActivity : AppCompatActivity() {
                 topMargin + 160, leftMargin, pageWidth, columnWidths,
                 grayFillPaint, linePaint, headerPaint, textPaint, smallTextPaint)
 
-            // Draw Shelter/Power requirements
-            drawShelterSection(canvas2, cafData, topMargin + 320, leftMargin, pageWidth,
+            // Draw Shelter/Power requirements with fixed genset dimensions
+            drawShelterSectionFixed(canvas2, cafData, topMargin + 320, leftMargin, pageWidth,
                 grayFillPaint, linePaint, headerPaint, textPaint, smallTextPaint)
 
-            // Draw signature section
-            drawSignatureSection(canvas2, cafData, topMargin + 500, leftMargin, pageWidth,
+            // Draw signature section with names
+            drawSignatureSectionWithNames(canvas2, cafData, topMargin + 500, leftMargin, pageWidth,
                 linePaint, headerPaint, textPaint)
 
             pdfDocument.finishPage(page2)
@@ -1308,12 +1307,12 @@ class CAFActivity : AppCompatActivity() {
                 topMargin, leftMargin, pageWidth, columnWidths,
                 grayFillPaint, linePaint, headerPaint, textPaint, smallTextPaint)
 
-            // Draw Shelter/Power requirements
-            drawShelterSection(canvas2, cafData, topMargin + 160, leftMargin, pageWidth,
+            // Draw Shelter/Power requirements with fixed genset dimensions
+            drawShelterSectionFixed(canvas2, cafData, topMargin + 160, leftMargin, pageWidth,
                 grayFillPaint, linePaint, headerPaint, textPaint, smallTextPaint)
 
-            // Draw signature section
-            drawSignatureSection(canvas2, cafData, topMargin + 340, leftMargin, pageWidth,
+            // Draw signature section with names
+            drawSignatureSectionWithNames(canvas2, cafData, topMargin + 340, leftMargin, pageWidth,
                 linePaint, headerPaint, textPaint)
 
             pdfDocument.finishPage(page2)
@@ -1332,6 +1331,7 @@ class CAFActivity : AppCompatActivity() {
     ): Float {
         var yPosition = startY
 
+        // Header with gray background
         // Header with gray background
         val headerRect = RectF(leftMargin, yPosition, leftMargin + pageWidth, yPosition + 20)
         canvas.drawRect(headerRect, grayPaint)
@@ -1438,13 +1438,14 @@ class CAFActivity : AppCompatActivity() {
         return rowY + 30
     }
 
-    private fun drawShelterSection(
+    // Fixed shelter section with properly displayed genset dimensions
+    private fun drawShelterSectionFixed(
         canvas: Canvas, cafData: CAFModel, startY: Float,
         leftMargin: Float, pageWidth: Float,
         grayPaint: Paint, linePaint: Paint, headerPaint: Paint,
         textPaint: Paint, smallTextPaint: Paint
     ) {
-        val yPosition = startY
+        var yPosition = startY
 
         // Title with gray background
         val shelterHeaderRect = RectF(leftMargin, yPosition, leftMargin + pageWidth, yPosition + 20)
@@ -1453,7 +1454,7 @@ class CAFActivity : AppCompatActivity() {
         canvas.drawText("4. SHELTER/POWER REQUIREMENTS", leftMargin + 10, yPosition + 14, headerPaint)
 
         // Main content area
-        val contentRect = RectF(leftMargin, yPosition + 20, leftMargin + pageWidth, yPosition + 120)
+        val contentRect = RectF(leftMargin, yPosition + 20, leftMargin + pageWidth, yPosition + 160)
         canvas.drawRect(contentRect, linePaint)
 
         // Equipment type
@@ -1463,7 +1464,7 @@ class CAFActivity : AppCompatActivity() {
         val isIndoor = cafData.equipmentType == "INDOOR"
         val isOutdoor = cafData.equipmentType == "OUTDOOR"
         val isOther = !isIndoor && !isOutdoor
-        val boxSize = 10f
+        val boxSize = 12f
 
         // INDOOR checkbox
         canvas.drawRect(leftMargin + 170, yPosition + 30, leftMargin + 170 + boxSize, yPosition + 30 + boxSize, linePaint)
@@ -1545,28 +1546,36 @@ class CAFActivity : AppCompatActivity() {
         }
         canvas.drawText("NO", leftMargin + 245, yPosition + 95, textPaint)
 
+        // GENSET DIMENSIONS - clearly displayed
+        canvas.drawText("GENSET DIMENSIONS:", leftMargin + 5, yPosition + 115, headerPaint)
+        canvas.drawText("Length:", leftMargin + 170, yPosition + 115, textPaint)
+        canvas.drawText(cafData.gensetLength, leftMargin + 210, yPosition + 115, textPaint)
+        canvas.drawText("Width:", leftMargin + 280, yPosition + 115, textPaint)
+        canvas.drawText(cafData.gensetWidth, leftMargin + 320, yPosition + 115, textPaint)
+
         // Draw remarks
-        canvas.drawText("Remarks:", leftMargin + 5, yPosition + 115, headerPaint)
-        canvas.drawText(cafData.remarks, leftMargin + 60, yPosition + 115, textPaint)
+        canvas.drawText("Remarks:", leftMargin + 5, yPosition + 135, headerPaint)
+        canvas.drawText(cafData.remarks, leftMargin + 60, yPosition + 135, textPaint)
 
         // Note about drawings
-        val drawingRect = RectF(leftMargin, yPosition + 130, leftMargin + pageWidth, yPosition + 150)
+        val drawingRect = RectF(leftMargin, yPosition + 170, leftMargin + pageWidth, yPosition + 190)
         canvas.drawRect(drawingRect, grayPaint)
         canvas.drawRect(drawingRect, linePaint)
 
         // Center the text
         headerPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText("SHELTER DRAWINGS MUST BE ATTACHED", leftMargin + pageWidth/2, yPosition + 144, headerPaint)
+        canvas.drawText("SHELTER DRAWINGS MUST BE ATTACHED", leftMargin + pageWidth/2, yPosition + 184, headerPaint)
         headerPaint.textAlign = Paint.Align.LEFT
     }
 
-    private fun drawSignatureSection(
+    // Signature section with names added
+    private fun drawSignatureSectionWithNames(
         canvas: Canvas, cafData: CAFModel, startY: Float,
         leftMargin: Float, pageWidth: Float,
         linePaint: Paint, headerPaint: Paint, textPaint: Paint
     ) {
         val colWidth = pageWidth / 4
-        val signatureHeight = 80f
+        val signatureHeight = 100f // Increased height to accommodate names
 
         // Draw signature box with all cells
         canvas.drawRect(leftMargin, startY, leftMargin + pageWidth, startY + signatureHeight, linePaint)
@@ -1592,29 +1601,41 @@ class CAFActivity : AppCompatActivity() {
         canvas.drawText("Client", leftMargin + 3*colWidth + colWidth/2, headerY, headerPaint)
         headerPaint.textAlign = Paint.Align.LEFT
 
-        // Draw signatures - with improved signature drawing
+        // Draw signatures with names
+        // Account Manager
         if (signatureUris.containsKey("accountManager")) {
             drawSignatureImageImproved(canvas, signatureUris["accountManager"]!!,
                 leftMargin + 5, startY + 25, colWidth - 10, 40f)
+            // Add name below signature
+            canvas.drawText("Lukman", leftMargin + colWidth/2 - 20, startY + 75, textPaint)
         }
 
+        // Quality Control
         if (signatureUris.containsKey("qualityControl")) {
             drawSignatureImageImproved(canvas, signatureUris["qualityControl"]!!,
                 leftMargin + colWidth + 5, startY + 25, colWidth - 10, 40f)
+            // Add name below signature
+            canvas.drawText("Ahmad", leftMargin + colWidth + colWidth/2 - 20, startY + 75, textPaint)
         }
 
+        // Colocation
         if (signatureUris.containsKey("colocation")) {
             drawSignatureImageImproved(canvas, signatureUris["colocation"]!!,
                 leftMargin + 2*colWidth + 5, startY + 25, colWidth - 10, 40f)
+            // Add name below signature
+            canvas.drawText("Nurhaliza", leftMargin + 2*colWidth + colWidth/2 - 20, startY + 75, textPaint)
         }
 
+        // Client
         if (signatureUris.containsKey("client")) {
             drawSignatureImageImproved(canvas, signatureUris["client"]!!,
                 leftMargin + 3*colWidth + 5, startY + 25, colWidth - 10, 40f)
+            // Add name below signature
+            canvas.drawText("Fauzan", leftMargin + 3*colWidth + colWidth/2 - 20, startY + 75, textPaint)
         }
 
         // Draw dates at bottom of each column
-        val dateY = startY + 75
+        val dateY = startY + 95
         textPaint.textAlign = Paint.Align.LEFT
         canvas.drawText("Date: " + cafData.accountManagerDate, leftMargin + 5, dateY, textPaint)
         canvas.drawText("Date: " + cafData.qualityControlDate, leftMargin + colWidth + 5, dateY, textPaint)
@@ -1631,7 +1652,7 @@ class CAFActivity : AppCompatActivity() {
         textPaint.textSize = 10f
     }
 
-    // Improved signature drawing method that ensures signatures appear
+    // Improved signature drawing method with better handling
     private fun drawSignatureImageImproved(canvas: Canvas, uri: Uri, x: Float, y: Float, width: Float, height: Float) {
         try {
             // Get bitmap from URI
@@ -1660,8 +1681,16 @@ class CAFActivity : AppCompatActivity() {
             val left = x + (width - scaledBitmap.width) / 2
             val top = y + (height - scaledBitmap.height) / 2
 
-            // Draw the bitmap
+            // Draw the bitmap with clear border
+            val borderPaint = Paint().apply {
+                style = Paint.Style.STROKE
+                strokeWidth = 1f
+                color = Color.BLACK
+            }
+
+            // Draw bitmap with a surrounding rectangle for clarity
             canvas.drawBitmap(scaledBitmap, left, top, Paint())
+            canvas.drawRect(left - 1, top - 1, left + scaledBitmap.width + 1, top + scaledBitmap.height + 1, borderPaint)
 
             // Clean up
             if (bitmap != scaledBitmap) {
@@ -1676,188 +1705,6 @@ class CAFActivity : AppCompatActivity() {
             paint.textSize = 12f
             paint.textAlign = Paint.Align.CENTER
             canvas.drawText("[Signature]", x + width/2, y + height/2, paint)
-        }
-    }
-
-    private fun drawTable(canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float,
-                          rows: Int, cols: Int, paint: Paint) {
-        // Draw outer rectangle
-        canvas.drawRect(left, top, right, bottom, paint)
-
-        // Draw horizontal lines
-        val rowHeight = (bottom - top) / rows
-        for (i in 1 until rows) {
-            canvas.drawLine(left, top + i * rowHeight, right, top + i * rowHeight, paint)
-        }
-
-        // Draw vertical lines
-        val colWidth = (right - left) / cols
-        for (i in 1 until cols) {
-            canvas.drawLine(left + i * colWidth, top, left + i * colWidth, bottom, paint)
-        }
-    }
-
-    private fun drawCheckbox(canvas: Canvas, x: Float, y: Float, checked: Boolean, paint: Paint) {
-        // Draw square
-        canvas.drawRect(x, y, x + 10, y + 10, paint)
-
-        // If checked, draw X
-        if (checked) {
-            canvas.drawLine(x, y, x + 10, y + 10, paint)
-            canvas.drawLine(x + 10, y, x, y + 10, paint)
-        }
-    }
-
-    private fun drawAntennaTable(canvas: Canvas, title: String, items: List<Any>, remarks: String,
-                                 startY: Float, leftMargin: Float, pageWidth: Float,
-                                 grayPaint: Paint, linePaint: Paint, headerPaint: Paint,
-                                 textPaint: Paint, smallTextPaint: Paint): Float {
-        var yPosition = startY
-
-        // Title with gray background
-        val titleRect = RectF(leftMargin, yPosition, leftMargin + pageWidth, yPosition + 20)
-        canvas.drawRect(titleRect, grayPaint)
-        canvas.drawRect(titleRect, linePaint)
-        canvas.drawText(title, leftMargin + 10, yPosition + 14, headerPaint)
-        yPosition += 20f
-
-        // Subtitle
-        val subtitleRect = RectF(leftMargin, yPosition, leftMargin + pageWidth, yPosition + 15)
-        canvas.drawRect(subtitleRect, grayPaint)
-        canvas.drawRect(subtitleRect, linePaint)
-        canvas.drawText("ANTENNA DETAILS", leftMargin + (pageWidth/2) - 40, yPosition + 10, smallTextPaint)
-
-        // Draw "CABLES" header
-        canvas.drawText("CABLES", leftMargin + pageWidth - 80, yPosition + 10, smallTextPaint)
-        yPosition += 15f
-        // Table headers
-        val columnWidths = floatArrayOf(30f, 40f, 45f, 40f, 80f, 75f, 70f, 40f, 40f, 40f)
-        val tableHeaders = arrayOf("Item", "Status", "Height (m)", "Quant", "Manufacturer",
-            "Model/Tilting", "Dimensions (mm)", "Azim (°)", "Quant", "Size (\")")
-
-        val headerRect = RectF(leftMargin, yPosition, leftMargin + pageWidth, yPosition + 20)
-        canvas.drawRect(headerRect, linePaint)
-
-        var colX = leftMargin
-        for (i in tableHeaders.indices) {
-            if (i > 0) {
-                canvas.drawLine(colX, yPosition, colX, yPosition + 20 + (items.size * 15), linePaint)
-            }
-            canvas.drawText(tableHeaders[i], colX + 2, yPosition + 14, smallTextPaint)
-            colX += columnWidths[i]
-        }
-        canvas.drawLine(colX, yPosition, colX, yPosition + 20 + (items.size * 15), linePaint)
-        yPosition += 20f
-
-        // Draw rows
-        if (items.isNotEmpty()) {
-            val firstItem = items[0]
-            if (firstItem is AntennaItem) {
-                for (item in items as List<AntennaItem>) {
-                    canvas.drawLine(leftMargin, yPosition, leftMargin + pageWidth, yPosition, linePaint)
-
-                    colX = leftMargin
-                    canvas.drawText(item.itemNo, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[0]
-
-                    canvas.drawText(item.status, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[1]
-
-                    canvas.drawText(item.height, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[2]
-
-                    canvas.drawText(item.quantity, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[3]
-
-                    canvas.drawText(item.manufacturer, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[4]
-
-                    canvas.drawText(item.model, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[5]
-
-                    canvas.drawText(item.dimensions, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[6]
-
-                    canvas.drawText(item.azimuth, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[7]
-
-                    canvas.drawText(item.cableQuantity, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[8]
-
-                    canvas.drawText(item.cableSize, colX + 2, yPosition + 10, smallTextPaint)
-
-                    yPosition += 15f
-                }
-            } else if (firstItem is AmplifierItem) {
-                for (item in items as List<AmplifierItem>) {
-                    canvas.drawLine(leftMargin, yPosition, leftMargin + pageWidth, yPosition, linePaint)
-
-                    colX = leftMargin
-                    canvas.drawText(item.itemNo, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[0]
-
-                    canvas.drawText(item.status, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[1]
-
-                    canvas.drawText(item.height, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[2]
-
-                    canvas.drawText(item.quantity, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[3]
-
-                    canvas.drawText(item.manufacturer, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[4]
-
-                    canvas.drawText(item.model, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[5]
-
-                    canvas.drawText(item.dimensions, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[6]
-
-                    canvas.drawText(item.azimuth, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[7]
-
-                    canvas.drawText(item.cableQuantity, colX + 2, yPosition + 10, smallTextPaint)
-                    colX += columnWidths[8]
-
-                    canvas.drawText(item.cableSize, colX + 2, yPosition + 10, smallTextPaint)
-
-                    yPosition += 15f
-                }
-            }
-        }
-
-        // Close the table
-        canvas.drawLine(leftMargin, yPosition, leftMargin + pageWidth, yPosition, linePaint)
-
-        // Remarks row
-        yPosition += 5f
-        canvas.drawText("Remarks:", leftMargin + 5, yPosition + 10, smallTextPaint)
-        canvas.drawText(remarks, leftMargin + 60, yPosition + 10, smallTextPaint)
-
-        return yPosition + 20f // Return final Y position
-    }
-
-    private fun drawSignatureImage(canvas: Canvas, uri: Uri, x: Float, y: Float, width: Float, height: Float) {
-        try {
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-
-            // Calculate scaling to fit in the designated area while maintaining aspect ratio
-            val scale = Math.min(width / bitmap.width, height / bitmap.height)
-
-            val matrix = Matrix()
-            matrix.postScale(scale, scale)
-
-            val scaledBitmap = Bitmap.createBitmap(
-                bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-
-            // Center the bitmap in the designated area
-            val left = x + (width - scaledBitmap.width) / 2
-            val top = y + (height - scaledBitmap.height) / 2
-
-            canvas.drawBitmap(scaledBitmap, left, top, null)
-        } catch (e: Exception) {
-            Log.e("CAFActivity", "Error drawing signature: ${e.message}")
         }
     }
 

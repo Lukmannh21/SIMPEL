@@ -2094,7 +2094,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         // Perbaikan: Tambahkan deskripsi singkat tentang halaman
         paint.textSize = 11f
-        canvas.drawText("Berikut adalah tanda tangan persetujuan dari pihak-pihak yang terlibat dalam survey ini:",
+        canvas.drawText("Berikut adalah tanda tangan persetujuan pihak pihak yang terlibat dan mengetahui pelaksanaan survey ini:",
             leftMargin, yPosition, paint)
         yPosition += 30f
 
@@ -2185,28 +2185,33 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
                     // Calculate dimensions maintaining aspect ratio
                     val signatureWidth = width - 20f
-                    val signatureHeight = 60f
+                    val signatureHeight = 60f // Ketinggian area yang dialokasikan untuk tanda tangan
 
                     // Determine scaling to fit while maintaining aspect ratio
                     val originalRatio = originalBitmap.width.toFloat() / originalBitmap.height.toFloat()
-                    val targetRatio = signatureWidth / signatureHeight
+                    // Target area untuk tanda tangan (bukan keseluruhan signatureWidth/signatureHeight box)
+                    // Kita ingin tanda tangan muat di dalam area yang ditentukan, misal 80% lebar dan 80% tinggi area tanda tangan
+                    val targetPhotoWidth = signatureWidth * 0.9f // Gunakan 90% dari lebar yang tersedia untuk gambar
+                    val targetPhotoHeight = signatureHeight * 0.9f // Gunakan 90% dari tinggi yang tersedia untuk gambar
+
 
                     val scaledWidth: Float
                     val scaledHeight: Float
 
-                    if (originalRatio > targetRatio) {
+                    if (originalRatio > (targetPhotoWidth / targetPhotoHeight)) {
                         // Width constrained
-                        scaledWidth = signatureWidth
-                        scaledHeight = signatureWidth / originalRatio
+                        scaledWidth = targetPhotoWidth
+                        scaledHeight = targetPhotoWidth / originalRatio
                     } else {
                         // Height constrained
-                        scaledHeight = signatureHeight
-                        scaledWidth = signatureHeight * originalRatio
+                        scaledHeight = targetPhotoHeight
+                        scaledWidth = targetPhotoHeight * originalRatio
                     }
 
                     // Position signature centered in available space
+                    // y + 45f adalah perkiraan posisi atas area tanda tangan
                     val xOffset = x + 10f + (signatureWidth - scaledWidth) / 2
-                    val yOffset = y + 45f + (signatureHeight - scaledHeight) / 2
+                    val yOffset = y + 45f + (signatureHeight - scaledHeight) / 2 // Disesuaikan agar terpusat dalam area signatureHeight
 
                     // Define the target rectangle for drawing
                     val destRect = RectF(xOffset, yOffset, xOffset + scaledWidth, yOffset + scaledHeight)
@@ -2214,14 +2219,15 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                     // Draw with high quality rendering
                     canvas.drawBitmap(originalBitmap, null, destRect, renderPaint)
                 } else {
-                    canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
+                    // Jika drawable bukan BitmapDrawable atau bitmap null/recycled, JANGAN GAMBAR GARIS
+                    // Tidak ada tindakan yang perlu dilakukan di sini jika ingin kosong
                 }
             } else {
-                // Draw signature line
-                canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
+                // Jika ImageView tidak visible atau tidak ada drawable, JANGAN GAMBAR GARIS
+                // Tidak ada tindakan yang perlu dilakukan di sini jika ingin kosong
             }
         } catch (e: Exception) {
-            canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
+            // Jika terjadi error saat menggambar signature, JANGAN GAMBAR GARIS
             Log.e("PDF", "Error drawing signature: ${e.message}")
         }
 
