@@ -1428,7 +1428,7 @@
 
                         <!-- Photo containers 7-15 -->
                         <LinearLayout android:id="@+id/photoContainer7" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cabinet Metro-E (ME Room) Metro-E" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CATUAN POWER DC" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto7" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto7"
                                 android:layout_width="match_parent"
@@ -1439,49 +1439,49 @@
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer8" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Metro-E" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="PROPOSED DUAL SOURCE POWER DC" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto8" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto8" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer9" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Akses gerbang" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="RECTIFIER" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto9" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto9" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer10" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Name plate" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="PENGUKURAN CATUAN POWER AC" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto10" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto10" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer11" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Proposed New Pondasi" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="POWER AC DI PANEL KWH EXCITING" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto11" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto11" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer12" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Power AC di panel KWH Exciting" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="PORT OTB EXCITING" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto12" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto12" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer13" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Grounding Busbar" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CABINET METRO-E (ME ROOM)" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto13" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto13" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer14" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginBottom="16dp">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Proposed Dual Source Power DC" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="METRO-E" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto14" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto14" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
 
                         <LinearLayout android:id="@+id/photoContainer15" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="R" android:textStyle="bold"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="ALTERNATIF DILUAR SITE (OUTDOOR)" android:textStyle="bold"/>
                             <Button android:id="@+id/btnUploadPhoto15" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Upload Photo" android:backgroundTint="@color/red_telkomsel"/>
                             <ImageView android:id="@+id/imgPhoto15" android:layout_width="match_parent" android:layout_height="150dp" android:scaleType="centerCrop" android:background="#EEEEEE" android:visibility="gone"/>
                         </LinearLayout>
