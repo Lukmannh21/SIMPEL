@@ -1118,6 +1118,33 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             return
         }
 
+        val locationToCheck = etLocation.text.toString().trim()
+
+        // Check if location already exists in Firestore
+        firestore.collection("ba_survey_mini_olt")
+            .whereEqualTo("location", locationToCheck) // Filter berdasarkan field 'location'
+            .limit(1) // Kita hanya butuh tahu apakah ada setidaknya satu
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    // Document with the same location already exists
+                    loadingDialog.dismiss()
+                    etLocation.error = "Lokasi dengan ID ini sudah terdaftar"
+                    Toast.makeText(this, "Error: Lokasi survei dengan ID '${locationToCheck}' sudah ada. Submit dibatalkan.", Toast.LENGTH_LONG).show()
+                } else {
+                    // Location is unique, proceed with submission
+                    proceedWithSubmission(loadingDialog, currentUser, locationToCheck)
+                }
+            }
+            .addOnFailureListener { e ->
+                loadingDialog.dismiss()
+                Toast.makeText(this, "Error saat pengecekan lokasi: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Buat fungsi baru untuk melanjutkan proses submit agar tidak terlalu nested
+    private fun proceedWithSubmission(loadingDialog: AlertDialog, currentUser: com.google.firebase.auth.FirebaseUser, location: String) {
+
         val surveyData = HashMap<String, Any>()
 
         // Basic info
