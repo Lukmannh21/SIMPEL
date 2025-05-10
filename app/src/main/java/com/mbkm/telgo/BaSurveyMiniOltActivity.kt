@@ -1147,6 +1147,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         val surveyData = HashMap<String, Any>()
 
+
         // Basic info
         surveyData["location"] = etLocation.text.toString().trim()
         surveyData["noIhld"] = etNoIhld.text.toString().trim()
@@ -1156,6 +1157,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         surveyData["surveyDate"] = tvCurrentDate.text.toString()
         surveyData["createdBy"] = currentUser.email ?: "unknown"
         surveyData["createdAt"] = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+
 
         // Table results with PM/PBM selections
         val tableResults = HashMap<String, HashMap<String, String>>()
@@ -1287,6 +1289,8 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         signaturesData["tif"] = tifData
 
         surveyData["signatures"] = signaturesData
+        surveyData["siteId"] = location  // Make sure this matches the Site ID in projects collection
+
 
         // Add to Firestore
         firestore.collection("ba_survey_mini_olt")
@@ -1297,13 +1301,14 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                 // Upload images
                 uploadImagesToFirebase(surveyId) { success ->
                     if (success) {
-                        // Generate and upload PDF
-                        generateAndUploadPdf(surveyId) { pdfSuccess ->
-                            loadingDialog.dismiss()
-
-                            if (pdfSuccess) {
+                        generateAndUploadPdf(surveyId) { pdfSuccess, pdfUrl ->
+                            if (pdfSuccess && pdfUrl != null) {
+                                // NEW CODE: Update the projects collection with the BA document reference
+                                updateProjectWithBaDocument(location, pdfUrl)
+                                loadingDialog.dismiss()
                                 showSuccessDialog()
                             } else {
+                                loadingDialog.dismiss()
                                 Toast.makeText(this, "Survey saved but failed to generate PDF", Toast.LENGTH_LONG).show()
                             }
                         }
@@ -1316,6 +1321,34 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 loadingDialog.dismiss()
                 Toast.makeText(this, "Error submitting form: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+    // New method to update project document with BA reference
+    private fun updateProjectWithBaDocument(siteId: String, pdfUrl: String) {
+        // Query the projects collection to find the document with matching siteId
+        firestore.collection("projects")
+            .whereEqualTo("siteId", siteId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    // Get the first matching document
+                    val projectDoc = documents.documents[0]
+
+                    // Update the document with the BA document URL
+                    firestore.collection("projects").document(projectDoc.id)
+                        .update("documentBA", pdfUrl)
+                        .addOnSuccessListener {
+                            Log.d("BaSurvey", "Successfully linked BA document to project $siteId")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("BaSurvey", "Error linking BA document: ${e.message}")
+                        }
+                } else {
+                    Log.w("BaSurvey", "No matching project found for siteId: $siteId")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("BaSurvey", "Error finding project: ${e.message}")
             }
     }
 
@@ -1444,7 +1477,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         }
     }
 
-    private fun generateAndUploadPdf(surveyId: String, callback: (Boolean) -> Unit) {
+    private fun generateAndUploadPdf(surveyId: String, callback: (Boolean, String?) -> Unit) {
         try {
             // Create PDF file
             val pdfFile = generatePdfFile()
@@ -1459,19 +1492,19 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                         firestore.collection("ba_survey_mini_olt").document(surveyId)
                             .update("pdfUrl", downloadUrl.toString())
                             .addOnSuccessListener {
-                                callback(true)
+                                callback(true, downloadUrl.toString())
                             }
                             .addOnFailureListener {
-                                callback(false)
+                                callback(false, null)
                             }
                     }
                 }
                 .addOnFailureListener {
-                    callback(false)
+                    callback(false, null)
                 }
         } catch (e: Exception) {
             e.printStackTrace()
-            callback(false)
+            callback(false, null)
         }
     }
 
