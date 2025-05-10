@@ -1082,17 +1082,21 @@ class CAFActivity : AppCompatActivity() {
         drawTruncatedText(canvas, cafData.city, leftMargin + 465, siteInfoTop + 17, 45f, textPaint)
 
         // Row 2: Latitude, Longitude, Site Type - FIXED LAYOUT WITH CLEAR SEPARATION
+        // Row 2: Latitude, Longitude, Site Type - FIXED LAYOUT WITH CLEAR SEPARATION
         canvas.drawRect(leftMargin, siteInfoTop + 25, leftMargin + 175, siteInfoTop + 50, linePaint) // Latitude
         canvas.drawRect(leftMargin + 175, siteInfoTop + 25, leftMargin + 355, siteInfoTop + 50, linePaint) // Longitude
         canvas.drawRect(leftMargin + 355, siteInfoTop + 25, leftMargin + pageWidth, siteInfoTop + 50, linePaint) // Site Type
 
         // Add latitude back with proper positioning
-        canvas.drawText("Latitude (Decimal/DMS):", leftMargin + 5, siteInfoTop + 42, headerPaint)
-        drawTruncatedText(canvas, cafData.latitude, leftMargin + 130, siteInfoTop + 42, 40f, textPaint)
+        canvas.drawText("Latitude:", leftMargin + 5, siteInfoTop + 42, headerPaint)
+        // Coba kurangi offset X, misalnya dari 130 menjadi 70 atau 80
+        // Sesuaikan juga maxWidth jika perlu agar tidak terpotong atau tumpang tindih dengan Longitude
+        drawTruncatedText(canvas, cafData.latitude, leftMargin + 75, siteInfoTop + 42, 95f, textPaint) // X diubah, maxWidth juga disesuaikan
 
-        canvas.drawText("Longitude (Decimal/DMS):", leftMargin + 180, siteInfoTop + 42, headerPaint)
-        drawTruncatedText(canvas, cafData.longitude, leftMargin + 305, siteInfoTop + 42, 45f, textPaint)
-
+        canvas.drawText("Longitude:", leftMargin + 180, siteInfoTop + 42, headerPaint)
+        // Coba kurangi offset X untuk longitude, misalnya dari 305 menjadi 245 atau 255
+        // Sesuaikan juga maxWidth agar tidak terpotong
+        drawTruncatedText(canvas, cafData.longitude, leftMargin + 250, siteInfoTop + 42, 100f, textPaint) // X diubah, maxWidth juga disesuaikan
         // Clear separation for Site Type
         canvas.drawText("Site Type:", leftMargin + 360, siteInfoTop + 42, headerPaint)
         drawTruncatedText(canvas, cafData.siteType, leftMargin + 410, siteInfoTop + 42, 100f, textPaint)
