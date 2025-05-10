@@ -660,6 +660,8 @@ class CAFActivity : AppCompatActivity() {
 
         // Generate Model from form fields
         val cafData = createCAFModel(currentUser.email ?: "unknown")
+        val siteId = etSiteId.text.toString().trim()
+
 
         // Add to Firestore
         firestore.collection("caf_applications")

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -18,6 +19,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.concurrent.atomic.AtomicInteger
 import android.webkit.MimeTypeMap
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import java.io.File
 import java.util.Locale
 
@@ -34,7 +37,7 @@ class SiteDetailActivity : AppCompatActivity() {
     private lateinit var rvDocuments: RecyclerView
     private lateinit var rvImages: RecyclerView
 
-    // buat meriksa data telah dimuat apa nggak biar dia gak dobel
+    // To prevent duplicate data loading
     private var isDataInitialized = false
 
     // Additional UI Components
@@ -74,6 +77,9 @@ class SiteDetailActivity : AppCompatActivity() {
     // Data
     private lateinit var siteId: String
     private lateinit var witel: String
+
+    // Map to store document direct URLs
+    private val documentUrlMap = HashMap<String, String>()
 
     // Adapters
     private lateinit var documentsAdapter: DocumentsAdapter
@@ -207,7 +213,7 @@ class SiteDetailActivity : AppCompatActivity() {
 
     private fun setupRecyclerViews() {
         // Set up Documents RecyclerView
-        documentsAdapter = DocumentsAdapter(documentsList)
+        documentsAdapter = DocumentsAdapter(documentsList, documentUrlMap)
         rvDocuments.layoutManager = LinearLayoutManager(this)
         rvDocuments.adapter = documentsAdapter
 
@@ -220,7 +226,11 @@ class SiteDetailActivity : AppCompatActivity() {
 
     private fun loadSiteData() {
         // Show loading indicator
-        // ...
+        val loadingDialog = AlertDialog.Builder(this)
+            .setView(R.layout.dialog_loading)
+            .setCancelable(false)
+            .create()
+        loadingDialog.show()
 
         // Get site details from Firestore
         firestore.collection("projects")
@@ -229,6 +239,7 @@ class SiteDetailActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
+                    loadingDialog.dismiss()
                     showToast("Site not found")
                     finish()
                     return@addOnSuccessListener
@@ -284,13 +295,34 @@ class SiteDetailActivity : AppCompatActivity() {
                     else -> tvStatus.setBackgroundResource(R.drawable.status_badge_background)
                 }
 
-                // Load documents
+                // Check for direct document BA URL from project
+                val documentBAUrl = site?.get("documentBA")?.toString()
+                if (!documentBAUrl.isNullOrEmpty()) {
+                    // Found a direct link to a BA Survey document
+                    documentUrlMap["document_ba"] = documentBAUrl
+
+                    // Add to documents list for display
+                    documentsList.add(DocumentModel(
+                        name = "Document BA Survey",
+                        type = "document_ba",
+                        path = null,  // null path indicates to use direct URL instead
+                        extension = "pdf",
+                        mimeType = "application/pdf"
+                    ))
+                }
+
+                // Load standard documents
                 loadDocuments()
+
+                loadCafDocuments()
 
                 // Load images
                 loadImages()
+
+                loadingDialog.dismiss()
             }
             .addOnFailureListener { e ->
+                loadingDialog.dismiss()
                 showToast("Error loading site: ${e.message}")
             }
     }
@@ -304,6 +336,14 @@ class SiteDetailActivity : AppCompatActivity() {
             "xls" to "application/vnd.ms-excel"
         )
 
+        // Skip checking if this document type already exists in the directUrl map
+        if (documentUrlMap.containsKey(docType)) {
+            if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
+                documentsAdapter.notifyDataSetChanged()
+            }
+            return
+        }
+
         val checkQueue = AtomicInteger(formats.size)
         var documentFound = false
 
@@ -312,32 +352,32 @@ class SiteDetailActivity : AppCompatActivity() {
             docRef.metadata
                 .addOnSuccessListener {
                     if (!documentFound && !isFinishing && !isDestroyed) {
-                        // Dokumen ditemukan, tambahkan ke list dengan format yang benar
+                        // Document found, add to list with correct format
                         documentFound = true
                         documentsList.add(DocumentModel(docName, docType, docRef.path, ext, mimeType))
 
-                        // Jika dokumen ditemukan dalam format ini, tidak perlu menunggu pengecekan format lain
-                        // untuk jenis dokumen ini, update adapter jika semua jenis dokumen selesai dicek
+                        // If document found in this format, no need to wait for other format checks
+                        // for this document type, update adapter if all document types checked
                         if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
                             documentsAdapter.notifyDataSetChanged()
                         }
                     }
                 }
                 .addOnFailureListener {
-                    // Format ini tidak ditemukan, lanjutkan ke format berikutnya
+                    // Format not found, continue to next format
                 }
                 .addOnCompleteListener {
-                    // Kurangi counter format yang sudah dicek
+                    // Decrement format check counter
                     if (checkQueue.decrementAndGet() == 0 && !documentFound) {
-                        // Semua format sudah dicek dan tidak ada dokumen yang ditemukan
-                        if (!isFinishing && !isDestroyed) {
-                            // Tambahkan dengan nilai null untuk menandakan dokumen tidak ada
+                        // All formats checked and no document found
+                        if (!isFinishing && !isDestroyed && !documentUrlMap.containsKey(docType)) {
+                            // Only add null document if we don't already have a direct URL
                             documentsList.add(DocumentModel(docName, docType, null, null, null))
                         }
 
-                        // Kurangi counter untuk jenis dokumen
+                        // Decrement document type counter
                         if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
-                            // Semua jenis dokumen sudah dicek, update adapter
+                            // All document types checked, update adapter
                             documentsAdapter.notifyDataSetChanged()
                         }
                     }
@@ -345,16 +385,15 @@ class SiteDetailActivity : AppCompatActivity() {
         }
     }
 
-    // Add this to the loadDocuments() method in SiteDetailActivity.kt
     private fun loadDocuments() {
-        // Bersihkan list terlebih dahulu dan beritahu adapter segera
+        // Clear list and notify adapter immediately
         documentsList.clear()
         documentsAdapter.notifyDataSetChanged()
 
-        // Gunakan AtomicInteger untuk melacak proses yang sedang berjalan
-        val pendingChecks = AtomicInteger(5) // 5 jenis dokumen yang akan diperiksa (added document_ba)
+        // Use AtomicInteger to track pending processes
+        val pendingChecks = AtomicInteger(5) // 5 document types to check (including document_ba)
 
-        // Tentukan jenis-jenis dokumen yang akan diperiksa
+        // Define document types to check
         val documentTypes = listOf(
             "document_ba" to "Document BA",
             "email_order" to "Document Email Order",
@@ -364,27 +403,95 @@ class SiteDetailActivity : AppCompatActivity() {
         )
 
         for ((docType, docName) in documentTypes) {
-            // Check untuk berbagai format (PDF, Word, Excel)
+            // Skip if we already have a direct URL for this document type
+            if (documentUrlMap.containsKey(docType)) {
+                // Create a document model for this direct URL
+                documentsList.add(DocumentModel(
+                    name = docName,
+                    type = docType,
+                    path = null,
+                    extension = "pdf",
+                    mimeType = "application/pdf"
+                ))
+
+                // Decrement counter
+                if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
+                    documentsAdapter.notifyDataSetChanged()
+                }
+                continue
+            }
+
+            // Check for various formats (PDF, Word, Excel)
             checkDocumentExists(docType, docName, pendingChecks)
         }
     }
+    // Add this method to SiteDetailActivity.kt
+    private fun loadCafDocuments() {
+        // Check if we're already loading the site data
+        if (isDataInitialized) return
+
+        // Query the caf_applications collection for documents with matching siteId
+        firestore.collection("caf_applications")
+            .whereEqualTo("siteId", siteId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    for (doc in documents) {
+                        // Get the PDF URL from the document
+                        val pdfUrl = doc.getString("excelUrl") // Using excelUrl since that's where the PDF is stored
+                        if (!pdfUrl.isNullOrEmpty()) {
+                            // Get client name for better document identification
+                            val clientName = doc.getString("client") ?: "Client"
+                            val cafDate = doc.getString("todayDate") ?: ""
+
+                            // Create a document name that includes identifiable information
+                            val docName = if (cafDate.isNotEmpty()) {
+                                "CAF - $clientName ($cafDate)"
+                            } else {
+                                "CAF - $clientName"
+                            }
+
+                            // Add to URL map for direct access
+                            documentUrlMap["caf_${doc.id}"] = pdfUrl
+
+                            // Add to documents list for display
+                            documentsList.add(DocumentModel(
+                                name = docName,
+                                type = "caf_${doc.id}",
+                                path = null,  // null path indicates to use direct URL
+                                extension = "pdf",
+                                mimeType = "application/pdf"
+                            ))
+                        }
+                    }
+
+                    // Notify the adapter if we found any documents
+                    if (documents.size() > 0) {
+                        documentsAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("SiteDetail", "Error loading CAF documents: ${e.message}")
+            }
+    }
 
     private fun loadImages() {
-        // Bersihkan list terlebih dahulu dan beritahu adapter segera
+        // Clear list and notify adapter immediately
         imagesList.clear()
         imagesAdapter.notifyDataSetChanged()
 
-        // Gunakan AtomicInteger untuk melacak proses yang sedang berjalan
-        val pendingChecks = AtomicInteger(7) // 7 jenis gambar yang akan diperiksa
+        // Use AtomicInteger to track pending processes
+        val pendingChecks = AtomicInteger(7) // 7 image types to check
 
-        // Tentukan jenis-jenis gambar yang akan diperiksa
+        // Define image types to check
         val imageTypes = listOf(
             "site_location" to "Image Site Location",
             "foundation_shelter" to "Image Foundation/Shelter",
             "installation_process" to "Image Installation Process",
             "cabinet" to "Image Cabinet",
             "3p_inet" to "Image 3P (INET)",
-            "3p_useetv" to "Image 3P UseeTV", // Nama yang diperbarui
+            "3p_useetv" to "Image 3P UseeTV",
             "3p_telephone" to "Image 3P (Telephone)"
         )
 
@@ -393,18 +500,18 @@ class SiteDetailActivity : AppCompatActivity() {
             imageRef.metadata
                 .addOnSuccessListener {
                     if (!isFinishing && !isDestroyed) {
-                        // Gambar ada
+                        // Image exists
                         imagesList.add(ImageModel(imageName, imageType, imageRef.path))
                     }
                 }
                 .addOnFailureListener {
                     if (!isFinishing && !isDestroyed) {
-                        // Gambar tidak ada (null)
+                        // Image does not exist (null)
                         imagesList.add(ImageModel(imageName, imageType, null))
                     }
                 }
                 .addOnCompleteListener {
-                    // Update adapter hanya setelah semua pemeriksaan selesai
+                    // Update adapter only after all checks complete
                     if (pendingChecks.decrementAndGet() == 0 && !isFinishing && !isDestroyed) {
                         imagesAdapter.notifyDataSetChanged()
                     }
@@ -432,18 +539,19 @@ class SiteDetailActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Hanya muat data jika belum dimuat atau setelah kembali dari activity lain
+        // Only load data if not already loaded or when returning from other activity
         loadSiteData()
     }
 
     private fun showToast(message: String) {
-        android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
         // Cancel any Firebase callbacks if needed
         imagesList.clear()
         documentsList.clear()
+        documentUrlMap.clear()
         super.onDestroy()
     }
 }
