@@ -1,0 +1,1496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient"
+    tools:context=".BASurveyBigDetailActivity">
+
+    <!-- Toolbar -->
+    <LinearLayout
+        android:id="@+id/toolbarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="BA Survey Big OLT Detail"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"/>
+
+        <Button
+            android:id="@+id/btnDownloadPdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Download PDF"
+            android:textSize="12sp"
+            android:backgroundTint="@color/red_telkomsel"
+            android:drawableStart="@drawable/ic_download"
+            android:drawablePadding="8dp"
+            android:padding="8dp"/>
+    </LinearLayout>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/toolbarLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Form Title -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="BERITA ACARA SURVEY BIG OLT"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/red_telkomsel"
+                android:gravity="center"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Basic Information Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Basic Information"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tvProjectTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Proyek: "
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvContractNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nomor Kontrak KHS: "
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvExecutor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Pelaksana: "
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Lokasi: "
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvSurveyDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Survey Date: "
+                        android:textStyle="bold"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Survey Results Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Survey Results"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- 1. Propose OLT -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="1. Propose OLT"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: OK/NOK" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 2. Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET) -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="2. Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Meter" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 3. Panjang  Bundlecore Uplink
+(Dari Rack ET ke OLT) -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="3. Panjang  Bundlecore Uplink
+(Dari Rack ET ke OLT)"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Meter" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 4. Panjang Bundlecore Downlink (Dari Rack EA ke OLT) -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="4. Panjang Bundlecore Downlink (Dari Rack EA ke OLT)"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Meter" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 5. Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm) -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="5. Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm)"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Meter" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 6. Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source) -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="6. Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source)"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Meter" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 7. Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="7. Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Meter" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 8. Kebutuhan catuan daya di Recti -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="8. Kebutuhan catuan daya di Recti"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: OK/NOK" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual8"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan8"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 9. Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="9. Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Pcs" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual9"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan9"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+
+
+                    <!-- 10. Kebutuhan Tray @3m (pcs) dari Tray Eksistingke OLT-turunan Dan Rack FTM-EA kalau diperlukan -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="10. Kebutuhan Tray @3m (pcs) dari Tray Eksistingke OLT-turunan Dan Rack FTM-EA kalau diperlukan"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Meter" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual10"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan10"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 11. Kebutuhan MCB 63A-Schneider -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="11. Kebutuhan MCB 63A-Schneider"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Pcs" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual11"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan11"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 12. Space 2 pcs FTB untuk di install di rack EA -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="12. Space 2 pcs FTB untuk di install di rack EA"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: OK/NOK" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual12"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan12"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 13. FTB yang kitagunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="13. FTB yang kitagunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: OK/NOK" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual13"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan13"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 14. Kebutuhan Rack EA -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="14. Kebutuhan Rack EA"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Pcs" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual14"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan14"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 15. Alokasi Port Metro -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="15. Alokasi Port Metro"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Port" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual15"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan15"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 16. Kebutuhan SFP -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="16. Kebutuhan SFP"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Pcs" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual16"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan16"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 17. Alokasi Core di FTB Eksisting (di Rack
+ET) -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="17. Alokasi Core di FTB Eksisting (di Rack
+ET)"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Core" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual17"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan17"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 18. Kondisi Penerangan di ruangan OLT -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="18. Kondisi Penerangan di ruangan OLT"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: OK/NOK" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual18"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan18"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- 19. CME – Kebutuhan Air Conditioner -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="19. CME – Kebutuhan Air Conditioner"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Satuan: Pcs" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#F5F5F5"
+                        android:padding="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Aktual:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvAktual19"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#E8F5E9"
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Keterangan:"
+                            android:textStyle="italic"/>
+
+                        <TextView
+                            android:id="@+id/tvKeterangan19"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Signatures Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Signatures"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Telkomsel Region -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:text="Telkomsel Region:"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvTselRegion"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <!-- ZTE Signature -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="PT. ZTE INDONESIA - TIM SURVEY"
+                            android:textStyle="bold"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:text="Name:"/>
+
+                            <TextView
+                                android:id="@+id/tvZteName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""/>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imgZteSignature"
+                            android:layout_width="150dp"
+                            android:layout_height="80dp"
+                            android:scaleType="fitCenter"
+                            android:background="@android:color/white"/>
+                    </LinearLayout>
+
+                    <!-- TSEL NOP Signature -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="PT. TELKOMSEL - MGR NOP"
+                            android:textStyle="bold"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:text="Name:"/>
+
+                            <TextView
+                                android:id="@+id/tvTselNopName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""/>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imgTselNopSignature"
+                            android:layout_width="150dp"
+                            android:layout_height="80dp"
+                            android:scaleType="fitCenter"
+                            android:background="@android:color/white"/>
+                    </LinearLayout>
+
+                    <!-- TSEL RTPDS Signature -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="PT. TELKOMSEL - MGR RTPDS"
+                            android:textStyle="bold"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:text="Name:"/>
+
+                            <TextView
+                                android:id="@+id/tvTselRtpdsName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""/>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imgTselRtpdsSignature"
+                            android:layout_width="150dp"
+                            android:layout_height="80dp"
+                            android:scaleType="fitCenter"
+                            android:background="@android:color/white"/>
+                    </LinearLayout>
+
+                    <!-- TSEL RTPE/NF Signature -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="PT. TELKOMSEL - MGR RTPE"
+                            android:textStyle="bold"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:text="Name:"/>
+
+                            <TextView
+                                android:id="@+id/tvTselRtpeNfName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""/>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imgTselRtpeNfSignature"
+                            android:layout_width="150dp"
+                            android:layout_height="80dp"
+                            android:scaleType="fitCenter"
+                            android:background="@android:color/white"/>
+                    </LinearLayout>
+
+                    <!-- TELKOM Signature -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="PT. TELKOM - MGR NDPS TR1"
+                            android:textStyle="bold"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:text="Name:"/>
+
+                            <TextView
+                                android:id="@+id/tvTelkomName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""/>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imgTelkomSignature"
+                            android:layout_width="150dp"
+                            android:layout_height="80dp"
+                            android:scaleType="fitCenter"
+                            android:background="@android:color/white"/>
+                    </LinearLayout>
+
+                    <!-- TIF Signature -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="PT. TIF - TIM SURVEY"
+                            android:textStyle="bold"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:text="Name:"/>
+
+                            <TextView
+                                android:id="@+id/tvTifName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""/>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imgTifSignature"
+                            android:layout_width="150dp"
+                            android:layout_height="80dp"
+                            android:scaleType="fitCenter"
+                            android:background="@android:color/white"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

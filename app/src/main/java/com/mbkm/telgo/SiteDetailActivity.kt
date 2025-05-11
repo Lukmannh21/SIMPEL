@@ -22,6 +22,8 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class SiteDetailActivity : AppCompatActivity() {
@@ -349,6 +351,8 @@ class SiteDetailActivity : AppCompatActivity() {
                 // Load standard documents
                 loadDocuments()
 
+                loadBASurveyBigDocuments() // Add the BA Survey Big documents 
+
                 loadCafDocuments()
 
                 // Load images
@@ -459,6 +463,63 @@ class SiteDetailActivity : AppCompatActivity() {
             // Check for various formats (PDF, Word, Excel)
             checkDocumentExists(docType, docName, pendingChecks)
         }
+    }
+    /**
+     * Function to load BA Survey Big OLT documents for current site
+     */
+    private fun loadBASurveyBigDocuments() {
+        // Query the big_surveys collection for documents with matching location (siteId)
+        firestore.collection("big_surveys")
+            .whereEqualTo("location", siteId) // location in BA Survey Big matches siteId in Site Detail
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    for (doc in documents) {
+                        // Get the PDF URL from the document
+                        val pdfUrl = doc.getString("pdfUrl")
+                        if (!pdfUrl.isNullOrEmpty()) {
+                            // Get project title and date for document identification
+                            val projectTitle = doc.getString("projectTitle") ?: "Project"
+                            val createdAt = doc.getLong("createdAt") ?: 0
+
+                            // Create formatted date if available
+                            val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                            val formattedDate = if (createdAt > 0) {
+                                dateFormat.format(Date(createdAt))
+                            } else {
+                                ""
+                            }
+
+                            // Create a descriptive document name
+                            val docName = if (formattedDate.isNotEmpty()) {
+                                "BA Survey Big - $projectTitle ($formattedDate)"
+                            } else {
+                                "BA Survey Big - $projectTitle"
+                            }
+
+                            // Add to URL map for direct access
+                            documentUrlMap["ba_big_${doc.id}"] = pdfUrl
+
+                            // Add to documents list for display
+                            documentsList.add(DocumentModel(
+                                name = docName,
+                                type = "ba_big_${doc.id}",
+                                path = null,  // null path indicates to use direct URL
+                                extension = "pdf",
+                                mimeType = "application/pdf"
+                            ))
+                        }
+                    }
+
+                    // Notify the adapter if we found any documents
+                    if (documents.size() > 0) {
+                        documentsAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("SiteDetail", "Error loading BA Survey Big documents: ${e.message}")
+            }
     }
     // Add this method to SiteDetailActivity.kt
     private fun loadCafDocuments() {

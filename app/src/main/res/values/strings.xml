@@ -26,6 +26,12 @@
         <item>INSERT CARD</item>
     </string-array>
 
+    <string name="apps_name">BASurveyBig</string>
+    <string-array name="executor_options">
+        <item>PT. ZTE INDONESIA</item>
+        <item>PT Huawei Tech Investment</item>
+    </string-array>
+
     <string name="back">Back</string>
     <string name="full_name">Full Name</string>
     <string name="enter_your_full_name">Enter your full name</string>
