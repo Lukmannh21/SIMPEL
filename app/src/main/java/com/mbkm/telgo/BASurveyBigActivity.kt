@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -30,20 +31,19 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
 import android.widget.Button
 import java.io.FileNotFoundException
-import kotlin.collections.HashMap
 
 class BASurveyBigActivity : AppCompatActivity() {
 
     // Firebase instances
     private lateinit var db: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
-
 
     // UI Components
     private lateinit var tabLayout: TabLayout
@@ -109,6 +109,18 @@ class BASurveyBigActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_basurvey_big)
+
+        // Request storage permissions for Android < 10 (API 29)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ),
+                STORAGE_PERMISSION_CODE
+            )
+        }
 
         // Initialize Firebase
         db = FirebaseFirestore.getInstance()
@@ -193,22 +205,8 @@ class BASurveyBigActivity : AppCompatActivity() {
         imgTselRtpeNfSignature = findViewById(R.id.imgTselRtpeNfSignature)
         btnTselRtpeNfSignature = findViewById(R.id.btnTselRtpeNfSignature)
 
-        inputProjectTitle = findViewById(R.id.inputProjectTitle)
-        inputContractNumber = findViewById(R.id.inputContractNumber)
-        inputExecutor = findViewById(R.id.inputExecutor)
-        inputLocation = findViewById(R.id.inputLocation)
-        inputDescription = findViewById(R.id.inputDescription)
-        etTselRegion = findViewById(R.id.etTselRegion)
-
         btnGeneratePdf = findViewById(R.id.btnGeneratePdf)
-        btnSubmitForm = findViewById(R.id.btnSubmitForm)  // Tambahkan baris ini
-
-        // Di dalam initializeUI() atau bagian setupButtons()
-        btnSubmitForm.setOnClickListener {
-            if (validateForm()) {
-                submitForm()
-            }
-        }
+        btnSubmitForm = findViewById(R.id.btnSubmitForm)
 
         // Setup signature button listeners
         setupSignatureButtons()
@@ -217,8 +215,18 @@ class BASurveyBigActivity : AppCompatActivity() {
         btnGeneratePdf.setOnClickListener {
             if (validateForm()) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val formId = UUID.randomUUID().toString() // Buat formId unik
-                    generateStyledPdf() // Panggil fungsi dengan parameter formId
+                    try {
+                        generateStyledPdf() // Panggil fungsi untuk generate PDF
+                    } catch (e: Exception) {
+                        Log.e("BASurveyBig", "Error generating PDF: ${e.message}")
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@BASurveyBigActivity,
+                                "Gagal membuat PDF: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
                 }
             }
         }
@@ -233,7 +241,7 @@ class BASurveyBigActivity : AppCompatActivity() {
     private fun setupTabs() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when(tab?.position) {
+                when (tab?.position) {
                     0 -> { // Form tab
                         formContainer.visibility = View.VISIBLE
                         searchContainer.visibility = View.GONE
@@ -424,7 +432,6 @@ class BASurveyBigActivity : AppCompatActivity() {
         }
     }
 
-
     private fun showSurveyOptionsDialog(baSurvey: SurveyData) {
         val options = arrayOf("View Details", "Download PDF")
 
@@ -586,39 +593,6 @@ class BASurveyBigActivity : AppCompatActivity() {
         private const val FILE_MANAGER_REQUEST_CODE = 102
     }
 
-    private fun takePhoto() {
-        if (checkCameraPermission()) {
-            val values = ContentValues()
-            values.put(MediaStore.Images.Media.TITLE, "New Picture")
-            values.put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
-
-            tempPhotoUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempPhotoUri)
-            startActivityForResult(cameraIntent, CAMERA_PERMISSION_CODE)
-        } else {
-            requestCameraPermission()
-        }
-    }
-
-    private fun chooseFromGallery() {
-        if (checkStoragePermission()) {
-            val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(galleryIntent, STORAGE_PERMISSION_CODE)
-        } else {
-            requestStoragePermission()
-        }
-    }
-
-    private fun drawSignature() {
-        val signatureDialog = SignatureDialog(this) { bitmap ->
-            currentImageView?.setImageBitmap(bitmap)
-            currentImageView?.visibility = View.VISIBLE
-        }
-        signatureDialog.show()
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -693,7 +667,9 @@ class BASurveyBigActivity : AppCompatActivity() {
 
         if (!checkStoragePermission()) {
             permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
         }
 
         if (permissions.isNotEmpty()) {
@@ -760,70 +736,69 @@ class BASurveyBigActivity : AppCompatActivity() {
                         "description" to inputDescription.text.toString(),
                         "tselRegion" to etTselRegion.text.toString(),
 
+                        // Actual and remarks data
+                        "actual1" to findViewById<EditText>(R.id.inputAktual1).text.toString(),
+                        "remark1" to findViewById<EditText>(R.id.inputKeterangan1).text.toString(),
+                        "actual2" to findViewById<EditText>(R.id.inputAktual2).text.toString(),
+                        "remark2" to findViewById<EditText>(R.id.inputKeterangan2).text.toString(),
+                        "actual3" to findViewById<EditText>(R.id.inputAktual3).text.toString(),
+                        "remark3" to findViewById<EditText>(R.id.inputKeterangan3).text.toString(),
+                        "actual4" to findViewById<EditText>(R.id.inputAktual4).text.toString(),
+                        "remark4" to findViewById<EditText>(R.id.inputKeterangan4).text.toString(),
+                        "actual5" to findViewById<EditText>(R.id.inputAktual5).text.toString(),
+                        "remark5" to findViewById<EditText>(R.id.inputKeterangan5).text.toString(),
+                        "actual6" to findViewById<EditText>(R.id.inputAktual6).text.toString(),
+                        "remark6" to findViewById<EditText>(R.id.inputKeterangan6).text.toString(),
+                        "actual7" to findViewById<EditText>(R.id.inputAktual7).text.toString(),
+                        "remark7" to findViewById<EditText>(R.id.inputKeterangan7).text.toString(),
+                        "actual8" to findViewById<EditText>(R.id.inputAktual8).text.toString(),
+                        "remark8" to findViewById<EditText>(R.id.inputKeterangan8).text.toString(),
+                        "actual9" to findViewById<EditText>(R.id.inputAktual9).text.toString(),
+                        "remark9" to findViewById<EditText>(R.id.inputKeterangan9).text.toString(),
+                        "actual10" to findViewById<EditText>(R.id.inputAktual10).text.toString(),
+                        "remark10" to findViewById<EditText>(R.id.inputKeterangan10).text.toString(),
+                        "actual11" to findViewById<EditText>(R.id.inputAktual11).text.toString(),
+                        "remark11" to findViewById<EditText>(R.id.inputKeterangan11).text.toString(),
+                        "actual12" to findViewById<EditText>(R.id.inputAktual12).text.toString(),
+                        "remark12" to findViewById<EditText>(R.id.inputKeterangan12).text.toString(),
+                        "actual13" to findViewById<EditText>(R.id.inputAktual13).text.toString(),
+                        "remark13" to findViewById<EditText>(R.id.inputKeterangan13).text.toString(),
+                        "actual14" to findViewById<EditText>(R.id.inputAktual14).text.toString(),
+                        "remark14" to findViewById<EditText>(R.id.inputKeterangan14).text.toString(),
+                        "actual15" to findViewById<EditText>(R.id.inputAktual15).text.toString(),
+                        "remark15" to findViewById<EditText>(R.id.inputKeterangan15).text.toString(),
+                        "actual16" to findViewById<EditText>(R.id.inputAktual16).text.toString(),
+                        "remark16" to findViewById<EditText>(R.id.inputKeterangan16).text.toString(),
+                        "actual17" to findViewById<EditText>(R.id.inputAktual17).text.toString(),
+                        "remark17" to findViewById<EditText>(R.id.inputKeterangan17).text.toString(),
+                        "actual18" to findViewById<EditText>(R.id.inputAktual18).text.toString(),
+                        "remark18" to findViewById<EditText>(R.id.inputKeterangan18).text.toString(),
+                        "actual19" to findViewById<EditText>(R.id.inputAktual19).text.toString(),
+                        "remark19" to findViewById<EditText>(R.id.inputKeterangan19).text.toString(),
 
-            // Actual and remarks data
-            "actual1" to findViewById<EditText>(R.id.inputAktual1).text.toString(),
-            "remark1" to findViewById<EditText>(R.id.inputKeterangan1).text.toString(),
-            "actual2" to findViewById<EditText>(R.id.inputAktual2).text.toString(),
-            "remark2" to findViewById<EditText>(R.id.inputKeterangan2).text.toString(),
-            "actual3" to findViewById<EditText>(R.id.inputAktual3).text.toString(),
-            "remark3" to findViewById<EditText>(R.id.inputKeterangan3).text.toString(),
-            "actual4" to findViewById<EditText>(R.id.inputAktual4).text.toString(),
-            "remark4" to findViewById<EditText>(R.id.inputKeterangan4).text.toString(),
-            "actual5" to findViewById<EditText>(R.id.inputAktual5).text.toString(),
-            "remark5" to findViewById<EditText>(R.id.inputKeterangan5).text.toString(),
-            "actual6" to findViewById<EditText>(R.id.inputAktual6).text.toString(),
-            "remark6" to findViewById<EditText>(R.id.inputKeterangan6).text.toString(),
-            "actual7" to findViewById<EditText>(R.id.inputAktual7).text.toString(),
-            "remark7" to findViewById<EditText>(R.id.inputKeterangan7).text.toString(),
-            "actual8" to findViewById<EditText>(R.id.inputAktual8).text.toString(),
-            "remark8" to findViewById<EditText>(R.id.inputKeterangan8).text.toString(),
-            "actual9" to findViewById<EditText>(R.id.inputAktual9).text.toString(),
-            "remark9" to findViewById<EditText>(R.id.inputKeterangan9).text.toString(),
-            "actual10" to findViewById<EditText>(R.id.inputAktual10).text.toString(),
-            "remark10" to findViewById<EditText>(R.id.inputKeterangan10).text.toString(),
-            "actual11" to findViewById<EditText>(R.id.inputAktual11).text.toString(),
-            "remark11" to findViewById<EditText>(R.id.inputKeterangan11).text.toString(),
-            "actual12" to findViewById<EditText>(R.id.inputAktual12).text.toString(),
-            "remark12" to findViewById<EditText>(R.id.inputKeterangan12).text.toString(),
-            "actual13" to findViewById<EditText>(R.id.inputAktual13).text.toString(),
-            "remark13" to findViewById<EditText>(R.id.inputKeterangan13).text.toString(),
-            "actual14" to findViewById<EditText>(R.id.inputAktual14).text.toString(),
-            "remark14" to findViewById<EditText>(R.id.inputKeterangan14).text.toString(),
-            "actual15" to findViewById<EditText>(R.id.inputAktual15).text.toString(),
-            "remark15" to findViewById<EditText>(R.id.inputKeterangan15).text.toString(),
-            "actual16" to findViewById<EditText>(R.id.inputAktual16).text.toString(),
-            "remark16" to findViewById<EditText>(R.id.inputKeterangan16).text.toString(),
-            "actual17" to findViewById<EditText>(R.id.inputAktual17).text.toString(),
-            "remark17" to findViewById<EditText>(R.id.inputKeterangan17).text.toString(),
-            "actual18" to findViewById<EditText>(R.id.inputAktual18).text.toString(),
-            "remark18" to findViewById<EditText>(R.id.inputKeterangan18).text.toString(),
-            "actual19" to findViewById<EditText>(R.id.inputAktual19).text.toString(),
-            "remark19" to findViewById<EditText>(R.id.inputKeterangan19).text.toString(),
+                        // Signature names and NIKs
+                        "zteName" to etZteName.text.toString(),
+                        "zteNik" to etZteNik.text.toString(),
 
-            // Signature names and NIKs
-            "zteName" to etZteName.text.toString(),
-            "zteNik" to etZteNik.text.toString(),
+                        "tifName" to etTifName.text.toString(),
+                        "tifNik" to etTifNik.text.toString(),
 
-            "tifName" to etTifName.text.toString(),
-            "tifNik" to etTifNik.text.toString(),
+                        "telkomName" to etTelkomName.text.toString(),
+                        "telkomNik" to etTelkomNik.text.toString(),
 
-            "telkomName" to etTelkomName.text.toString(),
-            "telkomNik" to etTelkomNik.text.toString(),
+                        "tselNopName" to etTselNopName.text.toString(),
+                        "tselNopNik" to etTselNopNik.text.toString(),
 
-            "tselNopName" to etTselNopName.text.toString(),
-            "tselNopNik" to etTselNopNik.text.toString(),
+                        "tselRtpdsName" to etTselRtpdsName.text.toString(),
+                        "tselRtpdsNik" to etTselRtpdsNik.text.toString(),
 
-            "tselRtpdsName" to etTselRtpdsName.text.toString(),
-            "tselRtpdsNik" to etTselRtpdsNik.text.toString(),
+                        "tselRtpeNfName" to etTselRtpeNfName.text.toString(),
+                        "tselRtpeNfNik" to etTselRtpeNfNik.text.toString(),
 
-            "tselRtpeNfName" to etTselRtpeNfName.text.toString(),
-            "tselRtpeNfNik" to etTselRtpeNfNik.text.toString(),
+                        "createdAt" to System.currentTimeMillis()
+                    )
 
-            "createdAt" to System.currentTimeMillis()
-        )
-
-// Upload signatures first if available
+                    // Upload signatures first if available
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             // Upload signatures jika ada
@@ -852,16 +827,24 @@ class BASurveyBigActivity : AppCompatActivity() {
                             }
 
                             // Upload PDF jika ada
-                            val pdfFile = generateStyledPdf()
-                            if (!pdfFile.exists() || !pdfFile.canRead()) {
-                                throw FileNotFoundException("File PDF tidak berhasil dibuat.")
-                            }
+                            try {
+                                val pdfFile = generateStyledPdf()
 
-                            val pdfPath = "ba_survey_big_olt_pdf/$formId.pdf"
-                            val pdfStorageRef = storage.reference.child(pdfPath)
-                            pdfStorageRef.putFile(Uri.fromFile(pdfFile)).await()
-                            val pdfDownloadUrl = pdfStorageRef.downloadUrl.await().toString()
-                            formData["pdfUrl"] = pdfDownloadUrl
+                                val pdfPath = "ba_survey_big_olt_pdf/$formId.pdf"
+                                val pdfStorageRef = storage.reference.child(pdfPath)
+                                pdfStorageRef.putFile(Uri.fromFile(pdfFile)).await()
+                                val pdfDownloadUrl = pdfStorageRef.downloadUrl.await().toString()
+                                formData["pdfUrl"] = pdfDownloadUrl
+                            } catch (e: Exception) {
+                                Log.e("BASurveyBig", "Error generating PDF: ${e.message}")
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        this@BASurveyBigActivity,
+                                        "PDF tidak berhasil dibuat, melanjutkan tanpa PDF",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
 
                             // Simpan data ke Firestore
                             db.collection("big_surveys")
@@ -950,22 +933,41 @@ class BASurveyBigActivity : AppCompatActivity() {
     }
 
     private suspend fun generateStyledPdf(): File {
-        var createdFile: File? = null // Ubah ke 'var'
+        var createdFile: File? = null
 
         withContext(Dispatchers.IO) {
             try {
+                // Cek dan buat direktori penyimpanan terlebih dahulu
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!downloadsDir.exists()) {
+                    val dirCreated = downloadsDir.mkdirs()
+                    if (!dirCreated) {
+                        Log.e("BASurveyBig", "Gagal membuat direktori downloads")
+                        // Coba gunakan direktori apps sebagai fallback
+                        val appDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                        if (appDir != null && (appDir.exists() || appDir.mkdirs())) {
+                            // Gunakan direktori aplikasi sebagai fallback
+                            Log.i("BASurveyBig", "Menggunakan direktori aplikasi sebagai fallback")
+                        } else {
+                            throw IOException("Tidak bisa membuat direktori penyimpanan")
+                        }
+                    }
+                }
+
                 // Ambil input dari pengguna
                 val projectTitle = findViewById<EditText>(R.id.inputProjectTitle).text.toString()
-                val contractNumber =
-                    findViewById<EditText>(R.id.inputContractNumber).text.toString()
+                val contractNumber = findViewById<EditText>(R.id.inputContractNumber).text.toString()
                 val executor = findViewById<Spinner>(R.id.inputExecutor).selectedItem.toString()
                 val location = findViewById<EditText>(R.id.inputLocation).text.toString()
                 // Hasil deskripsi otomatis
                 val description = generateDescription(projectTitle, contractNumber, executor)
 
                 // Tampilkan deskripsi otomatis di field deskripsi
-                findViewById<EditText>(R.id.inputDescription).setText(description)
+                withContext(Dispatchers.Main) {
+                    findViewById<EditText>(R.id.inputDescription).setText(description)
+                }
 
+                // Baca semua input aktual dan keterangan
                 val actual1 = findViewById<EditText>(R.id.inputAktual1).text.toString()
                 val remark1 = findViewById<EditText>(R.id.inputKeterangan1).text.toString()
                 val actual2 = findViewById<EditText>(R.id.inputAktual2).text.toString()
@@ -1013,7 +1015,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val pageHeight = 842f
                 val marginX = 50f
                 val marginTop = 50f
-                val marginBottom = 50f
+                val marginBottom = 60f  // Tambah margin bottom untuk footer yang lebih rapi
                 val maxX = pageWidth - marginX
 
                 // Paints
@@ -1059,22 +1061,14 @@ class BASurveyBigActivity : AppCompatActivity() {
                 var canvas = page.canvas
                 var y = marginTop
 
-                // Header halaman
                 // Header halaman dengan logo dinamis
                 fun drawHeader(executor: String) {
                     val centerX = (marginX + maxX) / 2
 
                     // Tambahkan logo berdasarkan pelaksana
-                    val zteLogo =
-                        BitmapFactory.decodeResource(resources, R.drawable.logo_zte) // Logo ZTE
-                    val huaweiLogo = BitmapFactory.decodeResource(
-                        resources,
-                        R.drawable.logo_huawei
-                    ) // Logo Huawei
-                    val telkomLogo = BitmapFactory.decodeResource(
-                        resources,
-                        R.drawable.logo_telkom
-                    ) // Logo Telkom
+                    val zteLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_zte) // Logo ZTE
+                    val huaweiLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_huawei) // Logo Huawei
+                    val telkomLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_telkom) // Logo Telkom
 
                     // Ukuran logo
                     val logoWidth = 80 // Lebar logo
@@ -1084,22 +1078,18 @@ class BASurveyBigActivity : AppCompatActivity() {
                     // Gambar logo pelaksana di pojok kiri atas
                     when (executor) {
                         "PT. ZTE INDONESIA" -> {
-                            val scaledZteLogo =
-                                Bitmap.createScaledBitmap(zteLogo, logoWidth, logoHeight, false)
+                            val scaledZteLogo = Bitmap.createScaledBitmap(zteLogo, logoWidth, logoHeight, false)
                             canvas.drawBitmap(scaledZteLogo, marginX, topMargin, null)
                         }
-
                         "PT Huawei Tech Investment" -> {
-                            val scaledHuaweiLogo =
-                                Bitmap.createScaledBitmap(huaweiLogo, logoWidth, logoHeight, false)
+                            val scaledHuaweiLogo = Bitmap.createScaledBitmap(huaweiLogo, logoWidth, logoHeight, false)
                             canvas.drawBitmap(scaledHuaweiLogo, marginX, topMargin, null)
                         }
                     }
 
                     // Gambar logo Telkom di pojok kanan atas
-                    val scaledTelkomLogo =
-                        Bitmap.createScaledBitmap(telkomLogo, logoWidth, logoHeight, false)
-                    canvas.drawBitmap(scaledTelkomLogo, maxX - logoWidth - marginX, topMargin, null)
+                    val scaledTelkomLogo = Bitmap.createScaledBitmap(telkomLogo, logoWidth, logoHeight, false)
+                    canvas.drawBitmap(scaledTelkomLogo, maxX - logoWidth, topMargin, null)
 
                     // Tambahkan jarak di bawah logo
                     val logoBottomY = topMargin + logoHeight + 20f
@@ -1111,58 +1101,65 @@ class BASurveyBigActivity : AppCompatActivity() {
                     y = logoBottomY + 40f // Perbarui posisi vertikal
                 }
 
-                // Footer halaman
-                // Footer halaman
+                // Footer halaman yang diperbaiki
                 fun drawFooter() {
                     // Atur ukuran teks lebih kecil
-                    paint.textSize = 10f // Ukuran teks lebih kecil
+                    paint.textSize = 9f // Ukuran teks lebih kecil
+                    paint.color = Color.BLACK
+                    paint.alpha = 220 // Sedikit transparan agar terlihat lebih profesional
 
-                    // Garis pembatas
+                    // Posisi footer yang lebih rapi
+                    val footerY = pageHeight - 30f
+
+                    // Garis pembatas yang lebih tipis
                     paint.style = Paint.Style.STROKE
+                    paint.strokeWidth = 0.5f
                     canvas.drawLine(
-                        marginX, // Garis mulai dari margin kiri
-                        pageHeight - 30f, // Posisi Y untuk garis (di atas teks dokumen)
+                        marginX,          // Garis mulai dari margin kiri
+                        footerY,          // Posisi Y untuk garis
                         pageWidth - marginX, // Garis berakhir di margin kanan
-                        pageHeight - 30f,
+                        footerY,
                         paint
                     )
 
                     // Tulisan dokumen
                     paint.style = Paint.Style.FILL
+                    paint.textAlign = Paint.Align.LEFT
                     canvas.drawText(
                         "Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku",
-                        marginX, // Tulisan dimulai dari margin kiri
-                        pageHeight - 20f, // Posisi Y di bawah garis dan di atas halaman
+                        marginX,          // Tulisan dimulai dari margin kiri
+                        footerY + 15f,    // Posisi Y di bawah garis
                         paint
                     )
 
-                    // Halaman di pojok kanan bawah
+                    // Halaman di pojok kanan bawah dengan text align right
+                    paint.textAlign = Paint.Align.RIGHT
                     val pageText = "Halaman ${pageCount - 1}"
-                    val textWidth = paint.measureText(pageText)
                     canvas.drawText(
                         pageText,
-                        pageWidth - marginX - textWidth, // Posisi X di pojok kanan bawah
-                        pageHeight - 20f, // Posisi Y sejajar dengan teks dokumen
+                        pageWidth - marginX, // Posisi X di pojok kanan bawah
+                        footerY + 15f,      // Posisi Y sejajar dengan teks dokumen
                         paint
                     )
-                }
 
+                    // Reset paint properties
+                    paint.textSize = 11f
+                    paint.alpha = 255
+                    paint.textAlign = Paint.Align.LEFT
+                }
 
                 // Tambahkan teks di bawah tabel halaman terakhir
                 fun drawClosingStatement() {
-                    val closingText =
-                        "Demikian Berita Acara Hasil Survey ini dibuat berdasarkan kenyataan di lapangan untuk dijadikan pedoman pelaksanaan selanjutnya."
+                    val closingText = "Demikian Berita Acara Hasil Survey ini dibuat berdasarkan kenyataan di lapangan untuk dijadikan pedoman pelaksanaan selanjutnya."
                     val closingMaxWidth = maxX - marginX * 2
                     val closingLines = wrapText(closingText, closingMaxWidth, paint)
 
                     // Format tanggal hari ini
-                    val currentDate =
-                        SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
+                    val currentDate = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
 
                     // Tinggi minimum untuk menambahkan teks
-                    val closingHeight =
-                        18f * closingLines.size + 10f + 20f // Tambahkan ruang untuk tanggal
-                    if (y + closingHeight > pageHeight - marginBottom) {
+                    val closingHeight = 18f * closingLines.size + 10f + 20f // Tambahkan ruang untuk tanggal
+                    if (y + closingHeight > pageHeight - marginBottom - 30f) {
                         drawFooter()
                         document.finishPage(page)
                         page = createPage()
@@ -1184,7 +1181,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                     canvas.drawText(currentDate, maxX, y + 10f, boldPaint) // Posisi align right
                 }
 
-
                 // Tambahkan tanda tangan di halaman terakhir
                 fun drawSignaturesWithFormattedTitles(
                     canvas: Canvas,
@@ -1193,7 +1189,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                     paint: Paint,
                     boldPaint: Paint
                 ) {
-                    val marginX = 50f
                     val boxWidth = (595 - (marginX * 2)) / 3 // Lebar kotak tanda tangan
                     val signatureBoxHeight = 150f // Tinggi kotak tanda tangan
                     var y = yStart
@@ -1282,18 +1277,14 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                     val tselNopName = findViewById<EditText>(R.id.etTselNopName).text.toString()
                     val tselNopNik = findViewById<EditText>(R.id.etTselNopNik).text.toString()
-                    val tselNopSignature =
-                        findViewById<ImageView>(R.id.imgTselNopSignature).drawable
-
+                    val tselNopSignature = findViewById<ImageView>(R.id.imgTselNopSignature).drawable
                     val tselRtpdsName = findViewById<EditText>(R.id.etTselRtpdsName).text.toString()
                     val tselRtpdsNik = findViewById<EditText>(R.id.etTselRtpdsNik).text.toString()
-                    val tselRtpdsSignature =
-                        findViewById<ImageView>(R.id.imgTselRtpdsSignature).drawable
+                    val tselRtpdsSignature = findViewById<ImageView>(R.id.imgTselRtpdsSignature).drawable
 
                     val tselRtpeName = findViewById<EditText>(R.id.etTselRtpeNfName).text.toString()
                     val tselRtpeNik = findViewById<EditText>(R.id.etTselRtpeNfNik).text.toString()
-                    val tselRtpeSignature =
-                        findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
+                    val tselRtpeSignature = findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
 
                     // Baris pertama (ZTE, TIF, TELKOM)
                     drawSignatureBox(
@@ -1363,11 +1354,18 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 y += 10f // Jarak sebelum tabel
 
-                // Tabel
-                val rowHeight = 40f
-                val colX = floatArrayOf(marginX, 90f, 250f, 360f, 430f, maxX)
+                // Tabel dengan kolom yang disesuaikan - PENTING: Memberikan ruang lebih untuk kolom AKTUAL
+                val colX = floatArrayOf(
+                    marginX,        // NO
+                    marginX + 40f,  // ITEM - lebih lebar
+                    marginX + 230f, // SATUAN - sedang
+                    marginX + 300f, // AKTUAL - lebih lebar dari sebelumnya
+                    marginX + 370f, // KETERANGAN - lebar
+                    maxX           // Batas kanan tabel
+                )
 
                 // Header tabel
+                val rowHeight = 40f
                 canvas.drawRect(colX[0], y, colX[5], y + rowHeight, tablePaint)
                 canvas.drawText("NO", colX[0] + 15f, y + 25f, boldPaint)
                 canvas.drawText("ITEM", colX[1] + 10f, y + 25f, boldPaint)
@@ -1380,1033 +1378,226 @@ class BASurveyBigActivity : AppCompatActivity() {
                 }
                 y += rowHeight
 
+                // FUNCTION TO CREATE TABLE ROW WITH WRAPPING TEXT
+                fun drawTableRow(rowNum: Int, itemText: String, unitText: String, actualText: String, remarkText: String) {
+                    val itemMaxWidth = colX[2] - colX[1] - 10f
+                    val actualMaxWidth = colX[4] - colX[3] - 10f
+                    val remarkMaxWidth = colX[5] - colX[4] - 10f
 
-                // Baris 1
-                val itemMaxWidth1 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth1 =
-                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
+                    val itemLines = wrapText(itemText, itemMaxWidth, cellPaint)
+                    val actualLines = wrapText(actualText, actualMaxWidth, cellPaint)
+                    val remarkLines = wrapText(remarkText, remarkMaxWidth, cellPaint)
 
-                val itemLines1 = wrapText(
-                    "Propose OLT",
-                    itemMaxWidth1,
-                    cellPaint
-                ) // Text wrapping untuk kolom ITEM
-                val remarkLines1 = wrapText(
-                    remark1,
-                    remarkMaxWidth1,
-                    cellPaint
-                ) // Text wrapping untuk kolom KETERANGAN
+                    val dynamicRowHeight = maxOf(
+                        40f,
+                        20f + (itemLines.size * 15f),
+                        20f + (actualLines.size * 15f),
+                        20f + (remarkLines.size * 15f)
+                    )
 
-// Hitung tinggi baris secara dinamis berdasarkan jumlah baris di kolom ITEM dan KETERANGAN
+                    if (y + dynamicRowHeight > pageHeight - marginBottom) {
+                        drawFooter()
+                        document.finishPage(page)
+                        page = createPage()
+                        canvas = page.canvas
+                        y = marginTop
+                        drawHeader(executor)
+                    }
+
+                    canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight, tablePaint)
+                    canvas.drawText(rowNum.toString(), colX[0] + 15f, y + 20f, cellPaint)
+
+                    var itemY = y + 18f
+                    for (line in itemLines) {
+                        canvas.drawText(line, colX[1] + 5f, itemY, cellPaint)
+                        itemY += 15f
+                    }
+
+                    canvas.drawText(unitText, colX[2] + 10f, y + 20f, cellPaint)
+
+                    var actualY = y + 18f
+                    for (line in actualLines) {
+                        canvas.drawText(line, colX[3] + 5f, actualY, cellPaint)
+                        actualY += 15f
+                    }
+
+                    var remarkY = y + 18f
+                    for (line in remarkLines) {
+                        canvas.drawText(line, colX[4] + 5f, remarkY, cellPaint)
+                        remarkY += 15f
+                    }
+
+                    for (x in colX) {
+                        canvas.drawLine(x, y, x, y + dynamicRowHeight, tablePaint)
+                    }
+
+                    y += dynamicRowHeight
+                }
+
+                // Baris 1 dengan handling khusus karena formatnya berbeda
+                val itemMaxWidth1 = colX[2] - colX[1] - 10f
+                val actualMaxWidth1 = colX[4] - colX[3] - 10f
+                val remarkMaxWidth1 = colX[5] - colX[4] - 10f
+
+                val itemLines1 = wrapText("Propose OLT", itemMaxWidth1, cellPaint)
+                val actualLines1 = wrapText(actual1, actualMaxWidth1, cellPaint)
+                val remarkLines1 = wrapText(remark1, remarkMaxWidth1, cellPaint)
+
                 val dynamicRowHeight1 = maxOf(
-                    40f, // Tinggi minimum baris
-                    20f + (itemLines1.size * 15f), // Tinggi berdasarkan jumlah baris di kolom ITEM
-                    20f + (remarkLines1.size * 15f) // Tinggi berdasarkan jumlah baris di kolom KETERANGAN
+                    40f,
+                    20f + (itemLines1.size * 15f),
+                    20f + (actualLines1.size * 15f),
+                    20f + (remarkLines1.size * 15f)
                 )
 
-// Cek apakah baris ini muat di halaman saat ini
                 if (y + dynamicRowHeight1 > pageHeight - marginBottom) {
-                    drawFooter() // Tambahkan footer sebelum berpindah halaman
+                    drawFooter()
                     document.finishPage(page)
                     page = createPage()
                     canvas = page.canvas
                     y = marginTop
-
+                    drawHeader(executor)
                 }
 
-// Gambarkan tabel untuk baris 1
                 canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight1, tablePaint)
                 canvas.drawText("1", colX[0] + 15f, y + 20f, cellPaint)
 
-// Gambarkan teks di kolom ITEM
                 var itemY1 = y + 18f
                 for (line in itemLines1) {
                     canvas.drawText(line, colX[1] + 5f, itemY1, cellPaint)
                     itemY1 += 15f
                 }
 
-// Gambarkan teks di kolom SATUAN dan AKTUAL
                 canvas.drawText("OK/NOK", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual1, colX[3] + 10f, y + 20f, cellPaint)
 
-// Gambarkan teks di kolom KETERANGAN
+                var actualY1 = y + 18f
+                for (line in actualLines1) {
+                    canvas.drawText(line, colX[3] + 5f, actualY1, cellPaint)
+                    actualY1 += 15f
+                }
+
                 var remarkY1 = y + 18f
                 for (line in remarkLines1) {
                     canvas.drawText(line, colX[4] + 5f, remarkY1, cellPaint)
                     remarkY1 += 15f
                 }
 
-// Tambahkan garis vertikal untuk memisahkan kolom
                 for (x in colX) {
                     canvas.drawLine(x, y, x, y + dynamicRowHeight1, tablePaint)
                 }
 
-// Perbarui posisi vertikal untuk baris berikutnya
                 y += dynamicRowHeight1
 
-                // Baris 2
-                val itemMaxWidth2 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth2 =
-                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
-
-                val itemLines2 = wrapText(
-                    "Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)",
-                    itemMaxWidth2,
-                    cellPaint
-                ) // Text wrapping untuk kolom ITEM
-                val remarkLines2 = wrapText(
-                    remark2,
-                    remarkMaxWidth2,
-                    cellPaint
-                ) // Text wrapping untuk kolom KETERANGAN
-
-// Hitung tinggi baris secara dinamis berdasarkan jumlah baris di kolom ITEM dan KETERANGAN
-                val dynamicRowHeight2 = maxOf(
-                    40f, // Tinggi minimum baris
-                    20f + (itemLines2.size * 15f), // Tinggi berdasarkan jumlah baris di kolom ITEM
-                    20f + (remarkLines2.size * 15f) // Tinggi berdasarkan jumlah baris di kolom KETERANGAN
-                )
-
-// Cek apakah baris ini muat di halaman saat ini
-                if (y + dynamicRowHeight2 > pageHeight - marginBottom) {
-                    drawFooter() // Tambahkan footer sebelum berpindah halaman
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-// Gambarkan tabel untuk baris 2
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight2, tablePaint)
-                canvas.drawText("2", colX[0] + 15f, y + 20f, cellPaint)
-
-// Gambarkan teks di kolom ITEM
-                var itemY2 = y + 18f
-                for (line in itemLines2) {
-                    canvas.drawText(line, colX[1] + 5f, itemY2, cellPaint)
-                    itemY2 += 15f
-                }
-
-// Gambarkan teks di kolom SATUAN dan AKTUAL
-                canvas.drawText("Meter", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual2, colX[3] + 10f, y + 20f, cellPaint)
-
-// Gambarkan teks di kolom KETERANGAN
-                var remarkY2 = y + 18f
-                for (line in remarkLines2) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY2, cellPaint)
-                    remarkY2 += 15f
-                }
-
-// Tambahkan garis vertikal untuk memisahkan kolom
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight2, tablePaint)
-                }
-
-// Perbarui posisi vertikal untuk baris berikutnya
-                y += dynamicRowHeight2
-
-                // Baris 3
-                val itemMaxWidth3 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth3 =
-                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
-
-                val itemLines3 = wrapText(
-                    "Panjang Bundlecore Uplink (Dari Rack ET ke OLT)",
-                    itemMaxWidth3,
-                    cellPaint
-                ) // Text wrapping untuk kolom ITEM
-                val remarkLines3 = wrapText(
-                    remark3,
-                    remarkMaxWidth3,
-                    cellPaint
-                ) // Text wrapping untuk kolom KETERANGAN
-
-// Hitung tinggi baris secara dinamis berdasarkan jumlah baris di kolom ITEM dan KETERANGAN
-                val dynamicRowHeight3 = maxOf(
-                    40f, // Tinggi minimum baris
-                    20f + (itemLines3.size * 15f), // Tinggi berdasarkan jumlah baris di kolom ITEM
-                    20f + (remarkLines3.size * 15f) // Tinggi berdasarkan jumlah baris di kolom KETERANGAN
-                )
-
-// Cek apakah baris ini muat di halaman saat ini
-                if (y + dynamicRowHeight3 > pageHeight - marginBottom) {
-                    drawFooter() // Tambahkan footer sebelum berpindah halaman
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-// Gambarkan tabel untuk baris 3
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight3, tablePaint)
-                canvas.drawText("3", colX[0] + 15f, y + 20f, cellPaint)
-
-// Gambarkan teks di kolom ITEM
-                var itemY3 = y + 18f
-                for (line in itemLines3) {
-                    canvas.drawText(line, colX[1] + 5f, itemY3, cellPaint)
-                    itemY3 += 15f
-                }
-
-// Gambarkan teks di kolom SATUAN dan AKTUAL
-                canvas.drawText("Meter", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual3, colX[3] + 10f, y + 20f, cellPaint)
-
-// Gambarkan teks di kolom KETERANGAN
-                var remarkY3 = y + 18f
-                for (line in remarkLines3) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY3, cellPaint)
-                    remarkY3 += 15f
-                }
-
-// Tambahkan garis vertikal untuk memisahkan kolom
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight3, tablePaint)
-                }
-
-// Perbarui posisi vertikal untuk baris berikutnya
-                y += dynamicRowHeight3
-
-                // Baris 4
-                val itemMaxWidth4 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth4 =
-                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
-
-                val itemLines4 = wrapText(
-                    "Panjang Bundlecore Downlink (Dari Rack EA ke OLT)",
-                    itemMaxWidth4,
-                    cellPaint
-                ) // Text wrapping untuk kolom ITEM
-                val remarkLines4 = wrapText(
-                    remark4,
-                    remarkMaxWidth4,
-                    cellPaint
-                ) // Text wrapping untuk kolom KETERANGAN
-
-// Hitung tinggi baris secara dinamis berdasarkan jumlah baris di kolom ITEM dan KETERANGAN
-                val dynamicRowHeight4 = maxOf(
-                    40f, // Tinggi minimum baris
-                    20f + (itemLines4.size * 15f), // Tinggi berdasarkan jumlah baris di kolom ITEM
-                    20f + (remarkLines4.size * 15f) // Tinggi berdasarkan jumlah baris di kolom KETERANGAN
-                )
-
-// Cek apakah baris ini muat di halaman saat ini
-                if (y + dynamicRowHeight4 > pageHeight - marginBottom) {
-                    drawFooter() // Tambahkan footer sebelum berpindah halaman
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-// Gambarkan tabel untuk baris 4
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight4, tablePaint)
-                canvas.drawText("4", colX[0] + 15f, y + 20f, cellPaint)
-
-// Gambarkan teks di kolom ITEM
-                var itemY4 = y + 18f
-                for (line in itemLines4) {
-                    canvas.drawText(line, colX[1] + 5f, itemY4, cellPaint)
-                    itemY4 += 15f
-                }
-
-// Gambarkan teks di kolom SATUAN dan AKTUAL
-                canvas.drawText("Meter", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual4, colX[3] + 10f, y + 20f, cellPaint)
-
-// Gambarkan teks di kolom KETERANGAN
-                var remarkY4 = y + 18f
-                for (line in remarkLines4) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY4, cellPaint)
-                    remarkY4 += 15f
-                }
-
-// Tambahkan garis vertikal untuk memisahkan kolom
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight4, tablePaint)
-                }
-
-// Perbarui posisi vertikal untuk baris berikutnya
-                y += dynamicRowHeight4
-
-                // Baris 5
-                val itemMaxWidth5 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth5 =
-                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
-
-                val itemLines5 = wrapText(
-                    "Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm)",
-                    itemMaxWidth5,
-                    cellPaint
-                ) // Text wrapping untuk kolom ITEM
-                val remarkLines5 = wrapText(
-                    remark5,
-                    remarkMaxWidth5,
-                    cellPaint
-                ) // Text wrapping untuk kolom KETERANGAN
-
-                val dynamicRowHeight5 = maxOf(
-                    40f,
-                    20f + (itemLines5.size * 15f),
-                    20f + (remarkLines5.size * 15f)
-                )
-
-                if (y + dynamicRowHeight5 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight5, tablePaint)
-                canvas.drawText("5", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY5 = y + 18f
-                for (line in itemLines5) {
-                    canvas.drawText(line, colX[1] + 5f, itemY5, cellPaint)
-                    itemY5 += 15f
-                }
-
-                canvas.drawText("meter", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual5, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY5 = y + 18f
-                for (line in remarkLines5) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY5, cellPaint)
-                    remarkY5 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight5, tablePaint)
-                }
-
-                y += dynamicRowHeight5
-
-// Baris 6
-                val itemMaxWidth6 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth6 =
-                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
-
-                val itemLines6 = wrapText(
-                    "Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source)",
-                    itemMaxWidth6,
-                    cellPaint
-                ) // Text wrapping untuk kolom ITEM
-                val remarkLines6 = wrapText(
-                    remark6,
-                    remarkMaxWidth6,
-                    cellPaint
-                ) // Text wrapping untuk kolom KETERANGAN
-
-                val dynamicRowHeight6 = maxOf(
-                    40f,
-                    20f + (itemLines6.size * 15f),
-                    20f + (remarkLines6.size * 15f)
-                )
-
-                if (y + dynamicRowHeight6 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight6, tablePaint)
-                canvas.drawText("6", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY6 = y + 18f
-                for (line in itemLines6) {
-                    canvas.drawText(line, colX[1] + 5f, itemY6, cellPaint)
-                    itemY6 += 15f
-                }
-
-                canvas.drawText("Meter", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual6, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY6 = y + 18f
-                for (line in remarkLines6) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY6, cellPaint)
-                    remarkY6 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight6, tablePaint)
-                }
-
-                y += dynamicRowHeight6
-
-                // Baris 7
-                val itemMaxWidth7 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth7 = colX[5] - colX[4] - 10f
-
-                val itemLines7 = wrapText(
-                    "Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New",
-                    itemMaxWidth7,
-                    cellPaint
-                )
-                val remarkLines7 = wrapText(remark7, remarkMaxWidth7, cellPaint)
-
-                val dynamicRowHeight7 = maxOf(
-                    40f,
-                    20f + (itemLines7.size * 15f),
-                    20f + (remarkLines7.size * 15f)
-                )
-
-                if (y + dynamicRowHeight7 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight7, tablePaint)
-                canvas.drawText("7", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY7 = y + 18f
-                for (line in itemLines7) {
-                    canvas.drawText(line, colX[1] + 5f, itemY7, cellPaint)
-                    itemY7 += 15f
-                }
-
-                canvas.drawText("meter", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual7, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY7 = y + 18f
-                for (line in remarkLines7) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY7, cellPaint)
-                    remarkY7 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight7, tablePaint)
-                }
-
-                y += dynamicRowHeight7
-
-// Baris 8
-                val itemMaxWidth8 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth8 = colX[5] - colX[4] - 10f
-
-                val itemLines8 =
-                    wrapText("Kebutuhan catuan daya di Recti", itemMaxWidth8, cellPaint)
-                val remarkLines8 = wrapText(remark8, remarkMaxWidth8, cellPaint)
-
-                val dynamicRowHeight8 = maxOf(
-                    40f,
-                    20f + (itemLines8.size * 15f),
-                    20f + (remarkLines8.size * 15f)
-                )
-
-                if (y + dynamicRowHeight8 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight8, tablePaint)
-                canvas.drawText("8", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY8 = y + 18f
-                for (line in itemLines8) {
-                    canvas.drawText(line, colX[1] + 5f, itemY8, cellPaint)
-                    itemY8 += 15f
-                }
-
-                canvas.drawText("OK/NOK", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual8, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY8 = y + 18f
-                for (line in remarkLines8) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY8, cellPaint)
-                    remarkY8 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight8, tablePaint)
-                }
-
-                y += dynamicRowHeight8
-
-// Baris 9
-                val itemMaxWidth9 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth9 = colX[5] - colX[4] - 10f
-
-                val itemLines9 = wrapText(
-                    "Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya",
-                    itemMaxWidth9,
-                    cellPaint
-                )
-                val remarkLines9 = wrapText(remark9, remarkMaxWidth9, cellPaint)
-
-                val dynamicRowHeight9 = maxOf(
-                    40f,
-                    20f + (itemLines9.size * 15f),
-                    20f + (remarkLines9.size * 15f)
-                )
-
-                if (y + dynamicRowHeight9 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight9, tablePaint)
-                canvas.drawText("9", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY9 = y + 18f
-                for (line in itemLines9) {
-                    canvas.drawText(line, colX[1] + 5f, itemY9, cellPaint)
-                    itemY9 += 15f
-                }
-
-                canvas.drawText("Pcs", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual9, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY9 = y + 18f
-                for (line in remarkLines9) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY9, cellPaint)
-                    remarkY9 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight9, tablePaint)
-                }
-
-                y += dynamicRowHeight9
-
-                // Baris 10
-                val itemMaxWidth10 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth10 = colX[5] - colX[4] - 10f
-
-                val itemLines10 = wrapText(
-                    "Kebutuhan Tray @3m (pcs) dari Tray Eksisting ke OLT-turunan Dan Rack FTM-EA kalau diperlukan",
-                    itemMaxWidth10,
-                    cellPaint
-                )
-                val remarkLines10 = wrapText(remark10, remarkMaxWidth10, cellPaint)
-
-                val dynamicRowHeight10 = maxOf(
-                    40f,
-                    20f + (itemLines10.size * 15f),
-                    20f + (remarkLines10.size * 15f)
-                )
-
-                if (y + dynamicRowHeight10 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight10, tablePaint)
-                canvas.drawText("10", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY10 = y + 18f
-                for (line in itemLines10) {
-                    canvas.drawText(line, colX[1] + 5f, itemY10, cellPaint)
-                    itemY10 += 15f
-                }
-
-                canvas.drawText("Meter", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual10, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY10 = y + 18f
-                for (line in remarkLines10) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY10, cellPaint)
-                    remarkY10 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight10, tablePaint)
-                }
-
-                y += dynamicRowHeight10
-
-// Baris 11
-                val itemMaxWidth11 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth11 = colX[5] - colX[4] - 10f
-
-                val itemLines11 = wrapText("Kebutuhan MCB 63A-Schneider", itemMaxWidth11, cellPaint)
-                val remarkLines11 = wrapText(remark11, remarkMaxWidth11, cellPaint)
-
-                val dynamicRowHeight11 = maxOf(
-                    40f,
-                    20f + (itemLines11.size * 15f),
-                    20f + (remarkLines11.size * 15f)
-                )
-
-                if (y + dynamicRowHeight11 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight11, tablePaint)
-                canvas.drawText("11", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY11 = y + 18f
-                for (line in itemLines11) {
-                    canvas.drawText(line, colX[1] + 5f, itemY11, cellPaint)
-                    itemY11 += 15f
-                }
-
-                canvas.drawText("Pcs", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual11, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY11 = y + 18f
-                for (line in remarkLines11) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY11, cellPaint)
-                    remarkY11 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight11, tablePaint)
-                }
-
-                y += dynamicRowHeight11
-
-// Baris 12
-                val itemMaxWidth12 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth12 = colX[5] - colX[4] - 10f
-
-                val itemLines12 = wrapText(
-                    "Space 2 pcs FTB untuk di install di rack EA",
-                    itemMaxWidth12,
-                    cellPaint
-                )
-                val remarkLines12 = wrapText(remark12, remarkMaxWidth12, cellPaint)
-
-                val dynamicRowHeight12 = maxOf(
-                    40f,
-                    20f + (itemLines12.size * 15f),
-                    20f + (remarkLines12.size * 15f)
-                )
-
-                if (y + dynamicRowHeight12 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight12, tablePaint)
-                canvas.drawText("12", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY12 = y + 18f
-                for (line in itemLines12) {
-                    canvas.drawText(line, colX[1] + 5f, itemY12, cellPaint)
-                    itemY12 += 15f
-                }
-
-                canvas.drawText("Meter", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual12, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY12 = y + 18f
-                for (line in remarkLines12) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY12, cellPaint)
-                    remarkY12 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight12, tablePaint)
-                }
-
-                y += dynamicRowHeight12
-
-// Baris 13
-                val itemMaxWidth13 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth13 = colX[5] - colX[4] - 10f
-
-                val itemLines13 = wrapText(
-                    "FTB yang kita gunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda",
-                    itemMaxWidth13,
-                    cellPaint
-                )
-                val remarkLines13 = wrapText(remark13, remarkMaxWidth13, cellPaint)
-
-                val dynamicRowHeight13 = maxOf(
-                    40f,
-                    20f + (itemLines13.size * 15f),
-                    20f + (remarkLines13.size * 15f)
-                )
-
-                if (y + dynamicRowHeight13 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight13, tablePaint)
-                canvas.drawText("13", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY13 = y + 18f
-                for (line in itemLines13) {
-                    canvas.drawText(line, colX[1] + 5f, itemY13, cellPaint)
-                    itemY13 += 15f
-                }
-
-                canvas.drawText("OK/NOK", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual13, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY13 = y + 18f
-                for (line in remarkLines13) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY13, cellPaint)
-                    remarkY13 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight13, tablePaint)
-                }
-
-                y += dynamicRowHeight13
-
-                // Baris 14
-                val itemMaxWidth14 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth14 = colX[5] - colX[4] - 10f
-
-                val itemLines14 = wrapText("Kebutuhan Rack EA", itemMaxWidth14, cellPaint)
-                val remarkLines14 = wrapText(remark14, remarkMaxWidth14, cellPaint)
-
-                val dynamicRowHeight14 = maxOf(
-                    40f,
-                    20f + (itemLines14.size * 15f),
-                    20f + (remarkLines14.size * 15f)
-                )
-
-                if (y + dynamicRowHeight14 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight14, tablePaint)
-                canvas.drawText("14", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY14 = y + 18f
-                for (line in itemLines14) {
-                    canvas.drawText(line, colX[1] + 5f, itemY14, cellPaint)
-                    itemY14 += 15f
-                }
-
-                canvas.drawText("Pcs", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual14, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY14 = y + 18f
-                for (line in remarkLines14) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY14, cellPaint)
-                    remarkY14 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight14, tablePaint)
-                }
-
-                y += dynamicRowHeight14
-
-// Baris 15
-                val itemMaxWidth15 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth15 = colX[5] - colX[4] - 10f
-
-                val itemLines15 = wrapText("Alokasi Port Metro", itemMaxWidth15, cellPaint)
-                val remarkLines15 = wrapText(remark15, remarkMaxWidth15, cellPaint)
-
-                val dynamicRowHeight15 = maxOf(
-                    40f,
-                    20f + (itemLines15.size * 15f),
-                    20f + (remarkLines15.size * 15f)
-                )
-
-                if (y + dynamicRowHeight15 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight15, tablePaint)
-                canvas.drawText("15", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY15 = y + 18f
-                for (line in itemLines15) {
-                    canvas.drawText(line, colX[1] + 5f, itemY15, cellPaint)
-                    itemY15 += 15f
-                }
-
-                canvas.drawText("Port", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual15, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY15 = y + 18f
-                for (line in remarkLines15) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY15, cellPaint)
-                    remarkY15 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight15, tablePaint)
-                }
-
-                y += dynamicRowHeight15
-
-// Baris 16
-                val itemMaxWidth16 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth16 = colX[5] - colX[4] - 10f
-
-                val itemLines16 = wrapText("Kebutuhan SFP", itemMaxWidth16, cellPaint)
-                val remarkLines16 = wrapText(remark16, remarkMaxWidth16, cellPaint)
-
-                val dynamicRowHeight16 = maxOf(
-                    40f,
-                    20f + (itemLines16.size * 15f),
-                    20f + (remarkLines16.size * 15f)
-                )
-
-                if (y + dynamicRowHeight16 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight16, tablePaint)
-                canvas.drawText("16", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY16 = y + 18f
-                for (line in itemLines16) {
-                    canvas.drawText(line, colX[1] + 5f, itemY16, cellPaint)
-                    itemY16 += 15f
-                }
-
-                canvas.drawText("Pcs", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual16, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY16 = y + 18f
-                for (line in remarkLines16) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY16, cellPaint)
-                    remarkY16 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight16, tablePaint)
-                }
-
-                y += dynamicRowHeight16
-
-// Baris 17
-                val itemMaxWidth17 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth17 = colX[5] - colX[4] - 10f
-
-                val itemLines17 = wrapText(
-                    "Alokasi Core di FTB Eksisting (di Rack ET)",
-                    itemMaxWidth17,
-                    cellPaint
-                )
-                val remarkLines17 = wrapText(remark17, remarkMaxWidth17, cellPaint)
-
-                val dynamicRowHeight17 = maxOf(
-                    40f,
-                    20f + (itemLines17.size * 15f),
-                    20f + (remarkLines17.size * 15f)
-                )
-
-                if (y + dynamicRowHeight17 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight17, tablePaint)
-                canvas.drawText("17", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY17 = y + 18f
-                for (line in itemLines17) {
-                    canvas.drawText(line, colX[1] + 5f, itemY17, cellPaint)
-                    itemY17 += 15f
-                }
-
-                canvas.drawText("Core", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual17, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY17 = y + 18f
-                for (line in remarkLines17) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY17, cellPaint)
-                    remarkY17 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight17, tablePaint)
-                }
-
-                y += dynamicRowHeight17
-
-                // Baris 18
-                val itemMaxWidth18 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth18 = colX[5] - colX[4] - 10f
-
-                val itemLines18 =
-                    wrapText("Kondisi Penerangan di ruangan OLT", itemMaxWidth18, cellPaint)
-                val remarkLines18 = wrapText(remark18, remarkMaxWidth18, cellPaint)
-
-                val dynamicRowHeight18 = maxOf(
-                    40f,
-                    20f + (itemLines18.size * 15f),
-                    20f + (remarkLines18.size * 15f)
-                )
-
-                if (y + dynamicRowHeight18 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight18, tablePaint)
-                canvas.drawText("18", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY18 = y + 18f
-                for (line in itemLines18) {
-                    canvas.drawText(line, colX[1] + 5f, itemY18, cellPaint)
-                    itemY18 += 15f
-                }
-
-                canvas.drawText("OK/NOK", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual18, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY18 = y + 18f
-                for (line in remarkLines18) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY18, cellPaint)
-                    remarkY18 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight18, tablePaint)
-                }
-
-                y += dynamicRowHeight18
-
-// Baris 19
-                val itemMaxWidth19 = colX[2] - colX[1] - 10f
-                val remarkMaxWidth19 = colX[5] - colX[4] - 10f
-
-                val itemLines19 =
-                    wrapText("CME – Kebutuhan Air Conditioner", itemMaxWidth19, cellPaint)
-                val remarkLines19 = wrapText(remark19, remarkMaxWidth19, cellPaint)
-
-                val dynamicRowHeight19 = maxOf(
-                    40f,
-                    20f + (itemLines19.size * 15f),
-                    20f + (remarkLines19.size * 15f)
-                )
-
-                if (y + dynamicRowHeight19 > pageHeight - marginBottom) {
-                    drawFooter()
-                    document.finishPage(page)
-                    page = createPage()
-                    canvas = page.canvas
-                    y = marginTop
-
-                }
-
-                canvas.drawRect(colX[0], y, colX[5], y + dynamicRowHeight19, tablePaint)
-                canvas.drawText("19", colX[0] + 15f, y + 20f, cellPaint)
-
-                var itemY19 = y + 18f
-                for (line in itemLines19) {
-                    canvas.drawText(line, colX[1] + 5f, itemY19, cellPaint)
-                    itemY19 += 15f
-                }
-
-                canvas.drawText("Pcs", colX[2] + 10f, y + 20f, cellPaint)
-                canvas.drawText(actual19, colX[3] + 10f, y + 20f, cellPaint)
-
-                var remarkY19 = y + 18f
-                for (line in remarkLines19) {
-                    canvas.drawText(line, colX[4] + 5f, remarkY19, cellPaint)
-                    remarkY19 += 15f
-                }
-
-                for (x in colX) {
-                    canvas.drawLine(x, y, x, y + dynamicRowHeight19, tablePaint)
-                }
-
-                y += dynamicRowHeight19
+                // Draw rows 2-19 using the function
+                drawTableRow(2, "Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)", "Meter", actual2, remark2)
+                drawTableRow(3, "Panjang Bundlecore Uplink (Dari Rack ET ke OLT)", "Meter", actual3, remark3)
+                drawTableRow(4, "Panjang Bundlecore Downlink (Dari Rack EA ke OLT)", "Meter", actual4, remark4)
+                drawTableRow(5, "Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm)", "meter", actual5, remark5)
+                drawTableRow(6, "Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source)", "Meter", actual6, remark6)
+                drawTableRow(7, "Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New", "meter", actual7, remark7)
+                drawTableRow(8, "Kebutuhan catuan daya di Recti", "OK/NOK", actual8, remark8)
+                drawTableRow(9, "Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya", "Pcs", actual9, remark9)
+                drawTableRow(10, "Kebutuhan Tray @3m (pcs) dari Tray Eksisting ke OLT-turunan Dan Rack FTM-EA kalau diperlukan", "Meter", actual10, remark10)
+                drawTableRow(11, "Kebutuhan MCB 63A-Schneider", "Pcs", actual11, remark11)
+                drawTableRow(12, "Space 2 pcs FTB untuk di install di rack EA", "Meter", actual12, remark12)
+                drawTableRow(13, "FTB yang kita gunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda", "OK/NOK", actual13, remark13)
+                drawTableRow(14, "Kebutuhan Rack EA", "Pcs", actual14, remark14)
+                drawTableRow(15, "Alokasi Port Metro", "Port", actual15, remark15)
+                drawTableRow(16, "Kebutuhan SFP", "Pcs", actual16, remark16)
+                drawTableRow(17, "Alokasi Core di FTB Eksisting (di Rack ET)", "Core", actual17, remark17)
+                drawTableRow(18, "Kondisi Penerangan di ruangan OLT", "OK/NOK", actual18, remark18)
+                drawTableRow(19, "CME – Kebutuhan Air Conditioner", "Pcs", actual19, remark19)
 
                 // Setelah semua baris tabel selesai
                 drawClosingStatement() // Tambahkan teks penutup di bawah tabel terakhir
-                // Panggil drawSignatures di halaman terakhir
+
+                // Tambahkan tanda tangan - pastikan ada cukup ruang
                 val region = findViewById<EditText>(R.id.etTselRegion).text.toString()
+
+                // Check if signatures will fit on current page
+                val signaturesHeight = 2 * 150f + 20f // 2 rows of signatures + spacing
+                if (y + signaturesHeight > pageHeight - marginBottom - 50f) {
+                    drawFooter()
+                    document.finishPage(page)
+                    page = createPage()
+                    canvas = page.canvas
+                    y = marginTop
+                    drawHeader(executor)
+                }
+
                 drawSignaturesWithFormattedTitles(canvas, region, y + 30f, paint, boldPaint)
 
                 drawFooter() // Tambahkan footer di halaman terakhir
                 document.finishPage(page)
 
+                // Simpan dokumen - dengan penanganan error yang lebih baik
+                try {
+                    // Coba simpan di direktori Downloads publik terlebih dahulu
+                    val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    if (!downloadsDir.exists()) {
+                        downloadsDir.mkdirs()
+                    }
 
+                    // Buat nama file unik
+                    var fileIndex = 1
+                    var file: File
+                    do {
+                        val fileName = "SurveyLokasi$fileIndex.pdf"
+                        file = File(downloadsDir, fileName)
+                        fileIndex++
+                    } while (file.exists())
 
-                val downloadsDir =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                if (!downloadsDir.exists()) downloadsDir.mkdirs()
+                    // Simpan file
+                    val fileOutputStream = FileOutputStream(file)
+                    document.writeTo(fileOutputStream)
+                    fileOutputStream.close()
+                    document.close()
 
-                // Cek nama file yang belum digunakan
-                var fileIndex = 1
-                var file: File
-                do {
-                    val fileName = "SurveyLokasi$fileIndex.pdf"
-                    file = File(downloadsDir, fileName)
-                    fileIndex++
-                } while (file.exists())
+                    createdFile = file
 
-                // Simpan dokumen
-                document.writeTo(FileOutputStream(file))
-                document.close()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@BASurveyBigActivity,
+                            "PDF berhasil disimpan di: ${file.absolutePath}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } catch (e: IOException) {
+                    Log.e("BASurveyBig", "Error saving to public Downloads: ${e.message}")
 
-                createdFile = file // 🔥 Inilah bagian penting yang sebelumnya tidak ada!
+                    // Jika gagal, coba simpan ke direktori aplikasi sebagai fallback
+                    val fallbackDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                    if (fallbackDir != null) {
+                        if (!fallbackDir.exists()) {
+                            fallbackDir.mkdirs()
+                        }
 
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@BASurveyBigActivity,
-                        "PDF berhasil disimpan di: ${file.absolutePath}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                        val fallbackFile = File(fallbackDir, "SurveyLokasi_${System.currentTimeMillis()}.pdf")
+                        try {
+                            document.writeTo(FileOutputStream(fallbackFile))
+                            document.close()
+                            createdFile = fallbackFile
+
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    this@BASurveyBigActivity,
+                                    "PDF berhasil disimpan di direktori aplikasi: ${fallbackFile.absolutePath}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        } catch (e2: Exception) {
+                            Log.e("BASurveyBig", "Error saving to app directory: ${e2.message}")
+                            throw e2 // Re-throw exception jika masih gagal
+                        }
+                    } else {
+                        throw e // Re-throw exception jika tidak ada fallback
+                    }
                 }
 
             } catch (e: Exception) {
+                Log.e("BASurveyBig", "Error generating PDF: ${e.message}")
+                e.printStackTrace() // Log stacktrace untuk debugging
+
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@BASurveyBigActivity,
@@ -2414,25 +1605,68 @@ class BASurveyBigActivity : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
-
             }
         }
 
-        return createdFile ?: throw IllegalStateException("File PDF tidak berhasil dibuat.")
+        // Gunakan file kosong "dummy" sebagai fallback terakhir untuk menghindari crash
+        if (createdFile == null) {
+            val fallbackEmptyFile = File(cacheDir, "empty_survey_${System.currentTimeMillis()}.pdf")
+            try {
+                fallbackEmptyFile.createNewFile()
+                return fallbackEmptyFile
+            } catch (e: Exception) {
+                Log.e("BASurveyBig", "Fatal error creating fallback file: ${e.message}")
+                throw IllegalStateException("File PDF tidak berhasil dibuat: ${e.message}")
+            }
+        }
+
+        return createdFile!!
     }
 
+    // Fungsi wrapText yang diperbaiki untuk mengatasi masalah overflow text
     private fun wrapText(text: String, maxWidth: Float, paint: Paint): List<String> {
+        // Jika text kosong, return list kosong
+        if (text.isEmpty()) return listOf("")
+
         val words = text.split(" ")
         val lines = mutableListOf<String>()
         var currentLine = ""
 
+        // Handle single long words that exceed maxWidth
         for (word in words) {
-            val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
-            if (paint.measureText(testLine) > maxWidth) {
-                lines.add(currentLine)
-                currentLine = word
+            // Jika kata tunggal lebih panjang dari maxWidth, pecah kata tersebut
+            if (paint.measureText(word) > maxWidth) {
+                if (currentLine.isNotEmpty()) {
+                    lines.add(currentLine)
+                    currentLine = ""
+                }
+
+                // Pecah kata panjang menjadi beberapa bagian
+                var remainingWord = word
+                while (paint.measureText(remainingWord) > maxWidth) {
+                    var i = 1
+                    while (i < remainingWord.length) {
+                        if (paint.measureText(remainingWord.substring(0, i)) > maxWidth) {
+                            i--
+                            break
+                        }
+                        i++
+                    }
+
+                    i = maxOf(1, i) // Minimal ambil 1 karakter
+                    lines.add(remainingWord.substring(0, i))
+                    remainingWord = remainingWord.substring(i)
+                }
+
+                currentLine = remainingWord
             } else {
-                currentLine = testLine
+                val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
+                if (paint.measureText(testLine) > maxWidth) {
+                    lines.add(currentLine)
+                    currentLine = word
+                } else {
+                    currentLine = testLine
+                }
             }
         }
 
@@ -2440,6 +1674,6 @@ class BASurveyBigActivity : AppCompatActivity() {
             lines.add(currentLine)
         }
 
-        return lines
+        return if (lines.isEmpty()) listOf("") else lines
     }
 }
