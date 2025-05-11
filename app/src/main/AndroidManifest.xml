@@ -53,6 +53,9 @@
             android:name=".LastUpdateActivity"
             android:exported="false" />
 
+
+
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.mbkm.telgo.fileprovider"

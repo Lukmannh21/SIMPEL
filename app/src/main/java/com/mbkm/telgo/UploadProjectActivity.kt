@@ -3,6 +3,7 @@ package com.mbkm.telgo
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
@@ -391,6 +392,22 @@ class UploadProjectActivity : AppCompatActivity() {
         val odp = odpInput.text.toString().trim()
         val port = portInput.text.toString().trim()
 
+        // IMPORTANT: Check user verification status first
+        val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+        val userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
+        val userRole = preferences.getString("userRole", "user") ?: "user"
+
+        // If user is not verified and not an admin, show verification required dialog
+        if (userStatus != "verified" && userRole != "admin") {
+            // Re-enable the button
+            btnAddData.isEnabled = true
+            btnAddData.alpha = 1.0f
+
+            // Show verification required dialog
+            showVerificationRequiredDialog()
+            return
+        }
+
         // Validasi untuk siteId (wajib diisi)
         if (siteId.isEmpty()) {
             showError(siteIdInput, "Site ID Location tidak boleh kosong")
@@ -404,6 +421,27 @@ class UploadProjectActivity : AppCompatActivity() {
             portMetro, sfp, hostname, sizeOlt, platform, type, jmlModul,
             siteProvider, kecamatanLokasi, kodeIhld, lopDownlink, kontrakPengadaan,
             toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port)
+    }
+
+    // Add this new method to show the verification required dialog
+    private fun showVerificationRequiredDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Verifikasi Diperlukan")
+            .setMessage("Akun Anda memerlukan verifikasi oleh administrator sebelum dapat menambahkan atau mengubah data proyek. Ini memastikan kualitas dan keamanan data.")
+            .setIcon(R.drawable.ic_image_error) // Make sure you have this icon or use another appropriate one
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setNeutralButton("Lihat Profil") { dialog, _ ->
+                dialog.dismiss()
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            }
+
+        val dialog = builder.create()
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        dialog.show()
     }
 
     private fun showError(input: EditText, message: String) {

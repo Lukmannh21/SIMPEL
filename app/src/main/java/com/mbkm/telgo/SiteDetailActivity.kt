@@ -70,6 +70,10 @@ class SiteDetailActivity : AppCompatActivity() {
     private lateinit var tvSisaHariThdpPlanOa: TextView
     private lateinit var tvSisaHariThdpToc: TextView
 
+    // User verification status
+    private var userStatus: String = "unverified"
+    private var userRole: String = "user"
+
     private val REQUEST_STORAGE_PERMISSION = 200
 
     // Firebase
@@ -107,6 +111,11 @@ class SiteDetailActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
+        // Get user status from SharedPreferences
+        val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+        userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
+        userRole = preferences.getString("userRole", "user") ?: "user"
+
         // Initialize UI components
         initializeUI()
 
@@ -115,12 +124,17 @@ class SiteDetailActivity : AppCompatActivity() {
             finish()
         }
 
-        // Set up edit data button
+        // Set up edit data button with verification check
         btnEditData.setOnClickListener {
-            val intent = Intent(this, EditSiteDataActivity::class.java)
-            intent.putExtra("SITE_ID", siteId)
-            intent.putExtra("WITEL", witel)
-            startActivity(intent)
+            // Check if user is verified or an admin before allowing edit
+            if (userStatus == "verified" || userRole == "admin") {
+                val intent = Intent(this, EditSiteDataActivity::class.java)
+                intent.putExtra("SITE_ID", siteId)
+                intent.putExtra("WITEL", witel)
+                startActivity(intent)
+            } else {
+                showVerificationRequiredDialog()
+            }
         }
 
         // Check and request storage permissions
@@ -169,6 +183,27 @@ class SiteDetailActivity : AppCompatActivity() {
         tvPort = findViewById(R.id.tvPort)
         tvSisaHariThdpPlanOa = findViewById(R.id.tvSisaHariThdpPlanOa)
         tvSisaHariThdpToc = findViewById(R.id.tvSisaHariThdpToc)
+    }
+
+    // Add verification required dialog method
+    private fun showVerificationRequiredDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Verifikasi Diperlukan")
+            .setMessage("Akun Anda memerlukan verifikasi oleh administrator sebelum dapat mengedit data proyek. Ini memastikan kualitas dan keamanan data.")
+            .setIcon(R.drawable.ic_image_error) // Make sure you have this icon
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setNeutralButton("Lihat Profil") { dialog, _ ->
+                dialog.dismiss()
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            }
+
+        val dialog = builder.create()
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        dialog.show()
     }
 
     private fun checkAndRequestStoragePermission(): Boolean {
@@ -600,6 +635,11 @@ class SiteDetailActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Refresh user verification status
+        val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+        userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
+        userRole = preferences.getString("userRole", "user") ?: "user"
+
         // Only load data if not already loaded or when returning from other activity
         loadSiteData()
     }

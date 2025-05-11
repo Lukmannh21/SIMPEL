@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.ActivityOptions
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -95,6 +96,8 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
     private lateinit var btnClearAllNotifications: Button
     private lateinit var btnUploadForms: Button
 
+    private var userRole: String = "user"
+    private var userStatus: String = "unverified"
 
     // Adapters
     private val previewEventsAdapter = EventsAdapter()
@@ -151,6 +154,13 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
 
         setContentView(R.layout.activity_services)
 
+
+
+        val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+        userRole = preferences.getString("userRole", "user") ?: "user"
+        userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
+
+
         // Initialize UI components
         bottomNavigationView = findViewById(R.id.bottomNavigation)
         btnWitelSearch = findViewById(R.id.btnWitelSearch)
@@ -177,8 +187,6 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
 
         btnUploadForms = findViewById(R.id.btnUploadForms)
 
-
-
         // Initialize SearchView
         eventsSearchView = findViewById(R.id.eventsSearchView)
 
@@ -194,7 +202,6 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
                 return true
             }
         })
-
 
         // Apply animation to cards
         val cardView = findViewById<View>(R.id.cardView)
@@ -651,10 +658,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
             }
     }
 
-    // Replace the clearAllNotifications method with this improved version:
-
     // Updated clearAllNotifications method
-
     private fun clearAllNotifications() {
         val currentUser = FirebaseAuth.getInstance().currentUser ?: return
 
@@ -694,7 +698,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
                                             "last_notification_clear_time" to clearTimestamp,
                                             "notifications_cleared" to true
                                         ),
-                                        com.google.firebase.firestore.SetOptions.merge()
+                                        SetOptions.merge()
                                     )
                                     .addOnSuccessListener {
                                         Log.d("NotificationClear", "Recorded clear operation at $clearTimestamp")
@@ -744,8 +748,6 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
             .show()
     }
 
-
-
     private fun markNotificationAsRead(notificationId: String) {
         firestore.collection("notifications").document(notificationId)
             .update("isRead", true)
@@ -783,12 +785,17 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         }
 
         btnUploadProject.setOnClickListener {
-            val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
-            it.startAnimation(animation)
-            it.postDelayed({
-                val intent = Intent(this, UploadProjectActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }, 200)
+            if (userStatus == "verified" || userRole == "admin") {
+                val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
+                it.startAnimation(animation)
+                it.postDelayed({
+                    val intent = Intent(this, UploadProjectActivity::class.java)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }, 200)
+            } else {
+                // Show verification required dialog for unverified users
+                showVerificationRequiredDialog("upload new projects")
+            }
         }
 
         btnLastHistory.setOnClickListener {
@@ -799,14 +806,22 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }, 200)
         }
+
         btnUploadForms.setOnClickListener {
-            val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
-            it.startAnimation(animation)
-            it.postDelayed({
-                val intent = Intent(this, UploadFormsMenuActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }, 200)
+            if (userStatus == "verified" || userRole == "admin") {
+                val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
+                it.startAnimation(animation)
+                it.postDelayed({
+                    val intent = Intent(this, UploadFormsMenuActivity::class.java)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }, 200)
+            } else {
+                // Show verification required dialog for unverified users
+                showVerificationRequiredDialog("upload forms")
+            }
         }
+
+
 
         btnUpcomingEvents.setOnClickListener {
             showEventsBottomSheet()
@@ -830,6 +845,22 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
                 filterEvents(checkedIds[0])
             }
         }
+    }
+
+    // Show verification required dialog when unverified users try to access restricted features
+    private fun showVerificationRequiredDialog(feature: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Verification Required")
+            .setMessage("Your account needs to be verified by an administrator before you can $feature. This ensures data quality and security.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setNeutralButton("View Profile") { dialog, _ ->
+                dialog.dismiss()
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+            .show()
     }
 
     private fun setupRecyclerViews() {
@@ -886,6 +917,17 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleNotificationIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Refresh user role and status
+        val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+        userRole = preferences.getString("userRole", "user") ?: "user"
+        userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
+
+
     }
 
     private fun loadEventDatesForCalendar() {
@@ -1313,7 +1355,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
                 }
 
                 if (thisMonthEvents.isEmpty()) {
-                    eventsEmptyStateText.text = ""
+                    eventsEmptyStateText.text = "No events this month"
                 }
 
                 displayAllEvents(thisMonthEvents)

@@ -64,6 +64,13 @@
                     android:src="@drawable/ic_account_circle" />
             </androidx.cardview.widget.CardView>
 
+            <!-- Verification Status Section -->
+            <!-- Add this right after the profile image CardView in your activity_profile.xml -->
+            <include
+                android:id="@+id/verificationStatusSection"
+                layout="@layout/verification_status_layout" />
+
+
             <!-- Personal Info Card -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardPersonalInfo"
@@ -449,8 +456,9 @@
 
         <Button
             android:id="@+id/btnNotificationSettings"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notification Settings"
             android:textAllCaps="false"
             android:paddingVertical="12dp"
             android:backgroundTint="@color/red_telkomsel_dark"
