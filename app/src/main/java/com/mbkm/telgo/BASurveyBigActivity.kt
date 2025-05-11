@@ -35,6 +35,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 import android.widget.Button
+import java.io.FileNotFoundException
 import kotlin.collections.HashMap
 
 class BASurveyBigActivity : AppCompatActivity() {
@@ -216,7 +217,8 @@ class BASurveyBigActivity : AppCompatActivity() {
         btnGeneratePdf.setOnClickListener {
             if (validateForm()) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    generateStyledPdf()
+                    val formId = UUID.randomUUID().toString() // Buat formId unik
+                    generateStyledPdf() // Panggil fungsi dengan parameter formId
                 }
             }
         }
@@ -252,9 +254,9 @@ class BASurveyBigActivity : AppCompatActivity() {
     private fun setupSearch() {
         // Initialize RecyclerView
         rvSearchResults.layoutManager = LinearLayoutManager(this)
-        searchAdapter = SurveyAdapter(surveyList) { surveyData ->
+        searchAdapter = SurveyAdapter(surveyList) { baSurvey ->
             // Handle item click - load data into form
-            loadSurveyIntoForm(surveyData)
+            showSurveyOptionsDialog(baSurvey)
             tabLayout.getTabAt(0)?.select() // Switch to form tab
         }
         rvSearchResults.adapter = searchAdapter
@@ -420,6 +422,64 @@ class BASurveyBigActivity : AppCompatActivity() {
         if (data.containsKey(fieldName)) {
             editText.setText(data[fieldName] as? String ?: "")
         }
+    }
+
+
+    private fun showSurveyOptionsDialog(baSurvey: SurveyData) {
+        val options = arrayOf("View Details", "Download PDF")
+
+        AlertDialog.Builder(this)
+            .setTitle("Survey Options")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> viewSurveyDetails(baSurvey)
+                    1 -> downloadSurveyPdf(baSurvey)
+                }
+            }
+            .show()
+    }
+
+    private fun viewSurveyDetails(baSurvey: SurveyData) {
+        // Navigate to detail view activity
+        val intent = Intent(this, BASurveyBigDetailActivity::class.java)
+        intent.putExtra("SURVEY_ID", baSurvey.id)
+        startActivity(intent)
+    }
+
+    private fun downloadSurveyPdf(baSurvey: SurveyData) {
+        // Show loading indicator
+        val loadingDialog = AlertDialog.Builder(this)
+            .setView(R.layout.dialog_loading)
+            .setCancelable(false)
+            .create()
+        loadingDialog.show()
+
+        // Download PDF from Firebase Storage
+        val pdfRef = storage.reference.child("ba_survey_big_olt_pdf/${baSurvey.id}.pdf")
+
+        val localFile = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "BA_Survey_Big_OLT_${baSurvey.location}.pdf")
+
+        pdfRef.getFile(localFile)
+            .addOnSuccessListener {
+                loadingDialog.dismiss()
+
+                // Share/open the PDF
+                val uri = FileProvider.getUriForFile(
+                    this,
+                    "com.mbkm.telgo.fileprovider",
+                    localFile
+                )
+
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(uri, "application/pdf")
+                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+                startActivity(Intent.createChooser(intent, "Open PDF with..."))
+            }
+            .addOnFailureListener { e ->
+                loadingDialog.dismiss()
+                Toast.makeText(this, "Error downloading PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun loadSignatureData(data: Map<String, Any>, nameField: String, nikField: String, signatureField: String,
@@ -674,14 +734,32 @@ class BASurveyBigActivity : AppCompatActivity() {
 
         loadingDialog.show()
 
-        // Create data hash map
-        val formData = hashMapOf(
-            "projectTitle" to inputProjectTitle.text.toString(),
-            "contractNumber" to inputContractNumber.text.toString(),
-            "executor" to inputExecutor.selectedItem.toString(),
-            "location" to inputLocation.text.toString(),
-            "description" to inputDescription.text.toString(),
-            "tselRegion" to etTselRegion.text.toString(),
+        val inputLocationValue = inputLocation.text.toString() // Ambil nilai lokasi dari input
+        val formId = UUID.randomUUID().toString() // Buat formId unik
+
+        // Periksa apakah lokasi sudah ada di Firestore
+        db.collection("big_surveys")
+            .whereEqualTo("location", inputLocationValue)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    // Jika lokasi sudah ada, tampilkan pesan dan hentikan proses
+                    loadingDialog.dismiss()
+                    Toast.makeText(
+                        this@BASurveyBigActivity,
+                        "Lokasi sudah ada di database. Tidak dapat melakukan submit.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    // Jika lokasi belum ada, lanjutkan proses submit
+                    val formData = hashMapOf(
+                        "projectTitle" to inputProjectTitle.text.toString(),
+                        "contractNumber" to inputContractNumber.text.toString(),
+                        "executor" to inputExecutor.selectedItem.toString(),
+                        "location" to inputLocationValue,
+                        "description" to inputDescription.text.toString(),
+                        "tselRegion" to etTselRegion.text.toString(),
+
 
             // Actual and remarks data
             "actual1" to findViewById<EditText>(R.id.inputAktual1).text.toString(),
@@ -745,60 +823,88 @@ class BASurveyBigActivity : AppCompatActivity() {
             "createdAt" to System.currentTimeMillis()
         )
 
-        // Upload signatures first if available
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // Upload all signatures
-                val signatureFields = listOf(
-                    Triple("zteSignature", imgZteSignature, "signatures/zte_${UUID.randomUUID()}.jpg"),
-                    Triple("tifSignature", imgTifSignature, "signatures/tif_${UUID.randomUUID()}.jpg"),
-                    Triple("telkomSignature", imgTelkomSignature, "signatures/telkom_${UUID.randomUUID()}.jpg"),
-                    Triple("tselNopSignature", imgTselNopSignature, "signatures/tsel_nop_${UUID.randomUUID()}.jpg"),
-                    Triple("tselRtpdsSignature", imgTselRtpdsSignature, "signatures/tsel_rtpds_${UUID.randomUUID()}.jpg"),
-                    Triple("tselRtpeNfSignature", imgTselRtpeNfSignature, "signatures/tsel_rtpe_${UUID.randomUUID()}.jpg")
-                )
+// Upload signatures first if available
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            // Upload signatures jika ada
+                            val signatureFields = listOf(
+                                Triple("zteSignature", imgZteSignature, "ba_survey_big_olt_signatures/zte_${UUID.randomUUID()}.jpg"),
+                                Triple("tifSignature", imgTifSignature, "ba_survey_big_olt_signatures/tif_${UUID.randomUUID()}.jpg"),
+                                Triple("telkomSignature", imgTelkomSignature, "ba_survey_big_olt_signatures/telkom_${UUID.randomUUID()}.jpg"),
+                                Triple("tselNopSignature", imgTselNopSignature, "ba_survey_big_olt_signatures/tsel_nop_${UUID.randomUUID()}.jpg"),
+                                Triple("tselRtpdsSignature", imgTselRtpdsSignature, "ba_survey_big_olt_signatures/tsel_rtpds_${UUID.randomUUID()}.jpg"),
+                                Triple("tselRtpeNfSignature", imgTselRtpeNfSignature, "ba_survey_big_olt_signatures/tsel_rtpe_${UUID.randomUUID()}.jpg")
+                            )
 
-                for ((fieldName, imageView, storagePath) in signatureFields) {
-                    if (imageView.drawable != null && imageView.visibility == View.VISIBLE) {
-                        val bitmap = (imageView.drawable as BitmapDrawable).bitmap
-                        val baos = java.io.ByteArrayOutputStream()
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                        val data = baos.toByteArray()
+                            for ((fieldName, imageView, storagePath) in signatureFields) {
+                                if (imageView.drawable != null && imageView.visibility == View.VISIBLE) {
+                                    val bitmap = (imageView.drawable as BitmapDrawable).bitmap
+                                    val baos = java.io.ByteArrayOutputStream()
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                                    val data = baos.toByteArray()
 
-                        val storageRef = storage.reference.child(storagePath)
-                        val uploadTask = storageRef.putBytes(data).await()
-                        val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
+                                    val storageRef = storage.reference.child(storagePath)
+                                    val uploadTask = storageRef.putBytes(data).await()
+                                    val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
 
-                        formData[fieldName] = downloadUrl
+                                    formData[fieldName] = downloadUrl
+                                }
+                            }
+
+                            // Upload PDF jika ada
+                            val pdfFile = generateStyledPdf()
+                            if (!pdfFile.exists() || !pdfFile.canRead()) {
+                                throw FileNotFoundException("File PDF tidak berhasil dibuat.")
+                            }
+
+                            val pdfPath = "ba_survey_big_olt_pdf/$formId.pdf"
+                            val pdfStorageRef = storage.reference.child(pdfPath)
+                            pdfStorageRef.putFile(Uri.fromFile(pdfFile)).await()
+                            val pdfDownloadUrl = pdfStorageRef.downloadUrl.await().toString()
+                            formData["pdfUrl"] = pdfDownloadUrl
+
+                            // Simpan data ke Firestore
+                            db.collection("big_surveys")
+                                .add(formData)
+                                .addOnSuccessListener { documentReference ->
+                                    loadingDialog.dismiss()
+                                    Toast.makeText(
+                                        this@BASurveyBigActivity,
+                                        "Form submitted successfully with ID: ${documentReference.id}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    resetForm()
+                                }
+                                .addOnFailureListener { e ->
+                                    loadingDialog.dismiss()
+                                    Toast.makeText(
+                                        this@BASurveyBigActivity,
+                                        "Error submitting form: ${e.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                loadingDialog.dismiss()
+                                Toast.makeText(
+                                    this@BASurveyBigActivity,
+                                    "Error uploading signatures: ${e.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
                     }
-                }
-
-                // Save form data to Firestore
-                db.collection("big_surveys")
-                    .add(formData)
-                    .addOnSuccessListener { documentReference ->
-                        loadingDialog.dismiss()
-                        Toast.makeText(this@BASurveyBigActivity,
-                            "Form submitted successfully with ID: ${documentReference.id}",
-                            Toast.LENGTH_LONG).show()
-                        resetForm()
-                    }
-                    .addOnFailureListener { e ->
-                        loadingDialog.dismiss()
-                        Toast.makeText(this@BASurveyBigActivity,
-                            "Error submitting form: ${e.message}",
-                            Toast.LENGTH_LONG).show()
-                    }
-
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    loadingDialog.dismiss()
-                    Toast.makeText(this@BASurveyBigActivity,
-                        "Error uploading signatures: ${e.message}",
-                        Toast.LENGTH_LONG).show()
                 }
             }
-        }
+            .addOnFailureListener { e ->
+                loadingDialog.dismiss()
+                Toast.makeText(
+                    this@BASurveyBigActivity,
+                    "Error checking location: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
     }
 
     private fun resetForm() {
@@ -843,12 +949,15 @@ class BASurveyBigActivity : AppCompatActivity() {
                 "dengan hasil sebagai berikut:"
     }
 
-    private suspend fun generateStyledPdf() {
+    private suspend fun generateStyledPdf(): File {
+        var createdFile: File? = null // Ubah ke 'var'
+
         withContext(Dispatchers.IO) {
             try {
                 // Ambil input dari pengguna
                 val projectTitle = findViewById<EditText>(R.id.inputProjectTitle).text.toString()
-                val contractNumber = findViewById<EditText>(R.id.inputContractNumber).text.toString()
+                val contractNumber =
+                    findViewById<EditText>(R.id.inputContractNumber).text.toString()
                 val executor = findViewById<Spinner>(R.id.inputExecutor).selectedItem.toString()
                 val location = findViewById<EditText>(R.id.inputLocation).text.toString()
                 // Hasil deskripsi otomatis
@@ -938,7 +1047,11 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Fungsi untuk membuat halaman baru
                 fun createPage(): PdfDocument.Page {
-                    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth.toInt(), pageHeight.toInt(), pageCount++).create()
+                    val pageInfo = PdfDocument.PageInfo.Builder(
+                        pageWidth.toInt(),
+                        pageHeight.toInt(),
+                        pageCount++
+                    ).create()
                     return document.startPage(pageInfo)
                 }
 
@@ -952,9 +1065,16 @@ class BASurveyBigActivity : AppCompatActivity() {
                     val centerX = (marginX + maxX) / 2
 
                     // Tambahkan logo berdasarkan pelaksana
-                    val zteLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_zte) // Logo ZTE
-                    val huaweiLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_huawei) // Logo Huawei
-                    val telkomLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_telkom) // Logo Telkom
+                    val zteLogo =
+                        BitmapFactory.decodeResource(resources, R.drawable.logo_zte) // Logo ZTE
+                    val huaweiLogo = BitmapFactory.decodeResource(
+                        resources,
+                        R.drawable.logo_huawei
+                    ) // Logo Huawei
+                    val telkomLogo = BitmapFactory.decodeResource(
+                        resources,
+                        R.drawable.logo_telkom
+                    ) // Logo Telkom
 
                     // Ukuran logo
                     val logoWidth = 80 // Lebar logo
@@ -964,17 +1084,21 @@ class BASurveyBigActivity : AppCompatActivity() {
                     // Gambar logo pelaksana di pojok kiri atas
                     when (executor) {
                         "PT. ZTE INDONESIA" -> {
-                            val scaledZteLogo = Bitmap.createScaledBitmap(zteLogo, logoWidth, logoHeight, false)
+                            val scaledZteLogo =
+                                Bitmap.createScaledBitmap(zteLogo, logoWidth, logoHeight, false)
                             canvas.drawBitmap(scaledZteLogo, marginX, topMargin, null)
                         }
+
                         "PT Huawei Tech Investment" -> {
-                            val scaledHuaweiLogo = Bitmap.createScaledBitmap(huaweiLogo, logoWidth, logoHeight, false)
+                            val scaledHuaweiLogo =
+                                Bitmap.createScaledBitmap(huaweiLogo, logoWidth, logoHeight, false)
                             canvas.drawBitmap(scaledHuaweiLogo, marginX, topMargin, null)
                         }
                     }
 
                     // Gambar logo Telkom di pojok kanan atas
-                    val scaledTelkomLogo = Bitmap.createScaledBitmap(telkomLogo, logoWidth, logoHeight, false)
+                    val scaledTelkomLogo =
+                        Bitmap.createScaledBitmap(telkomLogo, logoWidth, logoHeight, false)
                     canvas.drawBitmap(scaledTelkomLogo, maxX - logoWidth - marginX, topMargin, null)
 
                     // Tambahkan jarak di bawah logo
@@ -988,23 +1112,56 @@ class BASurveyBigActivity : AppCompatActivity() {
                 }
 
                 // Footer halaman
+                // Footer halaman
                 fun drawFooter() {
-                    canvas.drawText("Halaman ${pageCount - 1}", marginX, pageHeight - 20f, paint)
+                    // Atur ukuran teks lebih kecil
+                    paint.textSize = 10f // Ukuran teks lebih kecil
 
+                    // Garis pembatas
+                    paint.style = Paint.Style.STROKE
+                    canvas.drawLine(
+                        marginX, // Garis mulai dari margin kiri
+                        pageHeight - 30f, // Posisi Y untuk garis (di atas teks dokumen)
+                        pageWidth - marginX, // Garis berakhir di margin kanan
+                        pageHeight - 30f,
+                        paint
+                    )
+
+                    // Tulisan dokumen
+                    paint.style = Paint.Style.FILL
+                    canvas.drawText(
+                        "Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku",
+                        marginX, // Tulisan dimulai dari margin kiri
+                        pageHeight - 20f, // Posisi Y di bawah garis dan di atas halaman
+                        paint
+                    )
+
+                    // Halaman di pojok kanan bawah
+                    val pageText = "Halaman ${pageCount - 1}"
+                    val textWidth = paint.measureText(pageText)
+                    canvas.drawText(
+                        pageText,
+                        pageWidth - marginX - textWidth, // Posisi X di pojok kanan bawah
+                        pageHeight - 20f, // Posisi Y sejajar dengan teks dokumen
+                        paint
+                    )
                 }
 
 
                 // Tambahkan teks di bawah tabel halaman terakhir
                 fun drawClosingStatement() {
-                    val closingText = "Demikian Berita Acara Hasil Survey ini dibuat berdasarkan kenyataan di lapangan untuk dijadikan pedoman pelaksanaan selanjutnya."
+                    val closingText =
+                        "Demikian Berita Acara Hasil Survey ini dibuat berdasarkan kenyataan di lapangan untuk dijadikan pedoman pelaksanaan selanjutnya."
                     val closingMaxWidth = maxX - marginX * 2
                     val closingLines = wrapText(closingText, closingMaxWidth, paint)
 
                     // Format tanggal hari ini
-                    val currentDate = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
+                    val currentDate =
+                        SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
 
                     // Tinggi minimum untuk menambahkan teks
-                    val closingHeight = 18f * closingLines.size + 10f + 20f // Tambahkan ruang untuk tanggal
+                    val closingHeight =
+                        18f * closingLines.size + 10f + 20f // Tambahkan ruang untuk tanggal
                     if (y + closingHeight > pageHeight - marginBottom) {
                         drawFooter()
                         document.finishPage(page)
@@ -1029,7 +1186,13 @@ class BASurveyBigActivity : AppCompatActivity() {
 
 
                 // Tambahkan tanda tangan di halaman terakhir
-                fun drawSignaturesWithFormattedTitles(canvas: Canvas, region: String, yStart: Float, paint: Paint, boldPaint: Paint) {
+                fun drawSignaturesWithFormattedTitles(
+                    canvas: Canvas,
+                    region: String,
+                    yStart: Float,
+                    paint: Paint,
+                    boldPaint: Paint
+                ) {
                     val marginX = 50f
                     val boxWidth = (595 - (marginX * 2)) / 3 // Lebar kotak tanda tangan
                     val signatureBoxHeight = 150f // Tinggi kotak tanda tangan
@@ -1043,7 +1206,14 @@ class BASurveyBigActivity : AppCompatActivity() {
                     }
 
                     // Fungsi untuk menggambar teks nama perusahaan dengan format khusus (2 atau 3 baris)
-                    fun drawFormattedTitle(canvas: Canvas, lines: List<String>, x: Float, y: Float, maxWidth: Float, boldPaint: Paint): Float {
+                    fun drawFormattedTitle(
+                        canvas: Canvas,
+                        lines: List<String>,
+                        x: Float,
+                        y: Float,
+                        maxWidth: Float,
+                        boldPaint: Paint
+                    ): Float {
                         val lineHeight = boldPaint.textSize + 4f // Tinggi setiap baris
                         var currentY = y
 
@@ -1069,14 +1239,26 @@ class BASurveyBigActivity : AppCompatActivity() {
                         canvas.drawRect(rect, boxPaint)
 
                         // Tulis nama perusahaan dengan format 2 atau 3 baris
-                        val titleY = drawFormattedTitle(canvas, lines, x + 10f, y + 20f, boxWidth - 20f, boldPaint)
+                        val titleY = drawFormattedTitle(
+                            canvas,
+                            lines,
+                            x + 10f,
+                            y + 20f,
+                            boxWidth - 20f,
+                            boldPaint
+                        )
 
                         // Gambar tanda tangan di tengah kotak
                         val signatureY = titleY + 10f
                         if (signature != null) {
                             val bitmap = (signature as BitmapDrawable).bitmap
                             val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 100, 50, false)
-                            canvas.drawBitmap(scaledBitmap, x + (boxWidth / 2 - 50f), signatureY, null)
+                            canvas.drawBitmap(
+                                scaledBitmap,
+                                x + (boxWidth / 2 - 50f),
+                                signatureY,
+                                null
+                            )
                         }
 
                         // Tulis nama dan NIK di bawah tanda tangan
@@ -1100,15 +1282,18 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                     val tselNopName = findViewById<EditText>(R.id.etTselNopName).text.toString()
                     val tselNopNik = findViewById<EditText>(R.id.etTselNopNik).text.toString()
-                    val tselNopSignature = findViewById<ImageView>(R.id.imgTselNopSignature).drawable
+                    val tselNopSignature =
+                        findViewById<ImageView>(R.id.imgTselNopSignature).drawable
 
                     val tselRtpdsName = findViewById<EditText>(R.id.etTselRtpdsName).text.toString()
                     val tselRtpdsNik = findViewById<EditText>(R.id.etTselRtpdsNik).text.toString()
-                    val tselRtpdsSignature = findViewById<ImageView>(R.id.imgTselRtpdsSignature).drawable
+                    val tselRtpdsSignature =
+                        findViewById<ImageView>(R.id.imgTselRtpdsSignature).drawable
 
                     val tselRtpeName = findViewById<EditText>(R.id.etTselRtpeNfName).text.toString()
                     val tselRtpeNik = findViewById<EditText>(R.id.etTselRtpeNfNik).text.toString()
-                    val tselRtpeSignature = findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
+                    val tselRtpeSignature =
+                        findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
 
                     // Baris pertama (ZTE, TIF, TELKOM)
                     drawSignatureBox(
@@ -1198,10 +1383,19 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Baris 1
                 val itemMaxWidth1 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth1 = colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
+                val remarkMaxWidth1 =
+                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
 
-                val itemLines1 = wrapText("Propose OLT", itemMaxWidth1, cellPaint) // Text wrapping untuk kolom ITEM
-                val remarkLines1 = wrapText(remark1, remarkMaxWidth1, cellPaint) // Text wrapping untuk kolom KETERANGAN
+                val itemLines1 = wrapText(
+                    "Propose OLT",
+                    itemMaxWidth1,
+                    cellPaint
+                ) // Text wrapping untuk kolom ITEM
+                val remarkLines1 = wrapText(
+                    remark1,
+                    remarkMaxWidth1,
+                    cellPaint
+                ) // Text wrapping untuk kolom KETERANGAN
 
 // Hitung tinggi baris secara dinamis berdasarkan jumlah baris di kolom ITEM dan KETERANGAN
                 val dynamicRowHeight1 = maxOf(
@@ -1252,10 +1446,19 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Baris 2
                 val itemMaxWidth2 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth2 = colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
+                val remarkMaxWidth2 =
+                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
 
-                val itemLines2 = wrapText("Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)", itemMaxWidth2, cellPaint) // Text wrapping untuk kolom ITEM
-                val remarkLines2 = wrapText(remark2, remarkMaxWidth2, cellPaint) // Text wrapping untuk kolom KETERANGAN
+                val itemLines2 = wrapText(
+                    "Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)",
+                    itemMaxWidth2,
+                    cellPaint
+                ) // Text wrapping untuk kolom ITEM
+                val remarkLines2 = wrapText(
+                    remark2,
+                    remarkMaxWidth2,
+                    cellPaint
+                ) // Text wrapping untuk kolom KETERANGAN
 
 // Hitung tinggi baris secara dinamis berdasarkan jumlah baris di kolom ITEM dan KETERANGAN
                 val dynamicRowHeight2 = maxOf(
@@ -1306,10 +1509,19 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Baris 3
                 val itemMaxWidth3 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth3 = colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
+                val remarkMaxWidth3 =
+                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
 
-                val itemLines3 = wrapText("Panjang Bundlecore Uplink (Dari Rack ET ke OLT)", itemMaxWidth3, cellPaint) // Text wrapping untuk kolom ITEM
-                val remarkLines3 = wrapText(remark3, remarkMaxWidth3, cellPaint) // Text wrapping untuk kolom KETERANGAN
+                val itemLines3 = wrapText(
+                    "Panjang Bundlecore Uplink (Dari Rack ET ke OLT)",
+                    itemMaxWidth3,
+                    cellPaint
+                ) // Text wrapping untuk kolom ITEM
+                val remarkLines3 = wrapText(
+                    remark3,
+                    remarkMaxWidth3,
+                    cellPaint
+                ) // Text wrapping untuk kolom KETERANGAN
 
 // Hitung tinggi baris secara dinamis berdasarkan jumlah baris di kolom ITEM dan KETERANGAN
                 val dynamicRowHeight3 = maxOf(
@@ -1360,10 +1572,19 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Baris 4
                 val itemMaxWidth4 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth4 = colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
+                val remarkMaxWidth4 =
+                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
 
-                val itemLines4 = wrapText("Panjang Bundlecore Downlink (Dari Rack EA ke OLT)", itemMaxWidth4, cellPaint) // Text wrapping untuk kolom ITEM
-                val remarkLines4 = wrapText(remark4, remarkMaxWidth4, cellPaint) // Text wrapping untuk kolom KETERANGAN
+                val itemLines4 = wrapText(
+                    "Panjang Bundlecore Downlink (Dari Rack EA ke OLT)",
+                    itemMaxWidth4,
+                    cellPaint
+                ) // Text wrapping untuk kolom ITEM
+                val remarkLines4 = wrapText(
+                    remark4,
+                    remarkMaxWidth4,
+                    cellPaint
+                ) // Text wrapping untuk kolom KETERANGAN
 
 // Hitung tinggi baris secara dinamis berdasarkan jumlah baris di kolom ITEM dan KETERANGAN
                 val dynamicRowHeight4 = maxOf(
@@ -1414,10 +1635,19 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Baris 5
                 val itemMaxWidth5 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth5 = colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
+                val remarkMaxWidth5 =
+                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
 
-                val itemLines5 = wrapText("Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm)", itemMaxWidth5, cellPaint) // Text wrapping untuk kolom ITEM
-                val remarkLines5 = wrapText(remark5, remarkMaxWidth5, cellPaint) // Text wrapping untuk kolom KETERANGAN
+                val itemLines5 = wrapText(
+                    "Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm)",
+                    itemMaxWidth5,
+                    cellPaint
+                ) // Text wrapping untuk kolom ITEM
+                val remarkLines5 = wrapText(
+                    remark5,
+                    remarkMaxWidth5,
+                    cellPaint
+                ) // Text wrapping untuk kolom KETERANGAN
 
                 val dynamicRowHeight5 = maxOf(
                     40f,
@@ -1460,10 +1690,19 @@ class BASurveyBigActivity : AppCompatActivity() {
 
 // Baris 6
                 val itemMaxWidth6 = colX[2] - colX[1] - 10f // Lebar maksimum untuk kolom ITEM
-                val remarkMaxWidth6 = colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
+                val remarkMaxWidth6 =
+                    colX[5] - colX[4] - 10f // Lebar maksimum untuk kolom KETERANGAN
 
-                val itemLines6 = wrapText("Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source)", itemMaxWidth6, cellPaint) // Text wrapping untuk kolom ITEM
-                val remarkLines6 = wrapText(remark6, remarkMaxWidth6, cellPaint) // Text wrapping untuk kolom KETERANGAN
+                val itemLines6 = wrapText(
+                    "Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source)",
+                    itemMaxWidth6,
+                    cellPaint
+                ) // Text wrapping untuk kolom ITEM
+                val remarkLines6 = wrapText(
+                    remark6,
+                    remarkMaxWidth6,
+                    cellPaint
+                ) // Text wrapping untuk kolom KETERANGAN
 
                 val dynamicRowHeight6 = maxOf(
                     40f,
@@ -1508,7 +1747,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth7 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth7 = colX[5] - colX[4] - 10f
 
-                val itemLines7 = wrapText("Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New", itemMaxWidth7, cellPaint)
+                val itemLines7 = wrapText(
+                    "Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New",
+                    itemMaxWidth7,
+                    cellPaint
+                )
                 val remarkLines7 = wrapText(remark7, remarkMaxWidth7, cellPaint)
 
                 val dynamicRowHeight7 = maxOf(
@@ -1554,7 +1797,8 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth8 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth8 = colX[5] - colX[4] - 10f
 
-                val itemLines8 = wrapText("Kebutuhan catuan daya di Recti", itemMaxWidth8, cellPaint)
+                val itemLines8 =
+                    wrapText("Kebutuhan catuan daya di Recti", itemMaxWidth8, cellPaint)
                 val remarkLines8 = wrapText(remark8, remarkMaxWidth8, cellPaint)
 
                 val dynamicRowHeight8 = maxOf(
@@ -1600,7 +1844,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth9 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth9 = colX[5] - colX[4] - 10f
 
-                val itemLines9 = wrapText("Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya", itemMaxWidth9, cellPaint)
+                val itemLines9 = wrapText(
+                    "Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya",
+                    itemMaxWidth9,
+                    cellPaint
+                )
                 val remarkLines9 = wrapText(remark9, remarkMaxWidth9, cellPaint)
 
                 val dynamicRowHeight9 = maxOf(
@@ -1646,7 +1894,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth10 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth10 = colX[5] - colX[4] - 10f
 
-                val itemLines10 = wrapText("Kebutuhan Tray @3m (pcs) dari Tray Eksisting ke OLT-turunan Dan Rack FTM-EA kalau diperlukan", itemMaxWidth10, cellPaint)
+                val itemLines10 = wrapText(
+                    "Kebutuhan Tray @3m (pcs) dari Tray Eksisting ke OLT-turunan Dan Rack FTM-EA kalau diperlukan",
+                    itemMaxWidth10,
+                    cellPaint
+                )
                 val remarkLines10 = wrapText(remark10, remarkMaxWidth10, cellPaint)
 
                 val dynamicRowHeight10 = maxOf(
@@ -1738,7 +1990,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth12 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth12 = colX[5] - colX[4] - 10f
 
-                val itemLines12 = wrapText("Space 2 pcs FTB untuk di install di rack EA", itemMaxWidth12, cellPaint)
+                val itemLines12 = wrapText(
+                    "Space 2 pcs FTB untuk di install di rack EA",
+                    itemMaxWidth12,
+                    cellPaint
+                )
                 val remarkLines12 = wrapText(remark12, remarkMaxWidth12, cellPaint)
 
                 val dynamicRowHeight12 = maxOf(
@@ -1784,7 +2040,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth13 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth13 = colX[5] - colX[4] - 10f
 
-                val itemLines13 = wrapText("FTB yang kita gunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda", itemMaxWidth13, cellPaint)
+                val itemLines13 = wrapText(
+                    "FTB yang kita gunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda",
+                    itemMaxWidth13,
+                    cellPaint
+                )
                 val remarkLines13 = wrapText(remark13, remarkMaxWidth13, cellPaint)
 
                 val dynamicRowHeight13 = maxOf(
@@ -1968,7 +2228,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth17 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth17 = colX[5] - colX[4] - 10f
 
-                val itemLines17 = wrapText("Alokasi Core di FTB Eksisting (di Rack ET)", itemMaxWidth17, cellPaint)
+                val itemLines17 = wrapText(
+                    "Alokasi Core di FTB Eksisting (di Rack ET)",
+                    itemMaxWidth17,
+                    cellPaint
+                )
                 val remarkLines17 = wrapText(remark17, remarkMaxWidth17, cellPaint)
 
                 val dynamicRowHeight17 = maxOf(
@@ -2014,7 +2278,8 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth18 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth18 = colX[5] - colX[4] - 10f
 
-                val itemLines18 = wrapText("Kondisi Penerangan di ruangan OLT", itemMaxWidth18, cellPaint)
+                val itemLines18 =
+                    wrapText("Kondisi Penerangan di ruangan OLT", itemMaxWidth18, cellPaint)
                 val remarkLines18 = wrapText(remark18, remarkMaxWidth18, cellPaint)
 
                 val dynamicRowHeight18 = maxOf(
@@ -2060,7 +2325,8 @@ class BASurveyBigActivity : AppCompatActivity() {
                 val itemMaxWidth19 = colX[2] - colX[1] - 10f
                 val remarkMaxWidth19 = colX[5] - colX[4] - 10f
 
-                val itemLines19 = wrapText("CME – Kebutuhan Air Conditioner", itemMaxWidth19, cellPaint)
+                val itemLines19 =
+                    wrapText("CME – Kebutuhan Air Conditioner", itemMaxWidth19, cellPaint)
                 val remarkLines19 = wrapText(remark19, remarkMaxWidth19, cellPaint)
 
                 val dynamicRowHeight19 = maxOf(
@@ -2111,7 +2377,10 @@ class BASurveyBigActivity : AppCompatActivity() {
                 drawFooter() // Tambahkan footer di halaman terakhir
                 document.finishPage(page)
 
-                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+
+                val downloadsDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 if (!downloadsDir.exists()) downloadsDir.mkdirs()
 
                 // Cek nama file yang belum digunakan
@@ -2127,16 +2396,29 @@ class BASurveyBigActivity : AppCompatActivity() {
                 document.writeTo(FileOutputStream(file))
                 document.close()
 
+                createdFile = file // 🔥 Inilah bagian penting yang sebelumnya tidak ada!
+
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@BASurveyBigActivity, "PDF berhasil disimpan di: ${file.absolutePath}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@BASurveyBigActivity,
+                        "PDF berhasil disimpan di: ${file.absolutePath}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@BASurveyBigActivity, "Gagal membuat PDF: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@BASurveyBigActivity,
+                        "Gagal membuat PDF: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
+
             }
         }
+
+        return createdFile ?: throw IllegalStateException("File PDF tidak berhasil dibuat.")
     }
 
     private fun wrapText(text: String, maxWidth: Float, paint: Paint): List<String> {

@@ -16,7 +16,8 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"
         android:minSdkVersion="34" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -31,6 +32,9 @@
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
         <activity
+            android:name=".BASurveyBigDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ServicesActivity"
             android:exported="false" />
         <activity
@@ -42,7 +46,6 @@
         <activity
             android:name=".LastUpdateActivity"
             android:exported="false" />
-
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -84,8 +87,8 @@
         </activity>
         <activity
             android:name=".HomeActivity"
-            android:exported="true"
             android:configChanges="keyboardHidden"
+            android:exported="true"
             android:theme="@style/Theme.TelGO" />
         <activity
             android:name=".RegisterActivity"
@@ -107,36 +110,28 @@
         <activity
             android:name=".UploadProjectActivity"
             android:exported="false"
-            android:theme="@style/Theme.TelGO" />
-        <!-- Upload Forms Menu Activity -->
+            android:theme="@style/Theme.TelGO" /> <!-- Upload Forms Menu Activity -->
         <activity
             android:name=".UploadFormsMenuActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.TelGO" />
-
-        <!-- BA Survey Mini OLT Activity -->
+            android:theme="@style/Theme.TelGO" /> <!-- BA Survey Mini OLT Activity -->
         <activity
             android:name=".BaSurveyMiniOltActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.TelGO" />
-
-        <!-- BA Survey Mini OLT Detail Activity -->
+            android:theme="@style/Theme.TelGO"
+            android:windowSoftInputMode="adjustResize" /> <!-- BA Survey Mini OLT Detail Activity -->
         <activity
             android:name=".BaSurveyMiniOltDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.TelGO" />
-
-        <!-- Signature Activity -->
+            android:theme="@style/Theme.TelGO" /> <!-- Signature Activity -->
         <activity
             android:name=".SignatureActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.TelGO" />
-
         <activity
             android:name=".BASurveyBigActivity"
             android:exported="false"
@@ -162,15 +157,11 @@
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup" />
-        </provider>
-
-        <!-- Add the NotificationAlarmReceiver (was missing) -->
+        </provider> <!-- Add the NotificationAlarmReceiver (was missing) -->
         <receiver
             android:name=".NotificationAlarmReceiver"
             android:enabled="true"
-            android:exported="false" />
-
-        <!-- Your existing boot receiver - we'll use this name in the code -->
+            android:exported="false" /> <!-- Your existing boot receiver - we'll use this name in the code -->
         <receiver
             android:name=".NotificationBootReceiver"
             android:enabled="true"
@@ -178,11 +169,10 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-
-
 
         <provider
             android:name="androidx.core.content.FileProvider"
