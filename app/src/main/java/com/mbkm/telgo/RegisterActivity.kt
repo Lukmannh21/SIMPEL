@@ -2,12 +2,15 @@ package com.mbkm.telgo
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
@@ -287,8 +290,13 @@ class RegisterActivity : AppCompatActivity() {
                     val userId = auth.currentUser?.uid
 
                     if (userId != null) {
-                        // Create user data map
+                        // Current date and time for record keeping
+                        val currentDateTime = "2025-05-10 15:53:29" // Using the provided timestamp
+                        val currentUser = "Lukmannh21" // Using the provided username
+
+                        // Create user data map with verification status
                         val userData = hashMapOf(
+                            "uid" to userId,
                             "fullName" to name,
                             "nik" to nik,
                             "email" to email,
@@ -300,9 +308,14 @@ class RegisterActivity : AppCompatActivity() {
                             "gender" to "",
                             "witelRegion" to "",
                             "siteId" to "",
-                            "createdAt" to getCurrentDateTime(),
-                            "updatedAt" to getCurrentDateTime(),
-                            "createdBy" to "Lukmannh21"
+                            "createdAt" to currentDateTime,
+                            "updatedAt" to currentDateTime,
+                            "createdBy" to currentUser,
+                            "status" to "unverified", // Default status is unverified
+                            "role" to "user", // Default role is user
+                            "registrationDate" to Date().time,
+                            "lastLoginDate" to Date().time,
+                            "editedSites" to listOf<String>()
                         )
 
                         // Save to Firestore
@@ -310,16 +323,7 @@ class RegisterActivity : AppCompatActivity() {
                             .set(userData)
                             .addOnSuccessListener {
                                 showLoading(false)
-                                showSuccess("Registration successful!")
-                                // Navigate to login with delay
-                                android.os.Handler().postDelayed({
-                                    // Navigate to login
-                                    val intent = Intent(this, LoginActivity::class.java)
-                                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                    startActivity(intent)
-                                    finish()
-                                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-                                }, 1500)
+                                showSuccessWithVerificationMessage()
                             }
                             .addOnFailureListener { e ->
                                 showLoading(false)
@@ -334,6 +338,42 @@ class RegisterActivity : AppCompatActivity() {
                     showError("Registration failed: ${task.exception?.message}")
                 }
             }
+    }
+
+    private fun showSuccessWithVerificationMessage() {
+        // Create and show a custom dialog for verification pending
+        val builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_verification_pending, null)
+        builder.setView(dialogView)
+
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+
+        // Find the OK button in the dialog
+        val btnOk = dialogView.findViewById<Button>(R.id.btnOk)
+        btnOk.setOnClickListener {
+            dialog.dismiss()
+            // Navigate to login
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        }
+
+        // Auto dismiss after 5 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (dialog.isShowing) {
+                dialog.dismiss()
+                // Navigate to login
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                finish()
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            }
+        }, 5000)
     }
 
     private fun showLoading(isLoading: Boolean) {

@@ -48,6 +48,23 @@
         <activity
             android:name=".LastUpdateActivity"
             android:exported="false" />
+        <activity
+            android:name=".UserManagementActivity"
+            android:label="User Management"
+            android:parentActivityName=".ServicesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ServicesActivity" />
+        </activity>
+
+        <activity
+            android:name=".UserDetailActivity"
+            android:label="User Details"
+            android:parentActivityName=".UserManagementActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".UserManagementActivity" />
+        </activity>
 
 
         <provider

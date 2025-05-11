@@ -2,6 +2,8 @@ package com.mbkm.telgo
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -14,10 +16,14 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.*
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
+
     private lateinit var tilEmail: TextInputLayout
     private lateinit var tilPassword: TextInputLayout
     private lateinit var etEmail: TextInputEditText
@@ -37,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         // Initialize UI components
         initializeViews()
@@ -207,21 +214,73 @@ class LoginActivity : AppCompatActivity() {
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-                showLoading(false)
                 if (task.isSuccessful) {
-                    showSuccess("Login successful")
-                    android.os.Handler().postDelayed({
-                        val intent = Intent(this, ServicesActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                        finish()
-                    }, 1000)
+                    val user = auth.currentUser
+                    if (user != null) {
+                        // Update last login time and check user role
+                        updateLastLoginAndCheckRole(user.uid)
+                    } else {
+                        showLoading(false)
+                        showError("Login error: User not found")
+                    }
                 } else {
+                    showLoading(false)
                     val errorMessage = task.exception?.message ?: "Login failed"
                     showError(errorMessage)
                     shakeView(btnLogin)
                 }
+            }
+    }
+
+    private fun updateLastLoginAndCheckRole(userId: String) {
+        // Update last login timestamp
+        val lastLoginUpdate = hashMapOf<String, Any>(
+            "lastLoginDate" to Date().time
+        )
+
+        firestore.collection("users").document(userId)
+            .update(lastLoginUpdate)
+            .addOnSuccessListener {
+                // Now check the user role and status
+                firestore.collection("users").document(userId)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        showLoading(false)
+
+                        if (document != null && document.exists()) {
+                            val role = document.getString("role") ?: "user"
+                            val status = document.getString("status") ?: "unverified"
+
+                            // Store role and status in SharedPreferences for easy access
+                            val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+                            preferences.edit().apply {
+                                putString("userRole", role)
+                                putString("userStatus", status)
+                                apply()
+                            }
+
+                            showSuccess("Login successful")
+
+                            // Redirect based on role
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                val intent = Intent(this, ServicesActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                startActivity(intent)
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                                finish()
+                            }, 1000)
+                        } else {
+                            showError("User data not found")
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        showLoading(false)
+                        showError("Error checking user role: ${e.message}")
+                    }
+            }
+            .addOnFailureListener { e ->
+                showLoading(false)
+                showError("Error updating login time: ${e.message}")
             }
     }
 

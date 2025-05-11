@@ -137,6 +137,21 @@
                             android:textColor="@android:color/black"
                             android:textSize="14sp"
                             android:textStyle="bold" />
+                        <Button
+                            android:id="@+id/btnUserManagement"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ripple_effect"
+                            android:drawableTop="@drawable/ic_person"
+                            android:drawablePadding="8dp"
+                            android:text="User Management"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            android:elevation="4dp"
+                            android:visibility="gone"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

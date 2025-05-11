@@ -3,12 +3,14 @@ package com.mbkm.telgo
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,9 +31,13 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
     private lateinit var cardAccountDetails: CardView
     private lateinit var cardNotificationSettings: CardView
     private lateinit var ivProfileImage: ImageView
+    private lateinit var tvVerificationStatus: TextView
+    private lateinit var verificationBadge: View
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private var userRole = "user"
+    private var userStatus = "unverified"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +66,13 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
         cardAccountDetails = findViewById(R.id.cardAccountDetails)
         cardNotificationSettings = findViewById(R.id.cardNotificationSettings)
         ivProfileImage = findViewById(R.id.ivProfileImage)
+        tvVerificationStatus = findViewById(R.id.tvVerificationStatus)
+        verificationBadge = findViewById(R.id.verificationBadge)
+
+        // Load user role and status from SharedPreferences
+        val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+        userRole = preferences.getString("userRole", "user") ?: "user"
+        userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
 
         // Setup bottom navigation
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
@@ -81,6 +94,10 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
         btnLogout.setOnClickListener {
             // Sign out from Firebase
             auth.signOut()
+
+            // Clear saved preferences
+            preferences.edit().clear().apply()
+
             // Navigate to login screen
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -126,6 +143,14 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
         // Ensure the correct navigation item is selected
         bottomNavigationView.selectedItemId = R.id.navigation_account
+
+        // Refresh status from preferences in case it changed
+        val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+        userRole = preferences.getString("userRole", "user") ?: "user"
+        userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
+
+        // Update verification status UI
+        updateVerificationStatus(userStatus)
     }
 
     override fun finish() {
@@ -161,15 +186,33 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
                             tvUnit.text = if (unit.isNotEmpty()) unit else "Not set"
                             tvPosition.text = if (position.isNotEmpty()) position else "Not set"
                             tvPhone.text = if (phone.isNotEmpty()) phone else "Not set"
+
+                            // Get user status and update UI
+                            val status = document.getString("status") ?: "unverified"
+                            updateVerificationStatus(status)
+
+                            // Update SharedPreferences
+                            val role = document.getString("role") ?: "user"
+                            val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+                            preferences.edit().apply {
+                                putString("userRole", role)
+                                putString("userStatus", status)
+                                apply()
+                            }
+
+                            userRole = role
+                            userStatus = status
                         }
                     } else {
                         // No document found
                         setDefaultValues()
+                        updateVerificationStatus("unverified")
                     }
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error loading profile: ${e.message}", Toast.LENGTH_SHORT).show()
                     setDefaultValues()
+                    updateVerificationStatus("unverified")
                 }
         } else {
             // User not logged in, redirect to login
@@ -177,6 +220,29 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
             startActivity(intent)
             finish()
         }
+    }
+
+    private fun updateVerificationStatus(status: String) {
+        when (status) {
+            "verified" -> {
+                tvVerificationStatus.text = "Verified"
+                tvVerificationStatus.setTextColor(ContextCompat.getColor(this, R.color.green))
+                verificationBadge.background = ContextCompat.getDrawable(this, R.drawable.bg_verified)
+            }
+            else -> {
+                tvVerificationStatus.text = "Pending Verification"
+                tvVerificationStatus.setTextColor(ContextCompat.getColor(this, R.color.orange))
+                verificationBadge.background = ContextCompat.getDrawable(this, R.drawable.bg_unverified)
+            }
+        }
+
+        // Animate the status badge
+        verificationBadge.alpha = 0f
+        verificationBadge.visibility = View.VISIBLE
+        verificationBadge.animate()
+            .alpha(1f)
+            .setDuration(300)
+            .start()
     }
 
     private fun animateDataLoading(onComplete: () -> Unit) {
@@ -198,9 +264,6 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
                         .setDuration(200)
                         .withEndAction {
                             completedAnimations++
-                            if (completedAnimations == views.size) {
-                                // All animations complete
-                            }
                         }
                         .start()
                 }
