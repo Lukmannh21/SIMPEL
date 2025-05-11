@@ -403,9 +403,9 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         // Photo containers, buttons and image views
         try {
-            photoContainers = Array(15) { findViewById(resources.getIdentifier("photoContainer${it+1}", "id", packageName)) }
-            photoButtons = Array(15) { findViewById(resources.getIdentifier("btnUploadPhoto${it+1}", "id", packageName)) }
-            photoImageViews = Array(15) { findViewById(resources.getIdentifier("imgPhoto${it+1}", "id", packageName)) }
+            photoContainers = Array(16) { findViewById(resources.getIdentifier("photoContainer${it+1}", "id", packageName)) }
+            photoButtons = Array(16) { findViewById(resources.getIdentifier("btnUploadPhoto${it+1}", "id", packageName)) }
+            photoImageViews = Array(16) { findViewById(resources.getIdentifier("imgPhoto${it+1}", "id", packageName)) }
         } catch (e: Exception) {
             Log.e("BaSurveyMiniOlt", "Error initializing photo views: ${e.message}")
             photoContainers = emptyArray()
@@ -415,11 +415,11 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         // Photo labels
         photoLabels = arrayOf(
-            "Akses gerbang", "Name plate", "Outdoor", "Pengukuran Catuan Power AC",
-            "Catuan Power DC", "Port OTB Exciting", "Cabinet Metro-E (ME Room) Metro-E",
-            "Metro-E", "Akses gerbang", "Name plate", "Proposed New Pondasi",
-            "Power AC di panel KWH Exciting", "Grounding Busbar", "Proposed Dual Source Power DC",
-            "Rectifier"
+            "AKSES GERBANG", "NAME PLATE", "OUTDOOR", "SHELTER",
+            "PONDASI", "GROUNDING BASBAR", "CATUAN POWER DC",
+            "PROPOSED DUAL SOURCE POWER DC", "RECTIFIER", "PENGUKURAN CATUAN POWER AC", "POWER AC DI PANEL KWH EXCITING",
+            "PORT OTB EXCITING", "CABINET METRO-E (ME ROOM)", "METRO-E",
+            "ALTERNATIF DILUAR SITE (OUTDOOR)", "DI AREA ODC"
         )
 
         // Submit and search components
@@ -1118,7 +1118,35 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             return
         }
 
+        val locationToCheck = etLocation.text.toString().trim()
+
+        // Check if location already exists in Firestore
+        firestore.collection("ba_survey_mini_olt")
+            .whereEqualTo("location", locationToCheck) // Filter berdasarkan field 'location'
+            .limit(1) // Kita hanya butuh tahu apakah ada setidaknya satu
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    // Document with the same location already exists
+                    loadingDialog.dismiss()
+                    etLocation.error = "Lokasi dengan ID ini sudah terdaftar"
+                    Toast.makeText(this, "Error: Lokasi survei dengan ID '${locationToCheck}' sudah ada. Submit dibatalkan.", Toast.LENGTH_LONG).show()
+                } else {
+                    // Location is unique, proceed with submission
+                    proceedWithSubmission(loadingDialog, currentUser, locationToCheck)
+                }
+            }
+            .addOnFailureListener { e ->
+                loadingDialog.dismiss()
+                Toast.makeText(this, "Error saat pengecekan lokasi: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Buat fungsi baru untuk melanjutkan proses submit agar tidak terlalu nested
+    private fun proceedWithSubmission(loadingDialog: AlertDialog, currentUser: com.google.firebase.auth.FirebaseUser, location: String) {
+
         val surveyData = HashMap<String, Any>()
+
 
         // Basic info
         surveyData["location"] = etLocation.text.toString().trim()
@@ -1129,6 +1157,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         surveyData["surveyDate"] = tvCurrentDate.text.toString()
         surveyData["createdBy"] = currentUser.email ?: "unknown"
         surveyData["createdAt"] = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+
 
         // Table results with PM/PBM selections
         val tableResults = HashMap<String, HashMap<String, String>>()
@@ -1260,6 +1289,8 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         signaturesData["tif"] = tifData
 
         surveyData["signatures"] = signaturesData
+        surveyData["siteId"] = location  // Make sure this matches the Site ID in projects collection
+
 
         // Add to Firestore
         firestore.collection("ba_survey_mini_olt")
@@ -1270,13 +1301,14 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                 // Upload images
                 uploadImagesToFirebase(surveyId) { success ->
                     if (success) {
-                        // Generate and upload PDF
-                        generateAndUploadPdf(surveyId) { pdfSuccess ->
-                            loadingDialog.dismiss()
-
-                            if (pdfSuccess) {
+                        generateAndUploadPdf(surveyId) { pdfSuccess, pdfUrl ->
+                            if (pdfSuccess && pdfUrl != null) {
+                                // NEW CODE: Update the projects collection with the BA document reference
+                                updateProjectWithBaDocument(location, pdfUrl)
+                                loadingDialog.dismiss()
                                 showSuccessDialog()
                             } else {
+                                loadingDialog.dismiss()
                                 Toast.makeText(this, "Survey saved but failed to generate PDF", Toast.LENGTH_LONG).show()
                             }
                         }
@@ -1289,6 +1321,34 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 loadingDialog.dismiss()
                 Toast.makeText(this, "Error submitting form: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+    // New method to update project document with BA reference
+    private fun updateProjectWithBaDocument(siteId: String, pdfUrl: String) {
+        // Query the projects collection to find the document with matching siteId
+        firestore.collection("projects")
+            .whereEqualTo("siteId", siteId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    // Get the first matching document
+                    val projectDoc = documents.documents[0]
+
+                    // Update the document with the BA document URL
+                    firestore.collection("projects").document(projectDoc.id)
+                        .update("documentBA", pdfUrl)
+                        .addOnSuccessListener {
+                            Log.d("BaSurvey", "Successfully linked BA document to project $siteId")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("BaSurvey", "Error linking BA document: ${e.message}")
+                        }
+                } else {
+                    Log.w("BaSurvey", "No matching project found for siteId: $siteId")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("BaSurvey", "Error finding project: ${e.message}")
             }
     }
 
@@ -1417,7 +1477,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         }
     }
 
-    private fun generateAndUploadPdf(surveyId: String, callback: (Boolean) -> Unit) {
+    private fun generateAndUploadPdf(surveyId: String, callback: (Boolean, String?) -> Unit) {
         try {
             // Create PDF file
             val pdfFile = generatePdfFile()
@@ -1432,19 +1492,19 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                         firestore.collection("ba_survey_mini_olt").document(surveyId)
                             .update("pdfUrl", downloadUrl.toString())
                             .addOnSuccessListener {
-                                callback(true)
+                                callback(true, downloadUrl.toString())
                             }
                             .addOnFailureListener {
-                                callback(false)
+                                callback(false, null)
                             }
                     }
                 }
                 .addOnFailureListener {
-                    callback(false)
+                    callback(false, null)
                 }
         } catch (e: Exception) {
             e.printStackTrace()
-            callback(false)
+            callback(false, null)
         }
     }
 
@@ -1786,22 +1846,90 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
     private fun wrapText(text: String, paint: Paint, maxWidth: Float): List<String> {
         val result = ArrayList<String>()
+
+        // Jika teks kosong, kembalikan list kosong
+        if (text.isBlank()) {
+            return result
+        }
+
+        // Pecah teks berdasarkan spasi
         val words = text.split(" ")
 
+        // Jika hanya satu kata, cek apakah perlu dipecah karakter per karakter
+        if (words.size == 1) {
+            val word = words[0]
+            if (paint.measureText(word) <= maxWidth) {
+                // Jika muat dalam satu baris, langsung tambahkan
+                result.add(word)
+            } else {
+                // Jika tidak muat, pecah karakter demi karakter
+                var line = ""
+                for (char in word) {
+                    val testLine = line + char
+                    if (paint.measureText(testLine) <= maxWidth) {
+                        line = testLine
+                    } else {
+                        // Tambahkan baris sekarang ke hasil jika sudah penuh
+                        if (line.isNotEmpty()) {
+                            result.add(line)
+                        }
+                        line = char.toString()
+                    }
+                }
+                // Tambahkan sisa baris terakhir
+                if (line.isNotEmpty()) {
+                    result.add(line)
+                }
+            }
+            return result
+        }
+
+        // Proses multi-word text
         var currentLine = StringBuilder()
 
         for (word in words) {
+            // Coba tambahkan kata ke baris sekarang
             val testLine = if (currentLine.isEmpty()) word else "${currentLine} $word"
             val testWidth = paint.measureText(testLine)
 
             if (testWidth <= maxWidth) {
+                // Kata muat dalam baris saat ini
                 currentLine = StringBuilder(testLine)
             } else {
-                result.add(currentLine.toString())
-                currentLine = StringBuilder(word)
+                // Baris sudah penuh, tambahkan ke hasil dan mulai baris baru
+
+                // Jika currentLine tidak kosong, tambahkan ke hasil
+                if (currentLine.isNotEmpty()) {
+                    result.add(currentLine.toString())
+                    currentLine = StringBuilder()
+                }
+
+                // Periksa apakah kata tunggal ini lebih panjang dari maxWidth
+                if (paint.measureText(word) > maxWidth) {
+                    // Kata terlalu panjang, potong karakter per karakter
+                    var line = ""
+                    for (char in word) {
+                        val charTestLine = line + char
+                        if (paint.measureText(charTestLine) <= maxWidth) {
+                            line = charTestLine
+                        } else {
+                            // Tambahkan baris sekarang ke hasil
+                            result.add(line)
+                            line = char.toString()
+                        }
+                    }
+                    // Tambahkan sisa baris terakhir jika ada
+                    if (line.isNotEmpty()) {
+                        currentLine = StringBuilder(line)
+                    }
+                } else {
+                    // Kata muat dalam baris baru
+                    currentLine = StringBuilder(word)
+                }
             }
         }
 
+        // Tambahkan baris terakhir jika ada
         if (currentLine.isNotEmpty()) {
             result.add(currentLine.toString())
         }
@@ -1875,9 +2003,10 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         // Draw header background
         paint.color = Color.parseColor("#1e88e5")
+        paint.style = Paint.Style.FILL
         canvas.drawRect(leftMargin, y, rightMargin, y + headerHeight, paint)
 
-        // Calculate column widths
+        // Calculate column widths - SAMA dengan di drawTableRow untuk konsistensi
         val availableWidth = rightMargin - leftMargin
         val col1Width = availableWidth * 0.35f
         val col2Width = availableWidth * 0.15f
@@ -1889,15 +2018,24 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         paint.textSize = 10f
         paint.isFakeBoldText = true
 
-        canvas.drawText("SPESIFIKASI DAN KEBUTUHAN", leftMargin + 5f, y + 20f, paint)
-        canvas.drawText("PM/PBM", leftMargin + col1Width + 5f, y + 20f, paint)
-        canvas.drawText("HASIL SURVEY", leftMargin + col1Width + col2Width + 5f, y + 20f, paint)
-        canvas.drawText("KESEPAKATAN/PROPOSED", leftMargin + col1Width + col2Width + col3Width + 5f, y + 20f, paint)
+        // Center text vertically
+        val textY = y + headerHeight / 2 + paint.textSize / 3
+
+        // Draw header texts with horizontal padding
+        canvas.drawText("SPESIFIKASI DAN KEBUTUHAN", leftMargin + 5f, textY, paint)
+
+        // Center PM/PBM text
+        val pmPbmX = leftMargin + col1Width + (col2Width / 2) - (paint.measureText("PM/PBM") / 2)
+        canvas.drawText("PM/PBM", pmPbmX, textY, paint)
+
+        canvas.drawText("HASIL SURVEY", leftMargin + col1Width + col2Width + 5f, textY, paint)
+        canvas.drawText("KESEPAKATAN/PROPOSED", leftMargin + col1Width + col2Width + col3Width + 5f, textY, paint)
 
         paint.isFakeBoldText = false
 
         // Draw header borders
         paint.color = Color.BLACK
+        paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1f
 
         // Horizontal lines
@@ -1927,49 +2065,33 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         paint.textSize = 9f
 
-        // Split text for each column to handle wrapping
-        val specLines = wrapText(spec, paint, col1Width - 10f)
-        val resultLines = wrapText(result, paint, col3Width - 10f)
-        val proposedLines = wrapText(proposed, paint, col4Width - 10f)
+        // PERBAIKAN: Kurangi padding horizontal untuk memberikan ruang lebih banyak untuk teks
+        val horizontalPadding = 5f
 
-        // Calculate row height based on content
+        // Split text for each column to handle wrapping - dengan padding yang lebih kecil
+        val specLines = wrapText(spec, paint, col1Width - (2 * horizontalPadding))
+        val resultLines = wrapText(result, paint, col3Width - (2 * horizontalPadding))
+        val proposedLines = wrapText(proposed, paint, col4Width - (2 * horizontalPadding))
+
+        // Calculate DYNAMIC row height based on content
         val lineHeight = 12f
+        val verticalPadding = 5f // Padding untuk atas dan bawah sel
         val maxLines = maxOf(specLines.size, resultLines.size, proposedLines.size, 1)
-        val rowHeight = maxOf(maxLines * lineHeight + 6f, 30f) // Minimum height
 
-        // Draw cell backgrounds
+        // PERBAIKAN: Tinggi minimum sel ditingkatkan dan pastikan cukup ruang untuk semua teks
+        val minRowHeight = 30f
+        val contentHeight = (maxLines * lineHeight) + (2 * verticalPadding)
+        val rowHeight = maxOf(contentHeight, minRowHeight)
+
+        // Gambar background sel
         paint.color = Color.WHITE
+        paint.style = Paint.Style.FILL
         canvas.drawRect(leftMargin, y, rightMargin, y + rowHeight, paint)
 
-        // Draw text
+        // Draw borders
         paint.color = Color.BLACK
-
-        // Draw specification text
-        for (i in specLines.indices) {
-            canvas.drawText(specLines[i], leftMargin + 5f, y + 15f + (i * lineHeight), paint)
-        }
-
-        // Draw PM/PBM text (centered)
-        val pmPbmX = leftMargin + col1Width + (col2Width / 2) - (paint.measureText(pmPbm) / 2)
-        canvas.drawText(pmPbm, pmPbmX, y + 15f, paint)
-
-        // Draw result text
-        for (i in resultLines.indices) {
-            canvas.drawText(resultLines[i], leftMargin + col1Width + col2Width + 5f, y + 15f + (i * lineHeight), paint)
-        }
-
-        // Draw proposed text
-        for (i in proposedLines.indices) {
-            canvas.drawText(proposedLines[i], leftMargin + col1Width + col2Width + col3Width + 5f, y + 15f + (i * lineHeight), paint)
-        }
-
-        // Draw cell borders
-        paint.color = Color.BLACK
+        paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1f
-
-        // Horizontal lines
-        canvas.drawLine(leftMargin, y, rightMargin, y, paint)
-        canvas.drawLine(leftMargin, y + rowHeight, rightMargin, y + rowHeight, paint)
 
         // Vertical lines
         canvas.drawLine(leftMargin, y, leftMargin, y + rowHeight, paint)
@@ -1977,6 +2099,37 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         canvas.drawLine(leftMargin + col1Width + col2Width, y, leftMargin + col1Width + col2Width, y + rowHeight, paint)
         canvas.drawLine(leftMargin + col1Width + col2Width + col3Width, y, leftMargin + col1Width + col2Width + col3Width, y + rowHeight, paint)
         canvas.drawLine(rightMargin, y, rightMargin, y + rowHeight, paint)
+
+        // Horizontal lines
+        canvas.drawLine(leftMargin, y, rightMargin, y, paint)
+        canvas.drawLine(leftMargin, y + rowHeight, rightMargin, y + rowHeight, paint)
+
+        // Draw cell content
+        paint.style = Paint.Style.FILL
+        paint.color = Color.BLACK
+
+        // PERBAIKAN: Posisi y awal untuk teks, beri ruang dari bagian atas sel
+        val initialTextY = y + verticalPadding + lineHeight
+
+        // Draw specification text
+        for (i in specLines.indices) {
+            canvas.drawText(specLines[i], leftMargin + horizontalPadding, initialTextY + (i * lineHeight), paint)
+        }
+
+        // Draw PM/PBM text (centered vertical and horizontal)
+        val pmPbmX = leftMargin + col1Width + (col2Width / 2) - (paint.measureText(pmPbm) / 2)
+        val pmPbmY = y + (rowHeight / 2) + (paint.textSize / 3) // Approximately centered vertically
+        canvas.drawText(pmPbm, pmPbmX, pmPbmY, paint)
+
+        // Draw result text
+        for (i in resultLines.indices) {
+            canvas.drawText(resultLines[i], leftMargin + col1Width + col2Width + horizontalPadding, initialTextY + (i * lineHeight), paint)
+        }
+
+        // Draw proposed text
+        for (i in proposedLines.indices) {
+            canvas.drawText(proposedLines[i], leftMargin + col1Width + col2Width + col3Width + horizontalPadding, initialTextY + (i * lineHeight), paint)
+        }
 
         // Return next y position
         return y + rowHeight
@@ -2001,7 +2154,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         // Perbaikan: Tambahkan deskripsi singkat tentang halaman
         paint.textSize = 11f
-        canvas.drawText("Berikut adalah tanda tangan persetujuan dari pihak-pihak yang terlibat dalam survey ini:",
+        canvas.drawText("Berikut adalah tanda tangan persetujuan pihak pihak yang terlibat dan mengetahui pelaksanaan survey ini:",
             leftMargin, yPosition, paint)
         yPosition += 30f
 
@@ -2011,7 +2164,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             platformDropdown.text.toString(), "TIM SURVEY",
             etZteName.text.toString(), boxWidth, boxHeight,
             imgZteSignature,
-            "NIP. " + etZteNik.text.toString())
+            "NIK. " + etZteNik.text.toString())
 
         drawSignatureBox(canvas, paint,
             leftMargin + boxWidth + horizontalGap, yPosition,
@@ -2035,21 +2188,21 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             "PT. TELKOMSEL", "MGR NOP\n" + tvTselRegion.text,
             etTselNopName.text.toString(), boxWidth, boxHeight,
             imgTselNopSignature,
-            "NIP. " + etTselNopNik.text.toString())
+            "NIK. " + etTselNopNik.text.toString())
 
         drawSignatureBox(canvas, paint,
             leftMargin + boxWidth + horizontalGap, yPosition,
             "PT. TELKOMSEL", "MGR RTPDS\n" + tvTselRegion.text,
             etTselRtpdsName.text.toString(), boxWidth, boxHeight,
             imgTselRtpdsSignature,
-            "NIP. " + etTselRtpdsNik.text.toString())
+            "NIK. " + etTselRtpdsNik.text.toString())
 
         drawSignatureBox(canvas, paint,
             leftMargin + (boxWidth + horizontalGap) * 2, yPosition,
             "PT. TELKOMSEL", "MGR RTPE\n" + tvTselRegion.text,
             etTselRtpeNfName.text.toString(), boxWidth, boxHeight,
             imgTselRtpeNfSignature,
-            "NIP. " + etTselRtpeNfNik.text.toString())
+            "NIK. " + etTselRtpeNfNik.text.toString())
     }
 
     private fun drawSignatureBox(canvas: Canvas, paint: Paint, x: Float, y: Float,
@@ -2092,28 +2245,33 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
                     // Calculate dimensions maintaining aspect ratio
                     val signatureWidth = width - 20f
-                    val signatureHeight = 60f
+                    val signatureHeight = 60f // Ketinggian area yang dialokasikan untuk tanda tangan
 
                     // Determine scaling to fit while maintaining aspect ratio
                     val originalRatio = originalBitmap.width.toFloat() / originalBitmap.height.toFloat()
-                    val targetRatio = signatureWidth / signatureHeight
+                    // Target area untuk tanda tangan (bukan keseluruhan signatureWidth/signatureHeight box)
+                    // Kita ingin tanda tangan muat di dalam area yang ditentukan, misal 80% lebar dan 80% tinggi area tanda tangan
+                    val targetPhotoWidth = signatureWidth * 0.9f // Gunakan 90% dari lebar yang tersedia untuk gambar
+                    val targetPhotoHeight = signatureHeight * 0.9f // Gunakan 90% dari tinggi yang tersedia untuk gambar
+
 
                     val scaledWidth: Float
                     val scaledHeight: Float
 
-                    if (originalRatio > targetRatio) {
+                    if (originalRatio > (targetPhotoWidth / targetPhotoHeight)) {
                         // Width constrained
-                        scaledWidth = signatureWidth
-                        scaledHeight = signatureWidth / originalRatio
+                        scaledWidth = targetPhotoWidth
+                        scaledHeight = targetPhotoWidth / originalRatio
                     } else {
                         // Height constrained
-                        scaledHeight = signatureHeight
-                        scaledWidth = signatureHeight * originalRatio
+                        scaledHeight = targetPhotoHeight
+                        scaledWidth = targetPhotoHeight * originalRatio
                     }
 
                     // Position signature centered in available space
+                    // y + 45f adalah perkiraan posisi atas area tanda tangan
                     val xOffset = x + 10f + (signatureWidth - scaledWidth) / 2
-                    val yOffset = y + 45f + (signatureHeight - scaledHeight) / 2
+                    val yOffset = y + 45f + (signatureHeight - scaledHeight) / 2 // Disesuaikan agar terpusat dalam area signatureHeight
 
                     // Define the target rectangle for drawing
                     val destRect = RectF(xOffset, yOffset, xOffset + scaledWidth, yOffset + scaledHeight)
@@ -2121,14 +2279,15 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                     // Draw with high quality rendering
                     canvas.drawBitmap(originalBitmap, null, destRect, renderPaint)
                 } else {
-                    canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
+                    // Jika drawable bukan BitmapDrawable atau bitmap null/recycled, JANGAN GAMBAR GARIS
+                    // Tidak ada tindakan yang perlu dilakukan di sini jika ingin kosong
                 }
             } else {
-                // Draw signature line
-                canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
+                // Jika ImageView tidak visible atau tidak ada drawable, JANGAN GAMBAR GARIS
+                // Tidak ada tindakan yang perlu dilakukan di sini jika ingin kosong
             }
         } catch (e: Exception) {
-            canvas.drawLine(x + 10f, y + 70f, x + width - 10f, y + 70f, paint)
+            // Jika terjadi error saat menggambar signature, JANGAN GAMBAR GARIS
             Log.e("PDF", "Error drawing signature: ${e.message}")
         }
 
@@ -2152,11 +2311,11 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Tambahkan tabel header dulu
         drawHeaderTableOnly(canvas, etHeaderNo.text.toString())
 
-        // Set positions and constants - mulai dari posisi yang lebih rendah agar tidak tumpang tindih dengan header
+        // Set positions and constants
         val pageWidth = 612f
         val leftMargin = 40f
         val rightMargin = pageWidth - 40f
-        var yPosition = 120f  // Posisi awal yang lebih rendah untuk menghindari tumpang tindih dengan tabel header
+        var yPosition = 120f
 
         // Judul halaman foto
         paint.textSize = 14f
@@ -2166,58 +2325,50 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         paint.textAlign = Paint.Align.LEFT
         paint.isFakeBoldText = false
 
-        yPosition += 30f // Tambah jarak setelah judul
+        yPosition += 30f
 
-        // Calculate available photos for this page
-        val startPhotoIndex = photoPageIndex * photosPerPage
-        val availablePhotos = ArrayList<Int>()
+        // Tentukan range foto yang akan ditampilkan di halaman ini
+        // berdasarkan urutan di array photoLabels
+        val startIdx = photoPageIndex * photosPerPage
+        val endIdx = minOf(startIdx + photosPerPage, photoLabels.size)
 
-        // Collect available photo indices
-        for (i in photoUris.keys) {
-            availablePhotos.add(i)
-        }
-
-        availablePhotos.sort()
-
-        // Photos on this page
-        val photosOnThisPage = availablePhotos.filter {
-            it >= startPhotoIndex && it < startPhotoIndex + photosPerPage
-        }
-
-        if (photosOnThisPage.isEmpty()) {
-            // No photos to show on this page
+        // Jika tidak ada foto untuk ditampilkan pada halaman ini
+        if (startIdx >= photoLabels.size) {
             paint.textSize = 12f
             canvas.drawText("No more photos available.", leftMargin, yPosition + 50f, paint)
             return
         }
 
-        // Calculate dimensions for a 2x2 grid layout
+        // Dimensi untuk layout grid 2x2
         val availableWidth = rightMargin - leftMargin
-        val columnWidth = availableWidth / 2 - 10f  // 2 columns with small gap
-        val photoHeight = 230f  // Sedikit dikurangi agar muat di halaman dengan tabel header
+        val columnWidth = availableWidth / 2 - 10f
+        val photoHeight = 230f
 
-        // Draw each photo in a 2x2 grid
-        for (i in photosOnThisPage.indices) {
-            val photoIndex = photosOnThisPage[i]
-            val uri = photoUris[photoIndex]
+        // Gambar foto sesuai dengan urutan dalam array photoLabels
+        for (i in startIdx until endIdx) {
+            val positionInPage = i - startIdx // Posisi relatif (0-3) dalam halaman ini
 
-            // Calculate position in 2x2 grid
-            val column = i % 2  // 0 for left column, 1 for right column
-            val row = i / 2     // 0 for top row, 1 for bottom row
+            // Posisi dalam grid 2x2
+            val column = positionInPage % 2 // 0=kiri, 1=kanan
+            val row = positionInPage / 2    // 0=atas, 1=bawah
 
             val xPos = leftMargin + column * (columnWidth + 20f)
             val yPos = yPosition + row * (photoHeight + 70f)
 
-            // Draw photo label
-            val photoNum = photoIndex + 1
-            val photoLabel = if (photoIndex < photoLabels.size) photoLabels[photoIndex] else "Photo $photoNum"
+            // Ambil label dari array photoLabels baru
+            val photoNum = i + 1 // Nomor foto mulai dari 1
+            val photoLabel = photoLabels[i]
 
+            // Gambar label foto
             paint.textSize = 11f
             paint.isFakeBoldText = true
             canvas.drawText("$photoNum. $photoLabel", xPos, yPos, paint)
             paint.isFakeBoldText = false
 
-            // Draw photo
+            // Cari URI foto yang sesuai dengan indeks ini (jika ada)
+            val uri = photoUris[i]
+
+            // Gambar foto
             if (uri != null) {
                 try {
                     // Load photo bitmap
@@ -2295,7 +2446,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                     canvas.drawText("Error loading photo: ${e.message}", xPos, yPos + 50f, paint)
                 }
             } else {
-                // Draw placeholder
+                // Draw placeholder for missing photos
                 paint.style = Paint.Style.STROKE
                 canvas.drawRect(xPos, yPos + 20f, xPos + columnWidth, yPos + 20f + photoHeight - 40f, paint)
                 paint.style = Paint.Style.FILL

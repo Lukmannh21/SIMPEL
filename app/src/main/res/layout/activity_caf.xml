@@ -1,0 +1,1645 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient"
+    tools:context=".CAFActivity">
+
+    <LinearLayout
+        android:id="@+id/toolbarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Colocation Application Form"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolbarLayout"
+        app:tabIndicatorColor="@color/red_telkomsel"
+        app:tabSelectedTextColor="@color/red_telkomsel"
+        app:tabTextColor="@android:color/black">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Form" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- Form Content -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/formContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="visible">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Form Title -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="COLOCATION APPLICATION"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/red_telkomsel"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Basic Information Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="120dp"
+                                android:layout_height="wrap_content"
+                                android:text="Today's Date:"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:id="@+id/tvTodayDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""/>
+                        </LinearLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <EditText
+                                android:id="@+id/etColoApplicationDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Colo Application Date"
+                                android:inputType="date"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <EditText
+                                android:id="@+id/etRevision"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Revision"
+                                android:inputType="text"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Site Information Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Site Information"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginBottom="16dp"/>
+
+                        <!-- Site ID Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etSiteId"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="SITE ID"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/autoCompleteIsland"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Island"
+                                    android:text="Sumatera"
+                                    android:inputType="none"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etProvince"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Province"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- City Row -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <EditText
+                                android:id="@+id/etCity"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="City"
+                                android:inputType="text"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Coordinates Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etLatitude"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Latitude (Decimal/DMS)"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etLongitude"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Longitude (Decimal/DMS)"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Site Type & Tower Type Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etSiteType"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Site Type"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etTowerType"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Tower Type"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Building Height & Tower Height Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etBuildingHeight"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Building Height"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etTowerHeight"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Tower Height"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Tower Extension Required -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tower Extension Required:"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="4dp"/>
+
+                        <RadioGroup
+                            android:id="@+id/rgTowerExtension"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <RadioButton
+                                android:id="@+id/rbTowerExtensionYes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="YES"
+                                android:layout_marginEnd="32dp"/>
+
+                            <RadioButton
+                                android:id="@+id/rbTowerExtensionNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="NO"
+                                android:checked="true"/>
+                        </RadioGroup>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Client Information Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Client Information"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginBottom="16dp"/>
+
+                        <!-- Client Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etClient"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="CLIENT"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etClientSiteId"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Client Site ID"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Client Site Name & Contact Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etClientSiteName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Client Site Name"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etClientContact"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Client Contact"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Contact Phone -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <EditText
+                                android:id="@+id/etContactPhone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Contact Phone #"
+                                android:inputType="phone"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Application Validity Text -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="This application is valid for 15 calendar days."
+                            android:textStyle="italic"
+                            android:layout_marginBottom="8dp"/>
+
+                        <!-- Site Address -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <EditText
+                                android:id="@+id/etSiteAddress"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="SITE ADDRESS"
+                                android:inputType="textMultiLine"
+                                android:minLines="2"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- BTS ANTENNAS (RF) Table Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="1. BTS ANTENNAS (RF)"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginBottom="16dp"/>
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <!-- Table Header -->
+                                <TableLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:stretchColumns="*">
+
+                                    <TableRow
+                                        android:background="#CCCCCC">
+
+                                        <TextView
+                                            android:layout_width="40dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Item"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Status"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="60dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Height (m)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Quant"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Manufacturer"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Model/Tilting"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Dimensions (mm)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="70dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Azim (°)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Quant"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="60dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Size (\)"
+                                        android:padding="4dp"
+                                        android:textStyle="bold"
+                                        android:gravity="center"/>
+                                    </TableRow>
+                                </TableLayout>
+
+                                <!-- Table Content (Editable Fields) -->
+                                <TableLayout
+                                    android:id="@+id/tableBtsAntennas"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:stretchColumns="*">
+
+                                    <!-- Dynamic rows will be added here -->
+                                </TableLayout>
+
+                                <!-- Add Row Button -->
+                                <Button
+                                    android:id="@+id/btnAddBtsRow"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Row"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="8dp"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <!-- Remarks -->
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Remarks:"
+                                    android:textStyle="bold"
+                                    android:layout_marginTop="16dp"/>
+
+                                <EditText
+                                    android:id="@+id/etBtsRemarks"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="textMultiLine"
+                                    android:minLines="2"
+                                    android:hint="Enter remarks here"/>
+                            </LinearLayout>
+                        </HorizontalScrollView>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- MW ANTENNAS (Transmission) Table Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="2. MW ANTENNAS (Transmission)"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginBottom="16dp"/>
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <!-- Table Header -->
+                                <TableLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:stretchColumns="*">
+
+                                    <TableRow
+                                        android:background="#CCCCCC">
+
+                                        <TextView
+                                            android:layout_width="40dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Item"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Status"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="60dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Height (m)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Quant"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Manufacturer"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Model"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Diameter (m)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="70dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Azim (°)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Quant"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="60dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Size (\)"
+                                        android:padding="4dp"
+                                        android:textStyle="bold"
+                                        android:gravity="center"/>
+                                    </TableRow>
+                                </TableLayout>
+
+                                <!-- Table Content (Editable Fields) -->
+                                <TableLayout
+                                    android:id="@+id/tableMwAntennas"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:stretchColumns="*">
+
+                                    <!-- Dynamic rows will be added here -->
+                                </TableLayout>
+
+                                <!-- Add Row Button -->
+                                <Button
+                                    android:id="@+id/btnAddMwRow"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Row"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="8dp"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <!-- Remarks -->
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Remarks:"
+                                    android:textStyle="bold"
+                                    android:layout_marginTop="16dp"/>
+
+                                <EditText
+                                    android:id="@+id/etMwRemarks"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="textMultiLine"
+                                    android:minLines="2"
+                                    android:hint="Enter remarks here"/>
+                            </LinearLayout>
+                        </HorizontalScrollView>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- AMPLIFIERS (TMA/ODU) Table Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="3. AMPLIFIERS (TMA/ODU)"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginBottom="16dp"/>
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <!-- Table Header -->
+                                <TableLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:stretchColumns="*">
+
+                                    <TableRow
+                                        android:background="#CCCCCC">
+
+                                        <TextView
+                                            android:layout_width="40dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Item"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Status"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="60dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Height (m)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Quant"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Manufacturer"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Model"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Dimensions (mm)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="70dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Azim (°)"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="50dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Quant"
+                                            android:padding="4dp"
+                                            android:textStyle="bold"
+                                            android:gravity="center"/>
+
+                                        <TextView
+                                            android:layout_width="60dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Size (\)"
+                                        android:padding="4dp"
+                                        android:textStyle="bold"
+                                        android:gravity="center"/>
+                                    </TableRow>
+                                </TableLayout>
+
+                                <!-- Table Content (Editable Fields) -->
+                                <TableLayout
+                                    android:id="@+id/tableAmplifiers"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:stretchColumns="*">
+
+                                    <!-- Dynamic rows will be added here -->
+                                </TableLayout>
+
+                                <!-- Add Row Button -->
+                                <Button
+                                    android:id="@+id/btnAddAmplifierRow"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Row"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="8dp"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <!-- Remarks -->
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Remarks:"
+                                    android:textStyle="bold"
+                                    android:layout_marginTop="16dp"/>
+
+                                <EditText
+                                    android:id="@+id/etAmplifierRemarks"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="textMultiLine"
+                                    android:minLines="2"
+                                    android:hint="Enter remarks here"/>
+                            </LinearLayout>
+                        </HorizontalScrollView>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- SHELTER/POWER REQUIREMENTS Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="4. SHELTER/POWER REQUIREMENTS"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginBottom="16dp"/>
+
+                        <!-- Equipment Type -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TYPE OF EQUIPMENT REQUIRED:"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"/>
+
+                        <RadioGroup
+                            android:id="@+id/rgEquipmentType"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <RadioButton
+                                android:id="@+id/rbEquipmentIndoor"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="INDOOR (SHELTER)"
+                                android:layout_marginEnd="16dp"/>
+
+                            <RadioButton
+                                android:id="@+id/rbEquipmentOutdoor"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="OUTDOOR (CABINET)"
+                                android:layout_marginEnd="16dp"
+                                android:checked="true"/>
+
+                            <RadioButton
+                                android:id="@+id/rbEquipmentOther"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="OTHER (See Remarks)"/>
+                        </RadioGroup>
+
+                        <!-- Equipment Pad Dimensions -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="EQUIPMENT PAD DIMENSIONS:"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="16dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etEquipmentPadLength"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Length (cm)"
+                                    android:inputType="numberDecimal"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etEquipmentPadWidth"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Width (cm)"
+                                    android:inputType="numberDecimal"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Electricity Requirements -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ELECTRICITY REQUIREMENTS:"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="16dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etElectricityKVA"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="kVA"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etElectricityPhases"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="n x A (phases)"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Permanent Genset Required -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PERMANENT GENSET REQUIRED:"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"/>
+
+                        <RadioGroup
+                            android:id="@+id/rgGensetRequired"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="16dp">
+
+                            <RadioButton
+                                android:id="@+id/rbGensetYes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="YES"
+                                android:layout_marginEnd="32dp"/>
+
+                            <RadioButton
+                                android:id="@+id/rbGensetNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="NO"
+                                android:checked="true"/>
+                        </RadioGroup>
+
+                        <!-- Genset Dimensions -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="GENSET DIMENSIONS:"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="16dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etGensetLength"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Length"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                <EditText
+                                    android:id="@+id/etGensetWidth"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Width"
+                                    android:inputType="text"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Remarks -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Remarks:"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="4dp"/>
+
+                        <EditText
+                            android:id="@+id/etShelterRemarks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textMultiLine"
+                            android:minLines="2"
+                            android:hint="Enter remarks here"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="SHELTER DRAWINGS MUST BE ATTACHED"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="8dp"/>
+
+                        <Button
+                            android:id="@+id/btnUploadDrawing"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:text="Upload Shelter Drawing"
+                            android:backgroundTint="@color/red_telkomsel"
+                            android:layout_marginBottom="8dp"/>
+
+                        <TextView
+                            android:id="@+id/tvDrawingFileName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="No file selected"
+                            android:textStyle="italic"
+                            android:visibility="gone"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Signature Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Signatures"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginBottom="16dp"/>
+
+                        <TableLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:stretchColumns="*">
+
+                            <TableRow
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical"
+                                    android:layout_margin="4dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Account Manager"
+                                        android:textStyle="bold"
+                                        android:gravity="center"
+                                        android:layout_marginBottom="8dp"/>
+
+                                    <Button
+                                        android:id="@+id/btnAccountManagerSignature"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Add Signature"
+                                        android:backgroundTint="@color/red_telkomsel"/>
+
+                                    <ImageView
+                                        android:id="@+id/imgAccountManagerSignature"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="80dp"
+                                        android:scaleType="fitCenter"
+                                        android:background="@android:color/white"
+                                        android:visibility="gone"/>
+
+                                    <!-- Added Name Input Field -->
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <EditText
+                                            android:id="@+id/etAccountManagerName"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Name"
+                                            android:inputType="textPersonName"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <EditText
+                                            android:id="@+id/etAccountManagerDate"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Date"
+                                            android:inputType="date"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical"
+                                    android:layout_margin="4dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Quality Control"
+                                        android:textStyle="bold"
+                                        android:gravity="center"
+                                        android:layout_marginBottom="8dp"/>
+
+                                    <Button
+                                        android:id="@+id/btnQualityControlSignature"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Add Signature"
+                                        android:backgroundTint="@color/red_telkomsel"/>
+
+                                    <ImageView
+                                        android:id="@+id/imgQualityControlSignature"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="80dp"
+                                        android:scaleType="fitCenter"
+                                        android:background="@android:color/white"
+                                        android:visibility="gone"/>
+
+                                    <!-- Added Name Input Field -->
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <EditText
+                                            android:id="@+id/etQualityControlName"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Name"
+                                            android:inputType="textPersonName"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <EditText
+                                            android:id="@+id/etQualityControlDate"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Date"
+                                            android:inputType="date"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </TableRow>
+
+                            <TableRow>
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical"
+                                    android:layout_margin="4dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Colocation"
+                                        android:textStyle="bold"
+                                        android:gravity="center"
+                                        android:layout_marginBottom="8dp"/>
+
+                                    <Button
+                                        android:id="@+id/btnColocationSignature"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Add Signature"
+                                        android:backgroundTint="@color/red_telkomsel"/>
+
+                                    <ImageView
+                                        android:id="@+id/imgColocationSignature"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="80dp"
+                                        android:scaleType="fitCenter"
+                                        android:background="@android:color/white"
+                                        android:visibility="gone"/>
+
+                                    <!-- Added Name Input Field -->
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <EditText
+                                            android:id="@+id/etColocationName"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Name"
+                                            android:inputType="textPersonName"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <EditText
+                                            android:id="@+id/etColocationDate"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Date"
+                                            android:inputType="date"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical"
+                                    android:layout_margin="4dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Client"
+                                        android:textStyle="bold"
+                                        android:gravity="center"
+                                        android:layout_marginBottom="8dp"/>
+
+                                    <Button
+                                        android:id="@+id/btnClientSignature"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Add Signature"
+                                        android:backgroundTint="@color/red_telkomsel"/>
+
+                                    <ImageView
+                                        android:id="@+id/imgClientSignature"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="80dp"
+                                        android:scaleType="fitCenter"
+                                        android:background="@android:color/white"
+                                        android:visibility="gone"/>
+
+                                    <!-- Added Name Input Field -->
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <EditText
+                                            android:id="@+id/etClientName"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Name"
+                                            android:inputType="textPersonName"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <EditText
+                                            android:id="@+id/etClientDate"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Date"
+                                            android:inputType="date"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </TableRow>
+                        </TableLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Disclaimer Section -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="* The requested Coax Cable size is greater than the specification allowed in the MLA. Lessee must install the cables using a feeder cable clamp to reduce the wind loading effect on the tower."
+                            android:textStyle="italic"
+                            android:layout_marginBottom="8dp"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Client acknowledges certain sites require permanent genset (no PLN available) and will be responsible for providing its own permanent power."
+                            android:textStyle="italic"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Submit Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <Button
+                        android:id="@+id/btnSubmitForm"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Submit Form"
+                        android:backgroundTint="@color/red_telkomsel"
+                        android:layout_marginEnd="8dp"/>
+
+                    <Button
+                        android:id="@+id/btnGenerateExcel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Generate Excel"
+                        android:backgroundTint="#4CAF50"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Search Content (Same structure as the BA Survey Mini OLT) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/searchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:queryHint="Search by SITE ID, Client, Location..."
+                android:iconifiedByDefault="false"
+                android:layout_marginBottom="16dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSearchResults"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

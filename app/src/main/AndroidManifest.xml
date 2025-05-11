@@ -41,6 +41,12 @@
             android:name=".LastUpdateDetailActivity"
             android:exported="false" />
         <activity
+            android:name=".CAFActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CAFDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ResetPasswordActivity"
             android:exported="false" />
         <activity
