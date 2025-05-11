@@ -43,6 +43,7 @@
                 android:layout_marginTop="8dp"
                 android:visibility="gone"/>
 
+            <!-- SIMPEL SERVICES CARD - CLEANER DESIGN -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView"
                 android:layout_width="match_parent"
@@ -55,90 +56,139 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center"
                     android:orientation="vertical"
                     android:padding="16dp"
                     android:background="@drawable/card_background">
 
+                    <!-- Title -->
                     <TextView
                         android:id="@+id/telgo_services_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:text="SIMPEL SERVICES"
-                        android:textColor="@android:color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-medium"/>
-
-                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:text="SIMPEL SERVICES"
+                        android:textColor="#000000"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:fontFamily="sans-serif-medium"/>
 
-                        <Button
-                            android:id="@+id/btnWitelSearch"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/ripple_effect"
-                            android:drawableTop="@drawable/search2"
-                            android:drawablePadding="8dp"
-                            android:text="Witel Search"
-                            android:textColor="@android:color/black"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="sans-serif-medium"
-                            android:elevation="4dp"/>
+                    <!-- Grid layout for buttons -->
+                    <androidx.gridlayout.widget.GridLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:columnCount="2"
+                        app:rowCount="2"
+                        app:useDefaultMargins="true">
 
-                        <Button
-                            android:id="@+id/btnUploadProject"
+                        <!-- Witel Search Button -->
+                        <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/ripple_effect"
-                            android:drawableTop="@drawable/u2"
-                            android:drawablePadding="8dp"
-                            android:elevation="4dp"
-                            android:fontFamily="sans-serif-medium"
-                            android:text="Add LOP"
-                            android:textColor="@android:color/black"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            app:layout_columnWeight="1"
+                            app:layout_rowWeight="1">
 
-                        <Button
-                            android:id="@+id/btnLastHistory"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/ripple_effect"
-                            android:drawableTop="@drawable/history"
-                            android:drawablePadding="8dp"
-                            android:text="Last Update"
-                            android:textColor="@android:color/black"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="sans-serif-medium"
-                            android:elevation="4dp"/>
+                            <Button
+                                android:id="@+id/btnWitelSearch"
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:background="@drawable/circular_button_bg"
+                                android:drawableTop="@drawable/search2"
+                                android:backgroundTint="@color/red_telkomsel"/>
 
-                        <!-- Add this inside the LinearLayout in the cardView where the other service buttons are -->
-                        <Button
-                            android:id="@+id/btnUploadForms"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Witel Search"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+
+                        <!-- Add LOP Button -->
+                        <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/ripple_effect"
-                            android:drawableTop="@drawable/document21"
-                            android:drawablePadding="8dp"
-                            android:elevation="4dp"
-                            android:fontFamily="sans-serif-medium"
-                            android:text="Forms"
-                            android:textColor="@android:color/black"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            app:layout_columnWeight="1"
+                            app:layout_rowWeight="1">
 
-                    </LinearLayout>
+                            <Button
+                                android:id="@+id/btnUploadProject"
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:background="@drawable/circular_button_bg"
+                                android:drawableTop="@drawable/u2"
+                                android:backgroundTint="@color/red_telkomsel"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Add LOP"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+
+                        <!-- Last Update Button -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            app:layout_columnWeight="1"
+                            app:layout_rowWeight="1">
+
+                            <Button
+                                android:id="@+id/btnLastHistory"
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:background="@drawable/circular_button_bg"
+                                android:drawableTop="@drawable/history"
+                                android:backgroundTint="@color/red_telkomsel"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Last Update"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+
+                        <!-- Forms Button -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            app:layout_columnWeight="1"
+                            app:layout_rowWeight="1">
+
+                            <Button
+                                android:id="@+id/btnUploadForms"
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:background="@drawable/circular_button_bg"
+                                android:drawableTop="@drawable/document21"
+                                android:backgroundTint="@color/red_telkomsel"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Forms"
+                                android:textColor="#000000"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+                    </androidx.gridlayout.widget.GridLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

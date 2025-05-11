@@ -27,6 +27,6 @@ dependencyResolutionManagement {
 
 }
 
-rootProject.name = "TelGO"
+rootProject.name = "SIMPEL"
 include(":app")
  
