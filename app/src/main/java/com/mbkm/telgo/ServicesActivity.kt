@@ -95,7 +95,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
 
     private lateinit var btnClearAllNotifications: Button
     private lateinit var btnUploadForms: Button
-    private lateinit var btnUserManagement: Button
+
     private var userRole: String = "user"
     private var userStatus: String = "unverified"
 
@@ -154,18 +154,12 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
 
         setContentView(R.layout.activity_services)
 
-        btnUserManagement = findViewById(R.id.btnUserManagement)
+
 
         val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
         userRole = preferences.getString("userRole", "user") ?: "user"
         userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
 
-        // Check if the user is an admin to show the user management button
-        if (userRole == "admin") {
-            btnUserManagement.visibility = View.VISIBLE
-        } else {
-            btnUserManagement.visibility = View.GONE
-        }
 
         // Initialize UI components
         bottomNavigationView = findViewById(R.id.bottomNavigation)
@@ -827,20 +821,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
             }
         }
 
-        // New: User Management button for admin users
-        btnUserManagement.setOnClickListener {
-            if (userRole == "admin") {
-                val animation = AnimationUtils.loadAnimation(this, R.anim.button_animation)
-                it.startAnimation(animation)
-                it.postDelayed({
-                    val intent = Intent(this, UserManagementActivity::class.java)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }, 200)
-            } else {
-                // This shouldn't happen since the button is hidden for non-admin users
-                Toast.makeText(this, "Only admins can access user management", Toast.LENGTH_SHORT).show()
-            }
-        }
+
 
         btnUpcomingEvents.setOnClickListener {
             showEventsBottomSheet()
@@ -946,12 +927,7 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
         userRole = preferences.getString("userRole", "user") ?: "user"
         userStatus = preferences.getString("userStatus", "unverified") ?: "unverified"
 
-        // Update UI based on role/status
-        if (userRole == "admin") {
-            btnUserManagement.visibility = View.VISIBLE
-        } else {
-            btnUserManagement.visibility = View.GONE
-        }
+
     }
 
     private fun loadEventDatesForCalendar() {
