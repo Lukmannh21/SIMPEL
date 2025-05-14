@@ -926,7 +926,7 @@ class BASurveyBigActivity : AppCompatActivity() {
     }
 
     private fun generateDescription(projectTitle: String, contractNumber: String, executor: String): String {
-        val currentDate = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault()).format(Date())
+        val currentDate = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("id", "ID")).format(Date())
         return "Pada hari ini, $currentDate, telah dilakukan survey bersama terhadap pekerjaan \"$projectTitle\" " +
                 "yang dilaksanakan oleh $executor yang terikat Perjanjian Pemborongan \"$contractNumber\" " +
                 "dengan hasil sebagai berikut:"
@@ -1103,8 +1103,8 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Footer halaman yang diperbaiki
                 fun drawFooter() {
-                    // Atur ukuran teks lebih kecil
-                    paint.textSize = 9f // Ukuran teks lebih kecil
+                    // Atur ukuran teks lebih kecil untuk tulisan footer
+                    paint.textSize = 8f // Ukuran teks lebih kecil
                     paint.color = Color.BLACK
                     paint.alpha = 220 // Sedikit transparan agar terlihat lebih profesional
 
@@ -1125,20 +1125,16 @@ class BASurveyBigActivity : AppCompatActivity() {
                     // Tulisan dokumen
                     paint.style = Paint.Style.FILL
                     paint.textAlign = Paint.Align.LEFT
+                    val documentText = "Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku"
+                    val pageText = "Halaman ${pageCount - 1}"
+
+                    // Gabungkan kedua teks dengan spasi
+                    val combinedText = "$documentText     $pageText" // Tambahkan spasi di antara kedua teks
+                    paint.textAlign = Paint.Align.LEFT
                     canvas.drawText(
-                        "Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku",
+                        combinedText,
                         marginX,          // Tulisan dimulai dari margin kiri
                         footerY + 15f,    // Posisi Y di bawah garis
-                        paint
-                    )
-
-                    // Halaman di pojok kanan bawah dengan text align right
-                    paint.textAlign = Paint.Align.RIGHT
-                    val pageText = "Halaman ${pageCount - 1}"
-                    canvas.drawText(
-                        pageText,
-                        pageWidth - marginX, // Posisi X di pojok kanan bawah
-                        footerY + 15f,      // Posisi Y sejajar dengan teks dokumen
                         paint
                     )
 
@@ -1155,8 +1151,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                     val closingLines = wrapText(closingText, closingMaxWidth, paint)
 
                     // Format tanggal hari ini
-                    val currentDate = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
-
+                    val currentDate = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID")).format(Date())
                     // Tinggi minimum untuk menambahkan teks
                     val closingHeight = 18f * closingLines.size + 10f + 20f // Tambahkan ruang untuk tanggal
                     if (y + closingHeight > pageHeight - marginBottom - 30f) {
@@ -1346,11 +1341,7 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Deskripsi
                 val descMaxWidth = maxX - marginX * 2
-                val descLines = wrapText(description, descMaxWidth, paint)
-                for (line in descLines) {
-                    canvas.drawText(line, marginX, y, paint)
-                    y += 18f
-                }
+                y = drawJustifiedText(canvas, description, marginX, y, descMaxWidth, paint) // Gambar teks dan perbarui posisi Y
 
                 y += 10f // Jarak sebelum tabel
 
@@ -1621,6 +1612,45 @@ class BASurveyBigActivity : AppCompatActivity() {
         }
 
         return createdFile!!
+    }
+
+    // Fungsi untuk menggambar teks justify menggunakan wrapText
+    private fun drawJustifiedText(
+        canvas: Canvas,
+        text: String,
+        x: Float,
+        y: Float,
+        maxWidth: Float,
+        paint: Paint
+    ): Float {
+        // Gunakan wrapText untuk memecah teks menjadi baris
+        val lines = wrapText(text, maxWidth, paint)
+        var currentY = y
+
+        // Gambar setiap baris dengan posisi justify
+        for (line in lines) {
+            val words = line.split(" ")
+            val lineWidth = paint.measureText(line)
+            val gapCount = words.size - 1
+
+            if (gapCount > 0 && line != lines.last()) {
+                // Hitung jarak tambahan antar kata
+                val extraSpace = (maxWidth - lineWidth) / gapCount
+                var startX = x
+                for (word in words) {
+                    canvas.drawText(word, startX, currentY, paint)
+                    startX += paint.measureText(word) + extraSpace
+                }
+            } else {
+                // Gambar baris terakhir tanpa justify
+                canvas.drawText(line, x, currentY, paint)
+            }
+
+            // Pindahkan ke baris berikutnya
+            currentY += paint.textSize + 4f // Tambahkan jarak antar baris
+        }
+
+        return currentY
     }
 
     // Fungsi wrapText yang diperbaiki untuk mengatasi masalah overflow text
