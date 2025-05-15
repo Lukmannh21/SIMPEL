@@ -8,66 +8,99 @@
     android:background="@drawable/background_gradient"
     tools:context=".BASurveyBigActivity">
 
-    <LinearLayout
-        android:id="@+id/toolbarLayout"
+    <!-- Modernized Toolbar with Card Elevation -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/toolbarCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_back"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back"/>
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/toolbarLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="BA Survey Big OLT"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginStart="16dp"/>
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BA Survey Big OLT"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/red_telkomsel"
+                android:layout_marginStart="16dp"
+                android:fontFamily="sans-serif-medium"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Styled TabLayout with Rounded Corners -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tabLayoutCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbarLayout"
-        app:tabIndicatorColor="@color/red_telkomsel"
-        app:tabSelectedTextColor="@color/red_telkomsel"
-        app:tabTextColor="@android:color/black">
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbarCard">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Form" />
+            app:tabIndicatorColor="@color/red_telkomsel"
+            app:tabSelectedTextColor="@color/red_telkomsel"
+            app:tabTextColor="@android:color/black"
+            app:tabIndicatorHeight="3dp"
+            app:tabIndicatorAnimationMode="elastic"
+            app:tabRippleColor="@color/red_telkomsel"
+            app:tabTextAppearance="@style/TabTextAppearance">
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Search" />
-    </com.google.android.material.tabs.TabLayout>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Form" />
 
-    <!-- Form Content -->
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search" />
+        </com.google.android.material.tabs.TabLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Form Content with Enhanced Visual Style -->
     <androidx.cardview.widget.CardView
         android:id="@+id/formContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutCard"
         app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="visible">
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -75,790 +108,1398 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Form Title -->
+                <!-- Form Title with Improved Typography -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="BERITA ACARA SURVEY BIG OLT"
-                    android:textSize="18sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@color/red_telkomsel"
                     android:gravity="center"
-                    android:layout_marginBottom="16dp"/>
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="24dp"/>
 
-        <!-- Basic Information Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Basic Information"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <EditText
-                    android:id="@+id/inputProjectTitle"
+                <!-- Basic Information Card with Improved Design -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Proyek"
-                    android:layout_marginBottom="8dp" />
-
-                <EditText
-                    android:id="@+id/inputContractNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Nomor Kontrak KHS"
-                    android:layout_marginBottom="8dp" />
-
-                <Spinner
-                    android:id="@+id/inputExecutor"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:entries="@array/executor_options" />
-
-                <EditText
-                    android:id="@+id/inputLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Lokasi"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Deskripsi"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp" />
-
-                <EditText
-                    android:id="@+id/inputDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Deskripsi"
-                    android:focusable="false"
-                    android:cursorVisible="false"
-                    android:background="@android:color/transparent" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- ITEM Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ITEM"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <!-- Repeatable Rows -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <!-- Row 1 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="1. Propose OLT"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: OK/NOK" />
-
-                        <EditText
-                            android:id="@+id/inputAktual1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 2 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="2. Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Meter" />
-
-                        <EditText
-                            android:id="@+id/inputAktual2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 3 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="3. Panjang  Bundlecore Uplink
-(Dari Rack ET ke OLT)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Meter" />
-
-                        <EditText
-                            android:id="@+id/inputAktual3"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan3"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 4 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="4. Panjang Bundlecore Downlink (Dari Rack EA ke OLT)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Meter" />
-
-                        <EditText
-                            android:id="@+id/inputAktual4"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan4"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 5 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="5. Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Meter" />
-
-                        <EditText
-                            android:id="@+id/inputAktual5"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan5"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 6 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="6. Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source)"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Meter" />
-
-                        <EditText
-                            android:id="@+id/inputAktual6"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan6"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 7 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="7. Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Meter" />
-
-                        <EditText
-                            android:id="@+id/inputAktual7"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan7"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 8 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="8. Kebutuhan catuan daya di Recti"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: OK/NOK" />
-
-                        <EditText
-                            android:id="@+id/inputAktual8"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan8"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 9 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="9. Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Pcs" />
-
-                        <EditText
-                            android:id="@+id/inputAktual9"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan9"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 10 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="10. Kebutuhan Tray @3m (pcs) dari Tray Eksistingke OLT-turunan Dan Rack FTM-EA kalau diperlukan"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Meter" />
-
-                        <EditText
-                            android:id="@+id/inputAktual10"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan10"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 11 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="11. Kebutuhan MCB 63A-Schneider"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Pcs" />
-
-                        <EditText
-                            android:id="@+id/inputAktual11"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan11"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 12 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="12. Space 2 pcs FTB untuk di install di rack EA"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: OK/NOK" />
-
-                        <EditText
-                            android:id="@+id/inputAktual12"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan12"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 13 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="13. FTB yang kitagunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: OK/NOK" />
-
-                        <EditText
-                            android:id="@+id/inputAktual13"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan13"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 14 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="14. Kebutuhan Rack EA"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Pcs" />
-
-                        <EditText
-                            android:id="@+id/inputAktual14"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan14"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 15 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="15. Alokasi Port Metro"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Port" />
-
-                        <EditText
-                            android:id="@+id/inputAktual15"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan15"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 16 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="16. Kebutuhan SFP"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Pcs" />
-
-                        <EditText
-                            android:id="@+id/inputAktual16"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan16"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 17 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="17. Alokasi Core di FTB Eksisting (di Rack
-ET)
-"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Core" />
-
-                        <EditText
-                            android:id="@+id/inputAktual17"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan17"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 18 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="18. Kondisi Penerangan di ruangan OLT"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: OK/NOK" />
-
-                        <EditText
-                            android:id="@+id/inputAktual18"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan18"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-                    <!-- Row 19 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="19. CME – Kebutuhan Air Conditioner"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Satuan: Pcs" />
-
-                        <EditText
-                            android:id="@+id/inputAktual19"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aktual"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp" />
-
-                        <EditText
-                            android:id="@+id/inputKeterangan19"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Keterangan" />
-                    </LinearLayout>
-
-
-                    <!-- Repeat for all rows dynamically -->
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-                <!-- Signature Section -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="8dp"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="16dp"
                     app:cardElevation="4dp"
-                    android:layout_marginBottom="16dp">
+                    app:strokeColor="@color/red_telkomsel"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="20dp">
 
-                        <TextView
+                        <!-- Section header with icon -->
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Signatures"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"
-                            android:layout_marginBottom="16dp"/>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_document"
+                                android:tint="@color/red_telkomsel"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Basic Information"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/red_telkomsel"
+                                android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+
+                        <!-- Modernized form fields -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputProjectTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Proyek"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputContractNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Nomor Kontrak KHS"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Keep Spinner for compatibility with existing code -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pelaksana"
+                                android:textSize="12sp"
+                                android:textColor="#757575"
+                                android:layout_marginBottom="4dp"/>
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="0dp"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginEnd="2dp">
+
+                                <Spinner
+                                    android:id="@+id/inputExecutor"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:entries="@array/executor_options"
+                                    android:background="@drawable/spinner_background"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"/>
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputLocation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Lokasi/ID SITE"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputDescription"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Deskripsi(Default)"
+                                android:focusable="false"
+                                android:cursorVisible="false"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- ITEM Card with Improved Design -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/red_telkomsel"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <!-- Section header with icon -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_document"
+                                android:tint="@color/red_telkomsel"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ITEM"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/red_telkomsel"
+                                android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+
+                        <!-- Repeatable Rows with Improved Styling -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <!-- Row 1 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="1. Propose OLT"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual1"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan1"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 2 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="2. Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual2"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan2"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 3 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="3. Panjang Bundlecore Uplink (Dari Rack ET ke OLT)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual3"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan3"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 4 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="4. Panjang Bundlecore Downlink (Dari Rack EA ke OLT)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual4"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan4"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 5 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="5. Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual5"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan5"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 6 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="6. Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual6"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan6"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 7 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="7. Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual7"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan7"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 8 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="8. Kebutuhan catuan daya di Recti"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual8"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan8"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 9 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="9. Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual9"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan9"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 10 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="10. Kebutuhan Tray @3m (pcs) dari Tray Eksistingke OLT-turunan Dan Rack FTM-EA kalau diperlukan"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual10"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan10"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 11 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="11. Kebutuhan MCB 63A-Schneider"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual11"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan11"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 12 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="12. Space 2 pcs FTB untuk di install di rack EA"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual12"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan12"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 13 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="13. FTB yang kitagunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual13"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan13"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 14 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="14. Kebutuhan Rack EA"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual14"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan14"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 15 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="15. Alokasi Port Metro"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Port"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual15"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan15"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 16 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="16. Kebutuhan SFP"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual16"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan16"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 17 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="17. Alokasi Core di FTB Eksisting (di Rack ET)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Core"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual17"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan17"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 18 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="18. Kondisi Penerangan di ruangan OLT"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual18"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan18"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Row 19 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="19. CME – Kebutuhan Air Conditioner"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual19"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan19"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Signature Section with Improved Design -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/red_telkomsel"
+                    app:strokeWidth="1dp"
+                    android:layout_marginBottom="24dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <!-- Section header with icon -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_document"
+                                android:tint="@color/red_telkomsel"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Signatures"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/red_telkomsel"
+                                android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
 
                         <!-- Telkomsel Region -->
                         <com.google.android.material.textfield.TextInputLayout
@@ -867,7 +1508,7 @@ ET)
                             android:layout_marginBottom="16dp"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                            <EditText
+                            <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/etTselRegion"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -876,393 +1517,469 @@ ET)
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <!-- ZTE/Huawei Signature -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginBottom="16dp">
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
 
-                            <TextView
-                                android:id="@+id/tvZteCompany"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="PT. ZTE INDONESIA - TIM SURVEY"
-                                android:textStyle="bold"/>
+                                android:orientation="vertical"
+                                android:padding="16dp">
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etZteName"
+                                <TextView
+                                    android:id="@+id/tvZteCompany"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Name"
-                                    android:inputType="textPersonName"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:text="PT. ZTE INDONESIA - TIM SURVEY"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
 
-                            <!-- NIK/NIP field -->
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etZteNik"
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="NIK/NIP"
-                                    android:inputType="text"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                            <Button
-                                android:id="@+id/btnZteSignature"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Add Signature"
-                                android:backgroundTint="@color/red_telkomsel"/>
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etZteName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                            <ImageView
-                                android:id="@+id/imgZteSignature"
-                                android:layout_width="150dp"
-                                android:layout_height="80dp"
-                                android:scaleType="fitCenter"
-                                android:background="@android:color/white"
-                                android:visibility="gone"/>
-                        </LinearLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etZteNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnZteSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgZteSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <!-- TSEL NOP Signature -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginBottom="16dp">
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="PT. TELKOMSEL - MGR NOP"
-                                android:textStyle="bold"/>
+                                android:orientation="vertical"
+                                android:padding="16dp">
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTselNopName"
+                                <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Name"
-                                    android:inputType="textPersonName"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:text="PT. TELKOMSEL - MGR NOP"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
 
-                            <!-- NIK/NIP field -->
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTselNopNik"
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="NIK/NIP"
-                                    android:inputType="text"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                            <Button
-                                android:id="@+id/btnTselNopSignature"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Add Signature"
-                                android:backgroundTint="@color/red_telkomsel"/>
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselNopName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                            <ImageView
-                                android:id="@+id/imgTselNopSignature"
-                                android:layout_width="150dp"
-                                android:layout_height="80dp"
-                                android:scaleType="fitCenter"
-                                android:background="@android:color/white"
-                                android:visibility="gone"/>
-                        </LinearLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselNopNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTselNopSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTselNopSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <!-- TSEL RTPDS Signature -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginBottom="16dp">
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="PT. TELKOMSEL - MGR RTPDS"
-                                android:textStyle="bold"/>
+                                android:orientation="vertical"
+                                android:padding="16dp">
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTselRtpdsName"
+                                <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Name"
-                                    android:inputType="textPersonName"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:text="PT. TELKOMSEL - MGR RTPDS"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
 
-                            <!-- NIK/NIP field -->
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTselRtpdsNik"
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="NIK/NIP"
-                                    android:inputType="text"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                            <Button
-                                android:id="@+id/btnTselRtpdsSignature"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Add Signature"
-                                android:backgroundTint="@color/red_telkomsel"/>
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselRtpdsName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                            <ImageView
-                                android:id="@+id/imgTselRtpdsSignature"
-                                android:layout_width="150dp"
-                                android:layout_height="80dp"
-                                android:scaleType="fitCenter"
-                                android:background="@android:color/white"
-                                android:visibility="gone"/>
-                        </LinearLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselRtpdsNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTselRtpdsSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTselRtpdsSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <!-- TSEL RTPE/NF Signature -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginBottom="16dp">
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="PT. TELKOMSEL - MGR RTPE"
-                                android:textStyle="bold"/>
+                                android:orientation="vertical"
+                                android:padding="16dp">
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTselRtpeNfName"
+                                <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Name"
-                                    android:inputType="textPersonName"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:text="PT. TELKOMSEL - MGR RTPE"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
 
-                            <!-- NIK/NIP field -->
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTselRtpeNfNik"
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="NIK/NIP"
-                                    android:inputType="text"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                            <Button
-                                android:id="@+id/btnTselRtpeNfSignature"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Add Signature"
-                                android:backgroundTint="@color/red_telkomsel"/>
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselRtpeNfName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                            <ImageView
-                                android:id="@+id/imgTselRtpeNfSignature"
-                                android:layout_width="150dp"
-                                android:layout_height="80dp"
-                                android:scaleType="fitCenter"
-                                android:background="@android:color/white"
-                                android:visibility="gone"/>
-                        </LinearLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselRtpeNfNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTselRtpeNfSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTselRtpeNfSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <!-- TELKOM Signature -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginBottom="16dp">
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="PT. TELKOM - MGR NDPS TR1"
-                                android:textStyle="bold"/>
+                                android:orientation="vertical"
+                                android:padding="16dp">
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTelkomName"
+                                <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Name"
-                                    android:inputType="textPersonName"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:text="PT. TELKOM - MGR NDPS TR1"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
 
-                            <!-- NIK/NIP field -->
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTelkomNik"
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="NIK/NIP"
-                                    android:inputType="text"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                            <Button
-                                android:id="@+id/btnTelkomSignature"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Add Signature"
-                                android:backgroundTint="@color/red_telkomsel"/>
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTelkomName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                            <ImageView
-                                android:id="@+id/imgTelkomSignature"
-                                android:layout_width="150dp"
-                                android:layout_height="80dp"
-                                android:scaleType="fitCenter"
-                                android:background="@android:color/white"
-                                android:visibility="gone"/>
-                        </LinearLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTelkomNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTelkomSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTelkomSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <!-- TIF Signature -->
-                        <LinearLayout
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:layout_marginBottom="4dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="PT. TIF - TIM SURVEY"
-                                android:textStyle="bold"/>
+                                android:orientation="vertical"
+                                android:padding="16dp">
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTifName"
+                                <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="Name"
-                                    android:inputType="textPersonName"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:text="PT. TIF - TIM SURVEY"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
 
-                            <!-- NIK/NIP field -->
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                                <EditText
-                                    android:id="@+id/etTifNik"
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="NIK/NIP"
-                                    android:inputType="text"/>
-                            </com.google.android.material.textfield.TextInputLayout>
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                            <Button
-                                android:id="@+id/btnTifSignature"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Add Signature"
-                                android:backgroundTint="@color/red_telkomsel"/>
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTifName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                            <ImageView
-                                android:id="@+id/imgTifSignature"
-                                android:layout_width="150dp"
-                                android:layout_height="80dp"
-                                android:scaleType="fitCenter"
-                                android:background="@android:color/white"
-                                android:visibility="gone"/>
-                        </LinearLayout>
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTifNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTifSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTifSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
+                <!-- Submit and Generate PDF Buttons -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="24dp">
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="32dp">
 
                     <Button
                         android:id="@+id/btnSubmitForm"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:text="Submit Form"
+                        android:textSize="16sp"
                         android:backgroundTint="@color/red_telkomsel"
                         android:layout_marginEnd="8dp"/>
 
                     <Button
                         android:id="@+id/btnGeneratePdf"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="60dp"
                         android:layout_weight="1"
                         android:text="Generate PDF"
+                        android:textSize="16sp"
                         android:backgroundTint="#4CAF50"/>
                 </LinearLayout>
-
             </LinearLayout>
-
         </ScrollView>
     </androidx.cardview.widget.CardView>
+
+    <!-- Search Container with Improved Design -->
     <androidx.cardview.widget.CardView
         android:id="@+id/searchContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="8dp"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutCard"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="gone">
 
         <LinearLayout
@@ -1271,23 +1988,35 @@ ET)
             android:orientation="vertical"
             android:padding="16dp">
 
-            <SearchView
-                android:id="@+id/searchView"
+            <!-- Enhanced Search Bar -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:queryHint="Search by Location, Project..."
-                android:iconifiedByDefault="false"
-                android:layout_marginBottom="16dp"/>
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
+                android:layout_marginBottom="16dp">
 
+                <SearchView
+                    android:id="@+id/searchView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:queryHint="Search by Location, Project..."
+                    android:iconifiedByDefault="false"
+                    android:background="@android:color/transparent"
+                    android:queryBackground="@android:color/transparent"/>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Enhanced RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSearchResults"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"/>
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Loading State -->
+    <!-- Loading State with Animation -->
     <LinearLayout
         android:id="@+id/loadingEventsShimmer"
         android:layout_width="match_parent"
@@ -1295,7 +2024,7 @@ ET)
         android:orientation="vertical"
         android:gravity="center"
         android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutCard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone">
@@ -1312,7 +2041,7 @@ ET)
             android:layout_marginTop="16dp"/>
     </LinearLayout>
 
-    <!-- Empty State -->
+    <!-- Empty State with Enhanced Design -->
     <LinearLayout
         android:id="@+id/emptyEventsView"
         android:layout_width="match_parent"
@@ -1320,7 +2049,7 @@ ET)
         android:orientation="vertical"
         android:gravity="center"
         android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutCard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone">
