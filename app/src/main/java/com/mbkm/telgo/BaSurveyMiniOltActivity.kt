@@ -397,7 +397,6 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         imgTelkomSignature = findViewById(R.id.imgTelkomSignature)
         imgTifSignature = findViewById(R.id.imgTifSignature)
 
-
         // Dan inisialisasi di initializeUI()
         etHeaderNo = findViewById(R.id.etHeaderNo)
 
@@ -1147,7 +1146,6 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         val surveyData = HashMap<String, Any>()
 
-
         // Basic info
         surveyData["location"] = etLocation.text.toString().trim()
         surveyData["noIhld"] = etNoIhld.text.toString().trim()
@@ -1157,7 +1155,6 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         surveyData["surveyDate"] = tvCurrentDate.text.toString()
         surveyData["createdBy"] = currentUser.email ?: "unknown"
         surveyData["createdAt"] = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-
 
         // Table results with PM/PBM selections
         val tableResults = HashMap<String, HashMap<String, String>>()
@@ -1291,7 +1288,6 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         surveyData["signatures"] = signaturesData
         surveyData["siteId"] = location  // Make sure this matches the Site ID in projects collection
 
-
         // Add to Firestore
         firestore.collection("ba_survey_mini_olt")
             .add(surveyData)
@@ -1323,6 +1319,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                 Toast.makeText(this, "Error submitting form: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
     // New method to update project document with BA reference
     private fun updateProjectWithBaDocument(siteId: String, pdfUrl: String) {
         // Query the projects collection to find the document with matching siteId
@@ -1352,6 +1349,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             }
     }
 
+    // MODIFIED: Improved uploadImagesToFirebase method to handle non-sequential photo uploads
     private fun uploadImagesToFirebase(surveyId: String, callback: (Boolean) -> Unit) {
         // Counter for uploaded images
         val totalUploads = photoUris.size + signatureUris.size
@@ -1364,13 +1362,27 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
             return
         }
 
-        // Upload photos
-        for ((index, uri) in photoUris) {
-            val photoRef = storage.reference.child("ba_survey_mini_olt/$surveyId/photos/photo${index+1}.jpg")
+        // Create a map to store photo indices information
+        val photoIndexMap = HashMap<Int, Int>()
+
+        // Get sorted keys for consistent processing
+        val sortedPhotoKeys = photoUris.keys.sorted()
+
+        // Upload photos in order of their keys
+        for ((uploadIndex, originalIndex) in sortedPhotoKeys.withIndex()) {
+            // Map original index to a sequential upload index
+            photoIndexMap[originalIndex] = uploadIndex
+
+            val uri = photoUris[originalIndex] ?: continue
+
+            // Use the upload index for the storage path (creates sequential files)
+            val photoRef = storage.reference.child("ba_survey_mini_olt/$surveyId/photos/photo${uploadIndex+1}.jpg")
+
             uploadImageFromUri(uri, photoRef) { success, downloadUrl ->
                 if (success && downloadUrl != null) {
+                    // Store the original index in Firestore so we know which photo container it came from
                     firestore.collection("ba_survey_mini_olt").document(surveyId)
-                        .update("photos.photo${index+1}", downloadUrl)
+                        .update("photos.photo${originalIndex+1}", downloadUrl)
                         .addOnSuccessListener {
                             completedUploads++
                             if (completedUploads + failedUploads == totalUploads) {
@@ -1390,6 +1402,17 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+
+        // Store the mapping of original indices to upload indices
+        if (photoIndexMap.isNotEmpty()) {
+            val photoIndexData = HashMap<String, Any>()
+            photoIndexMap.forEach { (originalIndex, uploadIndex) ->
+                photoIndexData["idx_$originalIndex"] = uploadIndex
+            }
+
+            firestore.collection("ba_survey_mini_olt").document(surveyId)
+                .update("photoIndexMapping", photoIndexData)
         }
 
         // Upload signatures - all from gallery now
@@ -1566,21 +1589,24 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         document.finishPage(page2)
 
         // Photo pages: 4 photos per page
-        val photoCount = photoUris.size
-        val photosPerPage = 4 // 4 foto per halaman
-        val photoPages = if (photoCount > 0) (photoCount + photosPerPage - 1) / photosPerPage else 0
+        // MODIFIED: Use the improved photo handling approach
+        if (photoUris.isNotEmpty()) {
+            val sortedPhotoKeys = photoUris.keys.sorted()
+            val photosPerPage = 4 // 4 foto per halaman
+            val photoPages = (sortedPhotoKeys.size + photosPerPage - 1) / photosPerPage
 
-        for (i in 0 until photoPages) {
-            val pageNum = i + 3
-            val pageInfo = PdfDocument.PageInfo.Builder(612, 842, pageNum).create()
-            val page = document.startPage(pageInfo)
+            for (i in 0 until photoPages) {
+                val pageNum = i + 3
+                val pageInfo = PdfDocument.PageInfo.Builder(612, 842, pageNum).create()
+                val page = document.startPage(pageInfo)
 
-            // Now drawPhotosPageContent will add the header table and proper spacing
-            drawPhotosPageContent(page.canvas, i)
+                // Use the improved photo drawing method
+                drawPhotosPageContent(page.canvas, i)
 
-            // Draw footer
-            drawPageFooter(page.canvas, pageNum)
-            document.finishPage(page)
+                // Draw footer
+                drawPageFooter(page.canvas, pageNum)
+                document.finishPage(page)
+            }
         }
 
         // Tulis PDF ke file
@@ -1617,7 +1643,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     private fun calculateRequiredPages(): Int {
         // Calculate required pages for photos
         val photoCount = photoUris.size
-        val photosPerPage = 2  // 2 photos per page
+        val photosPerPage = 4  // 4 photos per page
         val photoPages = if (photoCount > 0) (photoCount + photosPerPage - 1) / photosPerPage else 0
 
         // 1 page for form, 1 page for signatures, plus photo pages
@@ -2300,7 +2326,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         canvas.drawText(nipText, x + 5f, y + height - 10f, paint)
     }
 
-    // Fungsi yang direvisi untuk menampilkan 4 foto per halaman dalam grid 2
+    // MODIFIED: Improved photo page rendering to handle non-sequential photos
     private fun drawPhotosPageContent(canvas: Canvas, photoPageIndex: Int) {
         // Tetapkan photosPerPage = 4 untuk layout 2x2
         val photosPerPage = 4
@@ -2327,13 +2353,16 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
         yPosition += 30f
 
-        // Tentukan range foto yang akan ditampilkan di halaman ini
-        // berdasarkan urutan di array photoLabels
-        val startIdx = photoPageIndex * photosPerPage
-        val endIdx = minOf(startIdx + photosPerPage, photoLabels.size)
+        // IMPROVEMENT: Get sorted keys for consistent ordering and all available photos
+        val availablePhotoIndices = photoUris.keys.sorted()
+        val totalPhotos = availablePhotoIndices.size
 
-        // Jika tidak ada foto untuk ditampilkan pada halaman ini
-        if (startIdx >= photoLabels.size) {
+        // Calculate range for this page
+        val startIdx = photoPageIndex * photosPerPage
+        val endIdx = minOf(startIdx + photosPerPage, totalPhotos)
+
+        // If no photos to display on this page
+        if (startIdx >= totalPhotos) {
             paint.textSize = 12f
             canvas.drawText("No more photos available.", leftMargin, yPosition + 50f, paint)
             return
@@ -2344,31 +2373,38 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         val columnWidth = availableWidth / 2 - 10f
         val photoHeight = 230f
 
-        // Gambar foto sesuai dengan urutan dalam array photoLabels
+        // Process photos for this page
         for (i in startIdx until endIdx) {
-            val positionInPage = i - startIdx // Posisi relatif (0-3) dalam halaman ini
+            // Calculate position in page grid (0-3)
+            val positionInPage = i - startIdx
 
-            // Posisi dalam grid 2x2
-            val column = positionInPage % 2 // 0=kiri, 1=kanan
-            val row = positionInPage / 2    // 0=atas, 1=bawah
+            // Grid position: column (0=left, 1=right), row (0=top, 1=bottom)
+            val column = positionInPage % 2
+            val row = positionInPage / 2
 
+            // Calculate position coordinates
             val xPos = leftMargin + column * (columnWidth + 20f)
             val yPos = yPosition + row * (photoHeight + 70f)
 
-            // Ambil label dari array photoLabels baru
-            val photoNum = i + 1 // Nomor foto mulai dari 1
-            val photoLabel = photoLabels[i]
+            // Get the original index from sorted list
+            val originalIndex = availablePhotoIndices[i]
 
-            // Gambar label foto
+            // Get corresponding label from photo labels array
+            val photoLabel = if (originalIndex < photoLabels.size) {
+                photoLabels[originalIndex]
+            } else {
+                "Foto #${originalIndex + 1}"
+            }
+
+            // Draw label with original index number (from 1)
             paint.textSize = 11f
             paint.isFakeBoldText = true
-            canvas.drawText("$photoNum. $photoLabel", xPos, yPos, paint)
+            canvas.drawText("${originalIndex + 1}. $photoLabel", xPos, yPos, paint)
             paint.isFakeBoldText = false
 
-            // Cari URI foto yang sesuai dengan indeks ini (jika ada)
-            val uri = photoUris[i]
+            // Get and display photo
+            val uri = photoUris[originalIndex]
 
-            // Gambar foto
             if (uri != null) {
                 try {
                     // Load photo bitmap
