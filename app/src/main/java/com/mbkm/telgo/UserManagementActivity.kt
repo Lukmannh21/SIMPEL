@@ -1,7 +1,11 @@
 package com.mbkm.telgo
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -16,7 +20,10 @@ class UserManagementActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
     private lateinit var btnBack: MaterialButton
+    private lateinit var etSearch: EditText
+    private lateinit var ivClearSearch: ImageView
     private lateinit var firestore: FirebaseFirestore
+    private var currentQuery: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +39,8 @@ class UserManagementActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewPager)
         btnBack = findViewById(R.id.btnBack)
+        etSearch = findViewById(R.id.etSearch)
+        ivClearSearch = findViewById(R.id.ivClearSearch)
 
         // Set up back button
         btnBack.setOnClickListener {
@@ -41,6 +50,42 @@ class UserManagementActivity : AppCompatActivity() {
 
         // Set up the view pager with fragments
         setupViewPager()
+
+        // Set up search functionality
+        setupSearch()
+    }
+
+    private fun setupSearch() {
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s.toString().trim()
+                currentQuery = query
+
+                // Show/hide clear button
+                ivClearSearch.visibility = if (query.isNotEmpty()) View.VISIBLE else View.GONE
+
+                // Apply search to current fragment
+                updateSearchQuery(query)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        ivClearSearch.setOnClickListener {
+            etSearch.setText("")
+            currentQuery = ""
+            ivClearSearch.visibility = View.GONE
+        }
+    }
+
+    private fun updateSearchQuery(query: String) {
+        val currentFragment = supportFragmentManager.fragments.firstOrNull {
+            it is UserListFragment && it.isVisible
+        } as? UserListFragment
+
+        currentFragment?.updateSearch(query)
     }
 
     private fun setupViewPager() {
@@ -54,6 +99,16 @@ class UserManagementActivity : AppCompatActivity() {
                 1 -> tab.text = "Verified Users"
             }
         }.attach()
+
+        // Set page change listener to update search when tab changes
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                if (currentQuery.isNotEmpty()) {
+                    updateSearchQuery(currentQuery)
+                }
+            }
+        })
     }
 
     override fun onBackPressed() {

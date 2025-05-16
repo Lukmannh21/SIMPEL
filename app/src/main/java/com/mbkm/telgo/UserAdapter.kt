@@ -14,14 +14,29 @@ import java.util.Locale
 class UserAdapter(private val onUserClick: (UserModel) -> Unit) :
     RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
-    private var users: List<UserModel> = emptyList()
+    private var allUsers: List<UserModel> = emptyList()
+    private var filteredUsers: List<UserModel> = emptyList()
 
     fun setUsers(newUsers: List<UserModel>) {
-        users = newUsers
+        allUsers = newUsers
+        filteredUsers = newUsers
         notifyDataSetChanged()
     }
 
-    fun getUsers(): List<UserModel> = users
+    fun getUsers(): List<UserModel> = filteredUsers
+
+    fun filterUsers(query: String) {
+        if (query.isEmpty()) {
+            filteredUsers = allUsers
+        } else {
+            val lowercaseQuery = query.lowercase(Locale.getDefault())
+            filteredUsers = allUsers.filter { user ->
+                user.fullName.lowercase(Locale.getDefault()).contains(lowercaseQuery) ||
+                        user.email.lowercase(Locale.getDefault()).contains(lowercaseQuery)
+            }
+        }
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -30,10 +45,10 @@ class UserAdapter(private val onUserClick: (UserModel) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bind(users[position])
+        holder.bind(filteredUsers[position])
     }
 
-    override fun getItemCount(): Int = users.size
+    override fun getItemCount(): Int = filteredUsers.size
 
     class UserViewHolder(
         itemView: View,

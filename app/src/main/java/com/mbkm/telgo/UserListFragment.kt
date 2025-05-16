@@ -22,6 +22,7 @@ class UserListFragment : Fragment() {
     private lateinit var adapter: UserAdapter
     private lateinit var firestore: FirebaseFirestore
     private var userStatus: String = "unverified"
+    private var allUsers: List<UserModel> = emptyList()
 
     companion object {
         private const val ARG_STATUS = "arg_status"
@@ -97,7 +98,7 @@ class UserListFragment : Fragment() {
             .addOnSuccessListener { documents ->
                 progressBar.visibility = View.GONE
 
-                val users = documents.mapNotNull { doc ->
+                allUsers = documents.mapNotNull { doc ->
                     try {
                         UserModel(
                             uid = doc.getString("uid") ?: doc.id,
@@ -113,31 +114,49 @@ class UserListFragment : Fragment() {
                             registrationDate = doc.getLong("registrationDate") ?: 0,
                             lastLoginDate = doc.getLong("lastLoginDate") ?: 0,
                             createdAt = doc.getString("createdAt") ?: "",
-                            updatedAt = doc.getString("updatedAt") ?: ""
+                            updatedAt = doc.getString("updatedAt") ?: "",
+                            createdBy = doc.getString("createdBy") ?: ""
                         )
                     } catch (e: Exception) {
                         null
                     }
                 }
 
-                adapter.setUsers(users)
-
-                if (users.isEmpty()) {
-                    emptyView.visibility = View.VISIBLE
-                    emptyText.text = if (userStatus == "verified") {
-                        "No verified users found"
-                    } else {
-                        "No pending verification requests"
-                    }
-                } else {
-                    emptyView.visibility = View.GONE
-                }
+                adapter.setUsers(allUsers)
+                updateEmptyState(allUsers.isEmpty())
             }
             .addOnFailureListener { e ->
                 progressBar.visibility = View.GONE
                 emptyView.visibility = View.VISIBLE
                 emptyText.text = "Error: ${e.message}"
             }
+    }
+
+    // Method to update search from activity
+    fun updateSearch(query: String) {
+        adapter.filterUsers(query)
+        updateEmptyState(adapter.getUsers().isEmpty())
+    }
+
+    private fun updateEmptyState(isEmpty: Boolean) {
+        if (isEmpty) {
+            emptyView.visibility = View.VISIBLE
+            emptyText.text = if (userStatus == "verified") {
+                if (adapter.getUsers().isEmpty() && allUsers.isNotEmpty()) {
+                    "No users match your search"
+                } else {
+                    "No verified users found"
+                }
+            } else {
+                if (adapter.getUsers().isEmpty() && allUsers.isNotEmpty()) {
+                    "No users match your search"
+                } else {
+                    "No pending verification requests"
+                }
+            }
+        } else {
+            emptyView.visibility = View.GONE
+        }
     }
 
     override fun onResume() {
