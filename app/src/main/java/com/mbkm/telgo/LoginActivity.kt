@@ -217,8 +217,8 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null) {
-                        // Update last login time and check user role
-                        updateLastLoginAndCheckRole(user.uid)
+                        // Check if user is admin before updating last login
+                        checkIfUserIsAdmin(user.uid)
                     } else {
                         showLoading(false)
                         showError("Login error: User not found")
@@ -232,55 +232,97 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateLastLoginAndCheckRole(userId: String) {
+    private fun checkIfUserIsAdmin(userId: String) {
+        firestore.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val role = document.getString("role") ?: "user"
+
+                    if (role == "admin") {
+                        // User is admin, proceed with login
+                        updateLastLogin(userId)
+                    } else {
+                        // User is not admin, sign out and show error
+                        auth.signOut()
+                        showLoading(false)
+                        showError("Access denied: Admin access only")
+                        shakeView(btnLogin)
+                    }
+                } else {
+                    auth.signOut()
+                    showLoading(false)
+                    showError("User profile not found")
+                }
+            }
+            .addOnFailureListener { e ->
+                auth.signOut()
+                showLoading(false)
+                showError("Error checking user role: ${e.message}")
+            }
+    }
+
+    private fun updateLastLogin(userId: String) {
         // Update last login timestamp
+        val timestamp = "2025-05-16 01:54:44" // Using provided timestamp
         val lastLoginUpdate = hashMapOf<String, Any>(
-            "lastLoginDate" to Date().time
+            "lastLoginDate" to Date().time,
+            "updatedAt" to timestamp,
+            "lastUpdatedBy" to "Lukmannh21"
         )
 
         firestore.collection("users").document(userId)
             .update(lastLoginUpdate)
             .addOnSuccessListener {
-                // Now check the user role and status
-                firestore.collection("users").document(userId)
-                    .get()
-                    .addOnSuccessListener { document ->
-                        showLoading(false)
-
-                        if (document != null && document.exists()) {
-                            val role = document.getString("role") ?: "user"
-                            val status = document.getString("status") ?: "unverified"
-
-                            // Store role and status in SharedPreferences for easy access
-                            val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
-                            preferences.edit().apply {
-                                putString("userRole", role)
-                                putString("userStatus", status)
-                                apply()
-                            }
-
-                            showSuccess("Login successful")
-
-                            // Redirect based on role
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                val intent = Intent(this, ServicesActivity::class.java)
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                startActivity(intent)
-                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                                finish()
-                            }, 1000)
-                        } else {
-                            showError("User data not found")
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        showLoading(false)
-                        showError("Error checking user role: ${e.message}")
-                    }
+                // Now proceed with admin login flow
+                completeAdminLogin(userId)
             }
             .addOnFailureListener { e ->
+                auth.signOut()
                 showLoading(false)
                 showError("Error updating login time: ${e.message}")
+            }
+    }
+
+    private fun completeAdminLogin(userId: String) {
+        firestore.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                showLoading(false)
+
+                if (document != null && document.exists()) {
+                    val role = document.getString("role") ?: "admin"
+                    val status = document.getString("status") ?: "verified"
+
+                    // Store role and status in SharedPreferences for easy access
+                    val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+                    preferences.edit().apply {
+                        putString("userRole", role)
+                        putString("userStatus", status)
+                        putString("userName", document.getString("fullName") ?: "Admin")
+                        putString("userEmail", document.getString("email") ?: "")
+                        apply()
+                    }
+
+                    showSuccess("Admin login successful")
+
+                    // Redirect to admin dashboard
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val intent = Intent(this, ServicesActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        finish()
+                    }, 1000)
+                } else {
+                    auth.signOut()
+                    showError("Admin data not found")
+                }
+            }
+            .addOnFailureListener { e ->
+                auth.signOut()
+                showLoading(false)
+                showError("Error retrieving admin profile: ${e.message}")
             }
     }
 
