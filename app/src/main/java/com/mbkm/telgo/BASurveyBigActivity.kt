@@ -39,6 +39,11 @@ import java.util.UUID
 import android.widget.Button
 import java.io.FileNotFoundException
 
+
+// Jika Anda belum punya data class seperti ini, buatlah
+// Sesuaikan field lain jika perlu
+
+
 class BASurveyBigActivity : AppCompatActivity() {
 
     // Firebase instances
@@ -319,15 +324,14 @@ class BASurveyBigActivity : AppCompatActivity() {
                         executor = data["executor"] as? String ?: "",
                         location = data["location"] as? String ?: "",
                         description = data["description"] as? String ?: "",
-                        createdAt = data["createdAt"] as? Long ?: 0
+                        createdAt = data["createdAt"] as? Long ?: 0,
+                        pdfUrl = data["pdfUrl"] as? String // << AMBIL PDF URL DI SINI
                     )
                     surveyList.add(survey)
                 }
 
-                // Sort by creation date, newest first
                 surveyList.sortByDescending { it.createdAt }
 
-                // Update UI
                 loadingView.visibility = View.GONE
                 if (surveyList.isEmpty()) {
                     emptyView.visibility = View.VISIBLE
@@ -335,7 +339,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                 } else {
                     emptyView.visibility = View.GONE
                     rvSearchResults.visibility = View.VISIBLE
-                    searchAdapter.updateData(surveyList)
+                    searchAdapter.updateData(surveyList) // Pastikan searchAdapter.updateData bisa menerima List<SurveyData>
                 }
             }
             .addOnFailureListener { e ->
@@ -454,38 +458,57 @@ class BASurveyBigActivity : AppCompatActivity() {
     }
 
     private fun downloadSurveyPdf(baSurvey: SurveyData) {
-        // Show loading indicator
+        // Periksa apakah pdfUrl ada dan tidak kosong
+        if (baSurvey.pdfUrl.isNullOrEmpty()) {
+            Toast.makeText(this, "PDF URL tidak ditemukan untuk survei ini.", Toast.LENGTH_LONG).show()
+            Log.e("BASurveyBig", "PDF URL is null or empty for survey ID: ${baSurvey.id}")
+            return
+        }
+
         val loadingDialog = AlertDialog.Builder(this)
-            .setView(R.layout.dialog_loading)
+            .setView(R.layout.dialog_loading) // Pastikan Anda memiliki layout ini
             .setCancelable(false)
             .create()
         loadingDialog.show()
 
-        // Download PDF from Firebase Storage
-        val pdfRef = storage.reference.child("ba_survey_big_olt_pdf/${baSurvey.id}.pdf")
+        // Gunakan pdfUrl yang sudah tersimpan di SurveyData
+        val pdfRef = storage.getReferenceFromUrl(baSurvey.pdfUrl!!) // pdfUrl sudah mengandung path yang benar
 
-        val localFile = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "BA_Survey_Big_OLT_${baSurvey.location}.pdf")
+        // Membuat nama file lokal yang lebih deskriptif (opsional, tapi baik)
+        // Ganti karakter yang tidak valid untuk nama file jika ada di lokasi
+        val safeLocation = baSurvey.location.replace(Regex("[^a-zA-Z0-9.-]"), "_")
+        val localFile = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "BA_Survey_Big_OLT_${safeLocation}_${baSurvey.id}.pdf")
 
         pdfRef.getFile(localFile)
             .addOnSuccessListener {
                 loadingDialog.dismiss()
+                try {
+                    val uri = FileProvider.getUriForFile(
+                        this,
+                        "com.mbkm.telgo.fileprovider", // Pastikan authority ini benar
+                        localFile
+                    )
 
-                // Share/open the PDF
-                val uri = FileProvider.getUriForFile(
-                    this,
-                    "com.mbkm.telgo.fileprovider",
-                    localFile
-                )
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(uri, "application/pdf")
+                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    }
 
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(uri, "application/pdf")
-                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-
-                startActivity(Intent.createChooser(intent, "Open PDF with..."))
+                    // Verifikasi apakah ada aplikasi yang bisa menangani intent PDF
+                    if (intent.resolveActivity(packageManager) != null) {
+                        startActivity(Intent.createChooser(intent, "Open PDF with..."))
+                    } else {
+                        Toast.makeText(this, "Tidak ada aplikasi untuk membuka PDF.", Toast.LENGTH_LONG).show()
+                    }
+                } catch (e: IllegalArgumentException) {
+                    Log.e("BASurveyBig", "FileProvider error: ${e.message}", e)
+                    Toast.makeText(this, "Gagal membuka PDF: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
             .addOnFailureListener { e ->
                 loadingDialog.dismiss()
-                Toast.makeText(this, "Error downloading PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("BASurveyBig", "Error downloading PDF from search: ${e.message}", e)
+                Toast.makeText(this, "Error downloading PDF: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 
