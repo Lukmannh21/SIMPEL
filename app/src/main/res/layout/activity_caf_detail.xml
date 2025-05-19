@@ -224,7 +224,7 @@
                 android:id="@+id/btnDownloadExcel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Download Excel"
+                android:text="Download PDF"
                 android:backgroundTint="#4CAF50"/>
         </LinearLayout>
     </ScrollView>
