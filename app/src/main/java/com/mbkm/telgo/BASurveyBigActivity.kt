@@ -1205,7 +1205,8 @@ class BASurveyBigActivity : AppCompatActivity() {
                     region: String,
                     yStart: Float,
                     paint: Paint,
-                    boldPaint: Paint
+                    boldPaint: Paint,
+                    executor: String // Tambah parameter executor
                 ) {
                     val boxWidth = (595 - (marginX * 2)) / 3 // Lebar kotak tanda tangan
                     val signatureBoxHeight = 150f // Tinggi kotak tanda tangan
@@ -1304,9 +1305,14 @@ class BASurveyBigActivity : AppCompatActivity() {
                     val tselRtpeNik = findViewById<EditText>(R.id.etTselRtpeNfNik).text.toString()
                     val tselRtpeSignature = findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
 
-                    // Baris pertama (ZTE, TIF, TELKOM)
+                    // Baris pertama (Executor, TIF, TELKOM)
+                    val surveyCompany = if (executor == "PT Huawei Tech Investment")
+                        listOf("PT. Huawei Tech Investment", "TIM SURVEY")
+                    else
+                        listOf("PT. ZTE INDONESIA", "TIM SURVEY")
+
                     drawSignatureBox(
-                        listOf("PT. ZTE INDONESIA", "TIM SURVEY"),
+                        surveyCompany,
                         zteName, zteNik, zteSignature, marginX, y
                     )
                     drawSignatureBox(
@@ -1539,7 +1545,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                     drawHeader(executor)
                 }
 
-                drawSignaturesWithFormattedTitles(canvas, region, y + 30f, paint, boldPaint)
+                drawSignaturesWithFormattedTitles(canvas, region, y + 30f, paint, boldPaint, executor)
 
                 drawFooter() // Tambahkan footer di halaman terakhir
                 document.finishPage(page)
@@ -1646,33 +1652,34 @@ class BASurveyBigActivity : AppCompatActivity() {
         maxWidth: Float,
         paint: Paint
     ): Float {
-        // Gunakan wrapText untuk memecah teks menjadi baris
         val lines = wrapText(text, maxWidth, paint)
         var currentY = y
 
-        // Gambar setiap baris dengan posisi justify
-        for (line in lines) {
+        // Set spasi antar baris lebih renggang (textSize + 10f)
+        val lineSpacing = paint.textSize + 10f
+
+        // Untuk spasi antar kata lebih renggang, tambahkan extra space
+        val extraWordSpacing = 4f // px, bisa dibesarkan lagi jika mau
+
+        for ((i, line) in lines.withIndex()) {
             val words = line.split(" ")
             val lineWidth = paint.measureText(line)
             val gapCount = words.size - 1
 
-            if (gapCount > 0 && line != lines.last()) {
-                // Hitung jarak tambahan antar kata
-                val extraSpace = (maxWidth - lineWidth) / gapCount
+            if (gapCount > 0 && i != lines.lastIndex) {
+                // hitung jarak antar kata (lebih renggang dari biasanya)
+                val extraSpace = ((maxWidth - lineWidth) / gapCount) + extraWordSpacing
                 var startX = x
                 for (word in words) {
                     canvas.drawText(word, startX, currentY, paint)
                     startX += paint.measureText(word) + extraSpace
                 }
             } else {
-                // Gambar baris terakhir tanpa justify
+                // baris terakhir tanpa justify
                 canvas.drawText(line, x, currentY, paint)
             }
-
-            // Pindahkan ke baris berikutnya
-            currentY += paint.textSize + 4f // Tambahkan jarak antar baris
+            currentY += lineSpacing
         }
-
         return currentY
     }
 
