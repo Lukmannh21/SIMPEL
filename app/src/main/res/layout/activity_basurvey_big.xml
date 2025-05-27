@@ -8,7 +8,6 @@
     android:background="@drawable/background_gradient"
     tools:context=".BASurveyBigActivity">
 
-    <!-- Modernized Toolbar with Card Elevation -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/toolbarCard"
         android:layout_width="match_parent"
@@ -48,7 +47,6 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Styled TabLayout with Rounded Corners -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/tabLayoutCard"
         android:layout_width="match_parent"
@@ -84,7 +82,6 @@
         </com.google.android.material.tabs.TabLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Form Content with Enhanced Visual Style -->
     <androidx.cardview.widget.CardView
         android:id="@+id/formContainer"
         android:layout_width="match_parent"
@@ -108,7 +105,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Form Title with Improved Typography -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -120,7 +116,6 @@
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginBottom="24dp"/>
 
-                <!-- Basic Information Card with Improved Design -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -136,7 +131,6 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <!-- Section header with icon -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -148,7 +142,7 @@
                                 android:layout_width="28dp"
                                 android:layout_height="28dp"
                                 android:src="@drawable/ic_document"
-                                android:tint="@color/red_telkomsel"
+                                app:tint="@color/red_telkomsel"
                                 android:layout_marginEnd="8dp"/>
 
                             <TextView
@@ -161,7 +155,6 @@
                                 android:fontFamily="sans-serif-medium"/>
                         </LinearLayout>
 
-                        <!-- Modernized form fields -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -188,7 +181,6 @@
                                 android:hint="Nomor Kontrak KHS"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- Keep Spinner for compatibility with existing code -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -251,7 +243,6 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- ITEM Card with Improved Design -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -267,7 +258,6 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <!-- Section header with icon -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -279,7 +269,7 @@
                                 android:layout_width="28dp"
                                 android:layout_height="28dp"
                                 android:src="@drawable/ic_document"
-                                android:tint="@color/red_telkomsel"
+                                app:tint="@color/red_telkomsel"
                                 android:layout_marginEnd="8dp"/>
 
                             <TextView
@@ -292,13 +282,11 @@
                                 android:fontFamily="sans-serif-medium"/>
                         </LinearLayout>
 
-                        <!-- Repeatable Rows with Improved Styling -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <!-- Row 1 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -359,7 +347,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 2 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -420,7 +407,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 3 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -481,7 +467,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 4 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -542,7 +527,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 5 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -603,7 +587,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 6 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -664,7 +647,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 7 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -725,7 +707,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 8 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -786,7 +767,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 9 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -847,7 +827,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 10 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -908,7 +887,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 11 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -969,7 +947,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 12 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1030,7 +1007,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 13 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1091,7 +1067,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 14 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1152,7 +1127,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 15 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1213,7 +1187,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 16 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1274,7 +1247,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 17 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1335,7 +1307,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 18 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1396,7 +1367,6 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
-                            <!-- Row 19 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1460,7 +1430,849 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Signature Section with Improved Design -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/red_telkomsel"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_camera"
+                                app:tint="@color/red_telkomsel"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Photo Documentation"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/red_telkomsel"
+                                android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="1. Akses Gerbang"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="2. Name Plate"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="3. Sto Tampak Depan"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="4. Foto Ruangan"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="5. Foto Rectifier"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel6"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="6. Rectifier A"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto6"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto6"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel7"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="7. Rectifier B"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto7"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto7"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer8"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel8"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="8. Panel SDP AC"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto8"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto8"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer9"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel9"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="9. Propose Space Cabinet Big OLT"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto9"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto9"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer10"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel10"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="10. Foto Rack Cabinet (Insert Frame)"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto10"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto10"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer11"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel11"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="11. Foto Runaway"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto11"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto11"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer12"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel12"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="12. PLN Fase R"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto12"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto12"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer13"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel13"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="13. PLN Fase S"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto13"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto13"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer14"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel14"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="14. PLN Fase T"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto14"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto14"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer15"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel15"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="15. Grounding"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto15"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto15"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer16"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel16"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="16. Port Metro"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto16"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto16"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer17"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel17"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="17. OTB FA"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto17"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto17"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer18"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel18"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="18. Bundle Core"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto18"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto18"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer19"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel19"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="19. Ruang FTM"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto19"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto19"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/photoContainer20"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel20"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="20. Foto Selfie Teknisi (Surveyor)"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto20"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto20"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@drawable/photo_placeholder_background"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -1476,7 +2288,6 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <!-- Section header with icon -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1487,8 +2298,8 @@
                             <ImageView
                                 android:layout_width="28dp"
                                 android:layout_height="28dp"
-                                android:src="@drawable/ic_document"
-                                android:tint="@color/red_telkomsel"
+                                android:src="@drawable/ic_signature"
+                                app:tint="@color/red_telkomsel"
                                 android:layout_marginEnd="8dp"/>
 
                             <TextView
@@ -1501,7 +2312,6 @@
                                 android:fontFamily="sans-serif-medium"/>
                         </LinearLayout>
 
-                        <!-- Telkomsel Region -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1516,7 +2326,6 @@
                                 android:inputType="text"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- ZTE/Huawei Signature -->
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1583,11 +2392,11 @@
                                     android:layout_height="80dp"
                                     android:scaleType="fitCenter"
                                     android:background="@android:color/white"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
-                        <!-- TSEL NOP Signature -->
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1653,11 +2462,11 @@
                                     android:layout_height="80dp"
                                     android:scaleType="fitCenter"
                                     android:background="@android:color/white"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
-                        <!-- TSEL RTPDS Signature -->
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1723,11 +2532,11 @@
                                     android:layout_height="80dp"
                                     android:scaleType="fitCenter"
                                     android:background="@android:color/white"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
-                        <!-- TSEL RTPE/NF Signature -->
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1793,11 +2602,11 @@
                                     android:layout_height="80dp"
                                     android:scaleType="fitCenter"
                                     android:background="@android:color/white"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
-                        <!-- TELKOM Signature -->
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1863,11 +2672,11 @@
                                     android:layout_height="80dp"
                                     android:scaleType="fitCenter"
                                     android:background="@android:color/white"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
-                        <!-- TIF Signature -->
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -1933,13 +2742,13 @@
                                     android:layout_height="80dp"
                                     android:scaleType="fitCenter"
                                     android:background="@android:color/white"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Submit and Generate PDF Buttons -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

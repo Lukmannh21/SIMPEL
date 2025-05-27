@@ -65,6 +65,12 @@ class BASurveyBigActivity : AppCompatActivity() {
     private lateinit var inputDescription: EditText
     private lateinit var etTselRegion: EditText
 
+    // Photo components
+    private lateinit var photoButtons: Array<Button>
+    private lateinit var photoImageViews: Array<ImageView>
+    private lateinit var photoLabels: Array<String>
+    private val photoUris = HashMap<Int, Uri>()
+
     // Signature components
     private lateinit var etZteName: EditText
     private lateinit var etZteNik: EditText
@@ -212,6 +218,17 @@ class BASurveyBigActivity : AppCompatActivity() {
 
         btnGeneratePdf = findViewById(R.id.btnGeneratePdf)
         btnSubmitForm = findViewById(R.id.btnSubmitForm)
+
+        // Initialize Photo fields
+        photoButtons = Array(20) { i -> findViewById(resources.getIdentifier("btnUploadPhoto${i + 1}", "id", packageName)) }
+        photoImageViews = Array(20) { i -> findViewById(resources.getIdentifier("imgPhoto${i + 1}", "id", packageName)) }
+        photoLabels = arrayOf(
+            "Akses Gerbang", "Name Plate", "Sto Tampak Depan", "Foto Ruangan",
+            "Foto Rectifier", "Rectifier A", "Rectifier B", "Panel SDP AC",
+            "Propose Space Cabinet Big OLT", "Foto Rack Cabinet (Insert Frame)", "Foto Runaway",
+            "PLN Fase R", "PLN Fase S", "PLN Fase T", "Grounding", "Port Metro",
+            "OTB FA", "Bundle Core", "Ruang FTM", "Foto Selfie Teknisi (Surveyor)"
+        )
 
         // Setup signature button listeners
         setupSignatureButtons()
