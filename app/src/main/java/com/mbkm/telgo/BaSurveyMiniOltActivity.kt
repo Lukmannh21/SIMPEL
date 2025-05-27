@@ -167,6 +167,12 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     private val searchResults = ArrayList<BaSurveyMiniOltModel>()
     private lateinit var searchAdapter: BaSurveyMiniOltAdapter
 
+
+    //signature
+    private lateinit var etTselNopRegion: EditText
+    private lateinit var etTselRtpdsRegion: EditText
+    private lateinit var etTselRtpeNfRegion: EditText
+
     // Request codes
     private val REQUEST_CAMERA_PERMISSION = 100
     private val REQUEST_STORAGE_PERMISSION = 101
@@ -368,7 +374,10 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         etTselRtpeNfName = findViewById(R.id.etTselRtpeNfName)
         etTelkomName = findViewById(R.id.etTelkomName)
         etTifName = findViewById(R.id.etTifName)
-        tvTselRegion = findViewById(R.id.etTselRegion)
+
+        etTselNopRegion = findViewById(R.id.etTselNopRegion)
+        etTselRtpdsRegion = findViewById(R.id.etTselRtpdsRegion)
+        etTselRtpeNfRegion = findViewById(R.id.etTselRtpeNfRegion)
 
         // NIK fields
         etZteNik = findViewById(R.id.etZteNik)
@@ -1076,9 +1085,29 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         }
 
         // Check if region is entered
-        if (tvTselRegion.text.toString().isEmpty()) {
-            tvTselRegion.error = "Required field"
+        // Validasi untuk region Telkomsel yang baru
+        // Jika nama MGR NOP diisi, regionnya juga wajib diisi
+        if (etTselNopName.text.toString().isNotEmpty() && etTselNopRegion.text.toString().isEmpty()) {
+            etTselNopRegion.error = "Region MGR NOP wajib diisi"
             isValid = false
+        } else {
+            etTselNopRegion.error = null // Hapus error jika valid
+        }
+
+        // Jika nama MGR RTPDS diisi, regionnya juga wajib diisi
+        if (etTselRtpdsName.text.toString().isNotEmpty() && etTselRtpdsRegion.text.toString().isEmpty()) {
+            etTselRtpdsRegion.error = "Region MGR RTPDS wajib diisi"
+            isValid = false
+        } else {
+            etTselRtpdsRegion.error = null
+        }
+
+        // Jika nama MGR RTPE/NF diisi, regionnya juga wajib diisi
+        if (etTselRtpeNfName.text.toString().isNotEmpty() && etTselRtpeNfRegion.text.toString().isEmpty()) {
+            etTselRtpeNfRegion.error = "Region MGR RTPE/NF wajib diisi"
+            isValid = false
+        } else {
+            etTselRtpeNfRegion.error = null
         }
 
         // Check if at least one signature is uploaded
@@ -1248,7 +1277,7 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         tselNopData["nik"] = etTselNopNik.text.toString().trim()
         tselNopData["role"] = "MGR NOP"
         tselNopData["company"] = "PT. TELKOMSEL"
-        tselNopData["region"] = tvTselRegion.text.toString().trim()
+        tselNopData["region"] = etTselNopRegion.text.toString().trim() // Gunakan region spesifik NOP
         signaturesData["tselNop"] = tselNopData
 
         // TSEL RTPDS
@@ -1257,17 +1286,18 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         tselRtpdsData["nik"] = etTselRtpdsNik.text.toString().trim()
         tselRtpdsData["role"] = "MGR RTPDS"
         tselRtpdsData["company"] = "PT. TELKOMSEL"
-        tselRtpdsData["region"] = tvTselRegion.text.toString().trim()
+        tselRtpdsData["region"] = etTselRtpdsRegion.text.toString().trim() // Gunakan region spesifik RTPDS
         signaturesData["tselRtpds"] = tselRtpdsData
 
         // TSEL RTPE/NF
         val tselRtpeNfData = HashMap<String, String>()
         tselRtpeNfData["name"] = etTselRtpeNfName.text.toString().trim()
         tselRtpeNfData["nik"] = etTselRtpeNfNik.text.toString().trim()
-        tselRtpeNfData["role"] = "MGR RTPE"
+        tselRtpeNfData["role"] = "MGR RTPE" // atau MGR RTPE/NF sesuai kebutuhan
         tselRtpeNfData["company"] = "PT. TELKOMSEL"
-        tselRtpeNfData["region"] = tvTselRegion.text.toString().trim()
+        tselRtpeNfData["region"] = etTselRtpeNfRegion.text.toString().trim() // Gunakan region spesifik RTPE/NF
         signaturesData["tselRtpeNf"] = tselRtpeNfData
+
 
         // TELKOM
         val telkomData = HashMap<String, String>()
@@ -2209,26 +2239,29 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Second row: Telkomsel positions
         yPosition += boxHeight + verticalGap
 
+        // TSEL NOP dengan region spesifik
         drawSignatureBox(canvas, paint,
             leftMargin, yPosition,
-            "PT. TELKOMSEL", "MGR NOP\n" + tvTselRegion.text,
+            "PT. TELKOMSEL", "MGR NOP\n${etTselNopRegion.text}", // Tambahkan region NOP
             etTselNopName.text.toString(), boxWidth, boxHeight,
             imgTselNopSignature,
-            "NIK. " + etTselNopNik.text.toString())
+            "NIK. " + etTselNopNik.text.toString()) // NIK untuk TSEL NOP
 
+        // TSEL RTPDS dengan region spesifik
         drawSignatureBox(canvas, paint,
             leftMargin + boxWidth + horizontalGap, yPosition,
-            "PT. TELKOMSEL", "MGR RTPDS\n" + tvTselRegion.text,
+            "PT. TELKOMSEL", "MGR RTPDS\n${etTselRtpdsRegion.text}", // Tambahkan region RTPDS
             etTselRtpdsName.text.toString(), boxWidth, boxHeight,
             imgTselRtpdsSignature,
-            "NIK. " + etTselRtpdsNik.text.toString())
+            "NIK. " + etTselRtpdsNik.text.toString()) // NIK untuk TSEL RTPDS
 
+        // TSEL RTPE/NF dengan region spesifik
         drawSignatureBox(canvas, paint,
             leftMargin + (boxWidth + horizontalGap) * 2, yPosition,
-            "PT. TELKOMSEL", "MGR RTPE\n" + tvTselRegion.text,
+            "PT. TELKOMSEL", "MGR RTPE\n${etTselRtpeNfRegion.text}", // Tambahkan region RTPE/NF
             etTselRtpeNfName.text.toString(), boxWidth, boxHeight,
             imgTselRtpeNfSignature,
-            "NIK. " + etTselRtpeNfNik.text.toString())
+            "NIK. " + etTselRtpeNfNik.text.toString()) // NIK untuk TSEL RTPE/NF
     }
 
     private fun drawSignatureBox(canvas: Canvas, paint: Paint, x: Float, y: Float,
@@ -2569,7 +2602,13 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         etTselRtpeNfName.text.clear()
         etTelkomName.text.clear()
         etTifName.text.clear()
-        tvTselRegion.text.clear()
+
+
+
+        // Clear EditText region Telkomsel yang baru
+        etTselNopRegion.text.clear()
+        etTselRtpdsRegion.text.clear()
+        etTselRtpeNfRegion.text.clear()
 
         // Clear NIK fields
         etZteNik.text.clear()

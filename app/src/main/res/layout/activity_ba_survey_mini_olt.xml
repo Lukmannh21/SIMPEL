@@ -299,980 +299,7 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-            <!-- Survey Table Section with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                android:layout_marginBottom="24dp"
-                app:cardBackgroundColor="#FFFFFF">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            <!-- Section header with accent color -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Spesifikasi dan Kebutuhan"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:background="@color/red_telkomsel"
-                android:padding="12dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-            <!-- 1. Rack with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="1. Rack tempat Perangkat MINI OLT &amp; OTB"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/rackDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etRackResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etRackProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 2. Rectifier with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="2. Rectifier"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/rectifierDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etRectifierResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etRectifierProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 3. DC Power with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="3. Ketersediaan Daya DC"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/dcPowerDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etDcPowerResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etDcPowerProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 4. Baterai with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="4. Baterai"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/batteryDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etBatteryResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etBatteryProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 5. MCB with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="5. MCB untuk Pemasangan Mini OLT"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/mcbDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etMcbResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etMcbProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 6. Grounding with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="6. Grounding"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/groundingDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etGroundingResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etGroundingProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 7. Indoor Room with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="7. Indoor Room"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/indoorRoomDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etIndoorRoomResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etIndoorRoomProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 8. AC Power with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="8. Ketersediaan Daya AC"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/acPowerDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etAcPowerResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etAcPowerProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 9. Uplink with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F5F5F5"
-                        android:padding="8dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:text="9. BA Kesiapan Uplink"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/black"/>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            app:boxStrokeColor="@color/red_telkomsel"
-                            app:hintTextColor="@color/red_telkomsel">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/uplinkDropdown"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Type"
-                                android:inputType="none"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="12dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:completionThreshold="1"
-                                android:popupBackground="@android:color/white"
-                                android:dropDownHeight="wrap_content"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etUplinkResult"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Hasil Survey dan Uraian Pekerjaan"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <EditText
-                            android:id="@+id/etUplinkProposed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Kesepakatan / Proposed"
-                            android:inputType="textMultiLine"
-                            android:minLines="2"
-                            android:textColor="@android:color/black"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 10. Conduit with improved styling -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="#F5F5F5"
-                    android:padding="8dp"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text="10. Conduit"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black"/>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                        app:boxStrokeColor="@color/red_telkomsel"
-                        app:hintTextColor="@color/red_telkomsel">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/conduitDropdown"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Type"
-                            android:inputType="none"
-                            android:textColor="@android:color/black"
-                            android:textSize="16sp"
-                            android:paddingTop="12dp"
-                            android:paddingBottom="12dp"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:completionThreshold="1"
-                            android:popupBackground="@android:color/white"
-                            android:dropDownHeight="wrap_content"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    app:boxStrokeColor="@color/red_telkomsel"
-                    app:hintTextColor="@color/red_telkomsel">
-
-                <EditText
-                    android:id="@+id/etConduitResult"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Hasil Survey dan Uraian Pekerjaan"
-                    android:inputType="textMultiLine"
-                    android:minLines="2"
-                    android:textColor="@android:color/black"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    app:boxStrokeColor="@color/red_telkomsel"
-                    app:hintTextColor="@color/red_telkomsel">
-
-                    <EditText
-                        android:id="@+id/etConduitProposed"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Kesepakatan / Proposed"
-                        android:inputType="textMultiLine"
-                        android:minLines="2"
-                        android:textColor="@android:color/black"/>
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            </LinearLayout>
-            </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-                <!-- Signature Section with improved styling -->
+                <!-- Survey Table Section with improved styling -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -1290,6 +317,978 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:text="Spesifikasi dan Kebutuhan"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/white"
+                            android:background="@color/red_telkomsel"
+                            android:padding="12dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <!-- 1. Rack with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="1. Rack tempat Perangkat MINI OLT &amp; OTB"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/rackDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etRackResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etRackProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 2. Rectifier with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="2. Rectifier"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/rectifierDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etRectifierResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etRectifierProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 3. DC Power with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="3. Ketersediaan Daya DC"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/dcPowerDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etDcPowerResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etDcPowerProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 4. Baterai with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="4. Baterai"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/batteryDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etBatteryResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etBatteryProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 5. MCB with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="5. MCB untuk Pemasangan Mini OLT"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/mcbDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etMcbResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etMcbProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 6. Grounding with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="6. Grounding"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/groundingDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etGroundingResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etGroundingProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 7. Indoor Room with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="7. Indoor Room"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/indoorRoomDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etIndoorRoomResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etIndoorRoomProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 8. AC Power with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="8. Ketersediaan Daya AC"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/acPowerDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etAcPowerResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etAcPowerProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 9. Uplink with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp"
+                                android:layout_marginBottom="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="9. BA Kesiapan Uplink"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/uplinkDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etUplinkResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etUplinkProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <!-- 10. Conduit with improved styling -->
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="2dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:background="#F5F5F5"
+                                        android:padding="8dp"
+                                        android:gravity="center_vertical">
+
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="3"
+                                            android:text="10. Conduit"
+                                            android:textStyle="bold"
+                                            android:textColor="@android:color/black"/>
+
+                                        <com.google.android.material.textfield.TextInputLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                            app:boxStrokeColor="@color/red_telkomsel"
+                                            app:hintTextColor="@color/red_telkomsel">
+
+                                            <AutoCompleteTextView
+                                                android:id="@+id/conduitDropdown"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:hint="Type"
+                                                android:inputType="none"
+                                                android:textColor="@android:color/black"
+                                                android:textSize="16sp"
+                                                android:paddingTop="12dp"
+                                                android:paddingBottom="12dp"
+                                                android:paddingStart="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:completionThreshold="1"
+                                                android:popupBackground="@android:color/white"
+                                                android:dropDownHeight="wrap_content"/>
+                                        </com.google.android.material.textfield.TextInputLayout>
+                                    </LinearLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etConduitResult"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Hasil Survey dan Uraian Pekerjaan"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+
+                                        <EditText
+                                            android:id="@+id/etConduitProposed"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Kesepakatan / Proposed"
+                                            android:inputType="textMultiLine"
+                                            android:minLines="2"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Signature Section with improved styling -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="24dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:text="Signatures"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -1303,26 +1302,6 @@
                             android:orientation="vertical"
                             android:padding="16dp">
 
-                            <!-- Telkomsel Region -->
-                            <com.google.android.material.textfield.TextInputLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="16dp"
-                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                                app:boxStrokeColor="@color/red_telkomsel"
-                                app:hintTextColor="@color/red_telkomsel">
-
-                                <EditText
-                                    android:id="@+id/etTselRegion"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="Telkomsel Region (e.g., SUMBAGSEL)"
-                                    android:inputType="text"
-                                    android:paddingVertical="16dp"
-                                    android:textColor="@android:color/black"/>
-                            </com.google.android.material.textfield.TextInputLayout>
-
-                            <!-- ZTE/Huawei Signature with improved styling -->
                             <androidx.cardview.widget.CardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1330,13 +1309,11 @@
                                 app:cardElevation="2dp"
                                 android:layout_marginBottom="16dp"
                                 app:cardBackgroundColor="#F8F9FA">
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
                                     android:padding="16dp">
-
                                     <TextView
                                         android:id="@+id/tvZteCompany"
                                         android:layout_width="match_parent"
@@ -1345,7 +1322,6 @@
                                         android:textStyle="bold"
                                         android:textColor="@color/red_telkomsel"
                                         android:layout_marginBottom="8dp"/>
-
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1353,7 +1329,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etZteName"
                                             android:layout_width="match_parent"
@@ -1362,8 +1337,6 @@
                                             android:inputType="textPersonName"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
-                                    <!-- NIK/NIP field -->
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1371,7 +1344,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etZteNik"
                                             android:layout_width="match_parent"
@@ -1380,7 +1352,6 @@
                                             android:inputType="text"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
                                     <Button
                                         android:id="@+id/btnZteSignature"
                                         android:layout_width="match_parent"
@@ -1388,7 +1359,6 @@
                                         android:text="Add Signature"
                                         android:backgroundTint="@color/red_telkomsel"
                                         android:textColor="@android:color/white"/>
-
                                     <ImageView
                                         android:id="@+id/imgZteSignature"
                                         android:layout_width="150dp"
@@ -1400,7 +1370,6 @@
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
 
-                            <!-- TSEL NOP Signature with improved styling -->
                             <androidx.cardview.widget.CardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1408,13 +1377,11 @@
                                 app:cardElevation="2dp"
                                 android:layout_marginBottom="16dp"
                                 app:cardBackgroundColor="#F8F9FA">
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
                                     android:padding="16dp">
-
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1422,7 +1389,6 @@
                                         android:textStyle="bold"
                                         android:textColor="@color/red_telkomsel"
                                         android:layout_marginBottom="8dp"/>
-
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1430,7 +1396,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTselNopName"
                                             android:layout_width="match_parent"
@@ -1439,16 +1404,13 @@
                                             android:inputType="textPersonName"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
-                                    <!-- NIK/NIP field -->
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginBottom="12dp"
+                                        android:layout_marginBottom="8dp"
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTselNopNik"
                                             android:layout_width="match_parent"
@@ -1457,7 +1419,22 @@
                                             android:inputType="text"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="12dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+                                        <EditText
+                                            android:id="@+id/etTselNopRegion"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Telkomsel Region (MGR NOP)"
+                                            android:inputType="text"
+                                            android:paddingVertical="16dp"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
                                     <Button
                                         android:id="@+id/btnTselNopSignature"
                                         android:layout_width="match_parent"
@@ -1465,7 +1442,6 @@
                                         android:text="Add Signature"
                                         android:backgroundTint="@color/red_telkomsel"
                                         android:textColor="@android:color/white"/>
-
                                     <ImageView
                                         android:id="@+id/imgTselNopSignature"
                                         android:layout_width="150dp"
@@ -1477,7 +1453,6 @@
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
 
-                            <!-- TSEL RTPDS Signature with improved styling -->
                             <androidx.cardview.widget.CardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1485,13 +1460,11 @@
                                 app:cardElevation="2dp"
                                 android:layout_marginBottom="16dp"
                                 app:cardBackgroundColor="#F8F9FA">
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
                                     android:padding="16dp">
-
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1499,7 +1472,6 @@
                                         android:textStyle="bold"
                                         android:textColor="@color/red_telkomsel"
                                         android:layout_marginBottom="8dp"/>
-
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1507,7 +1479,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTselRtpdsName"
                                             android:layout_width="match_parent"
@@ -1516,16 +1487,13 @@
                                             android:inputType="textPersonName"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
-                                    <!-- NIK/NIP field -->
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginBottom="12dp"
+                                        android:layout_marginBottom="8dp"
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTselRtpdsNik"
                                             android:layout_width="match_parent"
@@ -1534,7 +1502,22 @@
                                             android:inputType="text"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="12dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+                                        <EditText
+                                            android:id="@+id/etTselRtpdsRegion"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Telkomsel Region (MGR RTPDS)"
+                                            android:inputType="text"
+                                            android:paddingVertical="16dp"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
                                     <Button
                                         android:id="@+id/btnTselRtpdsSignature"
                                         android:layout_width="match_parent"
@@ -1542,7 +1525,6 @@
                                         android:text="Add Signature"
                                         android:backgroundTint="@color/red_telkomsel"
                                         android:textColor="@android:color/white"/>
-
                                     <ImageView
                                         android:id="@+id/imgTselRtpdsSignature"
                                         android:layout_width="150dp"
@@ -1554,7 +1536,6 @@
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
 
-                            <!-- TSEL RTPE/NF Signature with improved styling -->
                             <androidx.cardview.widget.CardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1562,13 +1543,11 @@
                                 app:cardElevation="2dp"
                                 android:layout_marginBottom="16dp"
                                 app:cardBackgroundColor="#F8F9FA">
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
                                     android:padding="16dp">
-
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1576,7 +1555,6 @@
                                         android:textStyle="bold"
                                         android:textColor="@color/red_telkomsel"
                                         android:layout_marginBottom="8dp"/>
-
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1584,7 +1562,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTselRtpeNfName"
                                             android:layout_width="match_parent"
@@ -1593,16 +1570,13 @@
                                             android:inputType="textPersonName"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
-                                    <!-- NIK/NIP field -->
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginBottom="12dp"
+                                        android:layout_marginBottom="8dp"
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTselRtpeNfNik"
                                             android:layout_width="match_parent"
@@ -1611,7 +1585,22 @@
                                             android:inputType="text"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="12dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        app:boxStrokeColor="@color/red_telkomsel"
+                                        app:hintTextColor="@color/red_telkomsel">
+                                        <EditText
+                                            android:id="@+id/etTselRtpeNfRegion"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Telkomsel Region (MGR RTPE/NF)"
+                                            android:inputType="text"
+                                            android:paddingVertical="16dp"
+                                            android:textColor="@android:color/black"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
                                     <Button
                                         android:id="@+id/btnTselRtpeNfSignature"
                                         android:layout_width="match_parent"
@@ -1619,7 +1608,6 @@
                                         android:text="Add Signature"
                                         android:backgroundTint="@color/red_telkomsel"
                                         android:textColor="@android:color/white"/>
-
                                     <ImageView
                                         android:id="@+id/imgTselRtpeNfSignature"
                                         android:layout_width="150dp"
@@ -1631,7 +1619,6 @@
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
 
-                            <!-- TELKOM Signature with improved styling -->
                             <androidx.cardview.widget.CardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -1639,13 +1626,11 @@
                                 app:cardElevation="2dp"
                                 android:layout_marginBottom="16dp"
                                 app:cardBackgroundColor="#F8F9FA">
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
                                     android:padding="16dp">
-
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1653,7 +1638,6 @@
                                         android:textStyle="bold"
                                         android:textColor="@color/red_telkomsel"
                                         android:layout_marginBottom="8dp"/>
-
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1661,7 +1645,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTelkomName"
                                             android:layout_width="match_parent"
@@ -1670,8 +1653,6 @@
                                             android:inputType="textPersonName"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
-                                    <!-- NIK/NIP field -->
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1679,7 +1660,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTelkomNik"
                                             android:layout_width="match_parent"
@@ -1688,7 +1668,6 @@
                                             android:inputType="text"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
                                     <Button
                                         android:id="@+id/btnTelkomSignature"
                                         android:layout_width="match_parent"
@@ -1696,7 +1675,6 @@
                                         android:text="Add Signature"
                                         android:backgroundTint="@color/red_telkomsel"
                                         android:textColor="@android:color/white"/>
-
                                     <ImageView
                                         android:id="@+id/imgTelkomSignature"
                                         android:layout_width="150dp"
@@ -1708,20 +1686,17 @@
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
 
-                            <!-- TIF Signature with improved styling -->
                             <androidx.cardview.widget.CardView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 app:cardCornerRadius="8dp"
                                 app:cardElevation="2dp"
                                 app:cardBackgroundColor="#F8F9FA">
-
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
                                     android:padding="16dp">
-
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1729,7 +1704,6 @@
                                         android:textStyle="bold"
                                         android:textColor="@color/red_telkomsel"
                                         android:layout_marginBottom="8dp"/>
-
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1737,7 +1711,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTifName"
                                             android:layout_width="match_parent"
@@ -1746,8 +1719,6 @@
                                             android:inputType="textPersonName"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
-                                    <!-- NIK/NIP field -->
                                     <com.google.android.material.textfield.TextInputLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -1755,7 +1726,6 @@
                                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                         app:boxStrokeColor="@color/red_telkomsel"
                                         app:hintTextColor="@color/red_telkomsel">
-
                                         <EditText
                                             android:id="@+id/etTifNik"
                                             android:layout_width="match_parent"
@@ -1764,7 +1734,6 @@
                                             android:inputType="text"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
-
                                     <Button
                                         android:id="@+id/btnTifSignature"
                                         android:layout_width="match_parent"
@@ -1772,7 +1741,6 @@
                                         android:text="Add Signature"
                                         android:backgroundTint="@color/red_telkomsel"
                                         android:textColor="@android:color/white"/>
-
                                     <ImageView
                                         android:id="@+id/imgTifSignature"
                                         android:layout_width="150dp"

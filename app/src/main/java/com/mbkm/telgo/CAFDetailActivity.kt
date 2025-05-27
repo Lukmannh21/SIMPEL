@@ -30,10 +30,10 @@ class CAFDetailActivity : AppCompatActivity() {
     private lateinit var tvTowerHeight: TextView
     private lateinit var tvCreatedDate: TextView
     private lateinit var tvCreatedBy: TextView
-    private lateinit var btnDownloadExcel: Button
+    private lateinit var btnDownloadPdf: Button  // Renamed from btnDownloadExcel
 
     private var cafId: String = ""
-    private var excelUrl: String = ""
+    private var pdfUrl: String = ""  // Renamed from excelUrl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,15 +68,15 @@ class CAFDetailActivity : AppCompatActivity() {
         tvTowerHeight = findViewById(R.id.tvTowerHeight)
         tvCreatedDate = findViewById(R.id.tvCreatedDate)
         tvCreatedBy = findViewById(R.id.tvCreatedBy)
-        btnDownloadExcel = findViewById(R.id.btnDownloadExcel)
+        btnDownloadPdf = findViewById(R.id.btnDownloadExcel)  // ID remains same for compatibility
 
         // Set button listeners
         btnBack.setOnClickListener {
             finish()
         }
 
-        btnDownloadExcel.setOnClickListener {
-            downloadExcelFile()
+        btnDownloadPdf.setOnClickListener {
+            downloadPdfFile()  // Changed from downloadExcelFile()
         }
     }
 
@@ -105,9 +105,9 @@ class CAFDetailActivity : AppCompatActivity() {
                         tvCreatedDate.text = data["createdAt"] as? String ?: "N/A"
                         tvCreatedBy.text = data["createdBy"] as? String ?: "N/A"
 
-                        // Store Excel URL for download
-                        excelUrl = data["excelUrl"] as? String ?: ""
-                        btnDownloadExcel.isEnabled = excelUrl.isNotEmpty()
+                        // Store PDF URL for download (still using excelUrl field for compatibility)
+                        pdfUrl = data["excelUrl"] as? String ?: ""
+                        btnDownloadPdf.isEnabled = pdfUrl.isNotEmpty()
                     }
                 } else {
                     Toast.makeText(this, "CAF not found", Toast.LENGTH_SHORT).show()
@@ -122,9 +122,9 @@ class CAFDetailActivity : AppCompatActivity() {
             }
     }
 
-    private fun downloadExcelFile() {
-        if (excelUrl.isEmpty()) {
-            Toast.makeText(this, "Excel file not available", Toast.LENGTH_SHORT).show()
+    private fun downloadPdfFile() {  // Renamed from downloadExcelFile()
+        if (pdfUrl.isEmpty()) {
+            Toast.makeText(this, "PDF file not available", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -137,16 +137,16 @@ class CAFDetailActivity : AppCompatActivity() {
 
         // Create local file
         val siteId = tvSiteId.text.toString().replace(" ", "_")
-        val fileName = "CAF_${siteId}.xls"
+        val fileName = "CAF_${siteId}.pdf"  // Changed extension to PDF
         val localFile = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
 
-        // Download Excel
-        storage.getReferenceFromUrl(excelUrl)
+        // Download PDF
+        storage.getReferenceFromUrl(pdfUrl)
             .getFile(localFile)
             .addOnSuccessListener {
                 loadingDialog.dismiss()
 
-                // Open the Excel file
+                // Open the PDF file
                 val uri = FileProvider.getUriForFile(
                     this,
                     "com.mbkm.telgo.fileprovider",
@@ -154,14 +154,14 @@ class CAFDetailActivity : AppCompatActivity() {
                 )
 
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(uri, "application/vnd.ms-excel")
+                intent.setDataAndType(uri, "application/pdf")  // Changed MIME type to PDF
                 intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
 
-                startActivity(Intent.createChooser(intent, "Open Excel with..."))
+                startActivity(Intent.createChooser(intent, "Open PDF with..."))
             }
             .addOnFailureListener { e ->
                 loadingDialog.dismiss()
-                Toast.makeText(this, "Error downloading Excel: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error downloading PDF: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }
