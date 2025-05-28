@@ -1870,17 +1870,17 @@ class BASurveyBigActivity : AppCompatActivity() {
                     isDither = true
                 }
 
-                // *** IMPROVED PHOTO DOCUMENTATION SECTION ***
+                // *** IMPROVED PHOTO DOCUMENTATION SECTION (for HashMap<Int, Uri>) ***
                 if (photoUris.isNotEmpty()) {
-                    // Create a new page for photos
+                    // Buat halaman baru untuk foto
                     page = createPage()
                     canvas = page.canvas
                     y = marginTop
 
-                    // Draw photo page header
+                    // Header halaman foto
                     drawHeader(executor)
 
-                    // Add photo section title
+                    // Judul section foto
                     val photoTitlePaint = Paint(titlePaint).apply {
                         textAlign = Paint.Align.CENTER
                         textSize = 16f
@@ -1888,7 +1888,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                     canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
                     y += 40f
 
-                    // Layout constants for photo grid (2x2)
+                    // Konstanta grid foto (2 kolom)
                     val photoAreaWidth = maxX - marginX
                     val photoContainerWidth = photoAreaWidth / 2 - 10f
                     val photoWidth = photoContainerWidth
@@ -1899,12 +1899,21 @@ class BASurveyBigActivity : AppCompatActivity() {
                     var currentCol = 0
                     var photosOnCurrentPage = 0
 
-                    // Process photos in order
-                    for (i in 0 until photoUris.size) {
-                        val uri = photoUris[i] ?: continue
-                        val caption = if (i < photoLabelTexts.size) photoLabelTexts[i] else "Photo ${i+1}"
+                    // Urutkan foto berdasar key, lalu pasangkan dengan caption
+                    val photoList = photoUris.entries
+                        .sortedBy { it.key }
+                        .map { entry ->
+                            val key = entry.key // biasanya mulai dari 1
+                            val uri = entry.value
+                            // Caption ambil dari photoLabelTexts jika ada, fallback ke "Photo <key>"
+                            val caption = if (key in photoLabelTexts.indices) photoLabelTexts[key] else "Photo ${key + 1}"
+                            Pair(uri, caption)
+                        }
 
-                        // Check if we need a new page
+                    for ((_, photoPair) in photoList.withIndex()) {
+                        val (uri, caption) = photoPair
+
+                        // Cek perlu halaman baru
                         if (currentCol == 0 && (photosOnCurrentPage == 4 || y + rowHeight > pageHeight - marginBottom)) {
                             drawFooter()
                             document.finishPage(page)
@@ -1917,72 +1926,49 @@ class BASurveyBigActivity : AppCompatActivity() {
                             photosOnCurrentPage = 0
                         }
 
-                        // Calculate position
+                        // Hitung posisi kolom
                         val photoX = if (currentCol == 0) marginX else marginX + photoContainerWidth + 20f
 
-                        // Draw caption
+                        // Gambar caption
                         canvas.drawText(caption, photoX, y + 12f, boldPaint)
 
-                        // Draw photo frame
+                        // Frame foto
                         val photoRect = RectF(photoX, y + 15f, photoX + photoWidth, y + 15f + photoHeight)
 
-                        // LOAD HIGH QUALITY BITMAP
+                        // Render foto kualitas tinggi
                         try {
-                            // Use contentResolver to get high-quality bitmap
                             contentResolver.openInputStream(uri)?.use { inputStream ->
-                                // Decode options
                                 val options = BitmapFactory.Options().apply {
                                     inPreferredConfig = Bitmap.Config.ARGB_8888
-                                    // First decode with inJustDecodeBounds to get dimensions
                                     inJustDecodeBounds = true
                                 }
-
                                 BitmapFactory.decodeStream(inputStream, null, options)
-
-                                // Calculate optimal sample size
                                 val sampleSize = calculateOptimalSampleSize(
                                     options.outWidth, options.outHeight,
                                     photoWidth.toInt(), photoHeight.toInt()
                                 )
-
-                                // Decode again with the proper sample size
                                 options.inJustDecodeBounds = false
                                 options.inSampleSize = sampleSize
-
-                                // Reset stream and decode
                                 contentResolver.openInputStream(uri)?.use { input2 ->
                                     val bitmap = BitmapFactory.decodeStream(input2, null, options)
-
                                     if (bitmap != null) {
-                                        // Calculate scaling to fit while maintaining aspect ratio
                                         val originalRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
-
                                         val displayWidth: Float
                                         val displayHeight: Float
-
                                         if (originalRatio > 1) {
-                                            // Landscape
                                             displayWidth = photoWidth
                                             displayHeight = photoWidth / originalRatio
                                         } else {
-                                            // Portrait
                                             displayHeight = photoHeight
                                             displayWidth = photoHeight * originalRatio
                                         }
-
-                                        // Center the photo
                                         val xOffset = photoX + (photoWidth - displayWidth) / 2
                                         val yOffset = y + 15f + (photoHeight - displayHeight) / 2
-
-                                        // Draw with high quality
                                         val destRect = RectF(
                                             xOffset, yOffset,
                                             xOffset + displayWidth, yOffset + displayHeight
                                         )
-
                                         canvas.drawBitmap(bitmap, null, destRect, photoRenderPaint)
-
-                                        // Add border
                                         val borderPaint = Paint().apply {
                                             style = Paint.Style.STROKE
                                             strokeWidth = 0.5f
@@ -1994,7 +1980,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                             }
                         } catch (e: Exception) {
                             Log.e("PDF", "Error drawing photo: ${e.message}")
-                            // Draw placeholder if image fails
                             val borderPaint = Paint().apply {
                                 style = Paint.Style.STROKE
                                 strokeWidth = 0.5f
@@ -2004,17 +1989,17 @@ class BASurveyBigActivity : AppCompatActivity() {
                             canvas.drawText("Error loading photo", photoX + 20, y + 100, paint)
                         }
 
-                        // Update position tracking
+                        // Update posisi grid
                         currentCol = (currentCol + 1) % 2
                         photosOnCurrentPage++
 
-                        // Move to next row if needed
+                        // Pindah baris jika sudah dua kolom
                         if (currentCol == 0) {
                             y += rowHeight
                         }
                     }
 
-                    // Finish the last photo page
+                    // Halaman foto terakhir, beri footer
                     drawFooter()
                     document.finishPage(page)
                 }
