@@ -1647,7 +1647,7 @@
                                     android:id="@+id/tvPhotoLabel5"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="5. Foto Rectifier"
+                                    android:text="5. Rectifier A"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -1687,7 +1687,7 @@
                                     android:id="@+id/tvPhotoLabel6"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="6. Rectifier A"
+                                    android:text="6. Rectifier B"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -1727,7 +1727,7 @@
                                     android:id="@+id/tvPhotoLabel7"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="7. Rectifier B"
+                                    android:text="7. Panel SDP AC"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -1767,7 +1767,7 @@
                                     android:id="@+id/tvPhotoLabel8"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="8. Panel SDP AC"
+                                    android:text="8. Propose Space Cabinet Big OLT"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -1807,7 +1807,7 @@
                                     android:id="@+id/tvPhotoLabel9"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="9. Propose Space Cabinet Big OLT"
+                                    android:text="9. Foto Rack Cabinet (Insert Frame)"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -1847,7 +1847,7 @@
                                     android:id="@+id/tvPhotoLabel10"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="10. Foto Rack Cabinet (Insert Frame)"
+                                    android:text="10. Foto Runaway"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -1887,7 +1887,7 @@
                                     android:id="@+id/tvPhotoLabel11"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="11. Foto Runaway"
+                                    android:text="11. PLN Fase R"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -1927,7 +1927,7 @@
                                     android:id="@+id/tvPhotoLabel12"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="12. PLN Fase R"
+                                    android:text="12. PLN Fase S"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -1967,7 +1967,7 @@
                                     android:id="@+id/tvPhotoLabel13"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="13. PLN Fase S"
+                                    android:text="13. PLN Fase T"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -2007,7 +2007,7 @@
                                     android:id="@+id/tvPhotoLabel14"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="14. PLN Fase T"
+                                    android:text="14. Grounding"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -2047,7 +2047,7 @@
                                     android:id="@+id/tvPhotoLabel15"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="15. Grounding"
+                                    android:text="15. Port Metro"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -2087,7 +2087,7 @@
                                     android:id="@+id/tvPhotoLabel16"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="16. Port Metro"
+                                    android:text="16. OTB FA"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -2127,7 +2127,7 @@
                                     android:id="@+id/tvPhotoLabel17"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="17. OTB FA"
+                                    android:text="17. Bundle Core"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -2167,7 +2167,7 @@
                                     android:id="@+id/tvPhotoLabel18"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="18. Bundle Core"
+                                    android:text="18. Ruang FTM"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -2207,7 +2207,7 @@
                                     android:id="@+id/tvPhotoLabel19"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="19. Ruang FTM"
+                                    android:text="19. Foto Selfie Teknisi (Surveyor)"
                                     android:textStyle="bold"
                                     android:textSize="16sp"
                                     android:textColor="@color/red_telkomsel"
@@ -2228,47 +2228,6 @@
                                     android:visibility="gone"/>
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/photoContainer20"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="2dp"
-                            app:strokeWidth="1dp"
-                            app:strokeColor="#E0E0E0">
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:padding="16dp">
-                                <TextView
-                                    android:id="@+id/tvPhotoLabel20"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="20. Foto Selfie Teknisi (Surveyor)"
-                                    android:textStyle="bold"
-                                    android:textSize="16sp"
-                                    android:textColor="@color/red_telkomsel"
-                                    android:layout_marginBottom="8dp" />
-                                <Button
-                                    android:id="@+id/btnUploadPhoto20"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Upload Photo"
-                                    android:backgroundTint="@color/red_telkomsel"/>
-                                <ImageView
-                                    android:id="@+id/imgPhoto20"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="150dp"
-                                    android:scaleType="centerCrop"
-                                    android:background="@drawable/photo_placeholder_background"
-                                    android:layout_marginTop="8dp"
-                                    android:visibility="gone"/>
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 

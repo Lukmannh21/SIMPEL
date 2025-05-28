@@ -107,22 +107,21 @@ class BASurveyBigActivity : AppCompatActivity() {
         "2. Name Plate",
         "3. Sto Tampak Depan",
         "4. Foto Ruangan",
-        "5. Foto Rectifier",
-        "6. Rectifier A",
-        "7. Rectifier B",
-        "8. Panel SDP AC",
-        "9. Propose Space Cabinet Big OLT",
-        "10. Foto Rack Cabinet (Insert Frame)",
-        "11. Foto Runaway",
-        "12. PLN Fase R",
-        "13. PLN Fase S",
-        "14. PLN Fase T",
-        "15. Grounding",
-        "16. Port Metro",
-        "17. OTB FA",
-        "18. Bundle Core",
-        "19. Ruang FTM",
-        "20. Foto Selfie Teknisi (Surveyor)"
+        "5. Rectifier A",
+        "6. Rectifier B",
+        "7. Panel SDP AC",
+        "8. Propose Space Cabinet Big OLT",
+        "9. Foto Rack Cabinet (Insert Frame)",
+        "10. Foto Runaway",
+        "11. PLN Fase R",
+        "12. PLN Fase S",
+        "13. PLN Fase T",
+        "14. Grounding",
+        "15. Port Metro",
+        "16. OTB FA",
+        "17. Bundle Core",
+        "18. Ruang FTM",
+        "19. Foto Selfie Teknisi (Surveyor)"
     )
 
     // Permissions
@@ -246,7 +245,7 @@ class BASurveyBigActivity : AppCompatActivity() {
 
         // Initialize photo buttons directly with better logging
         try {
-            photoButtons = Array(20) { i ->
+            photoButtons = Array(19) { i ->
                 findViewById<Button>(resources.getIdentifier("btnUploadPhoto${i+1}", "id", packageName)).apply {
                     val finalIndex = i // Save the index for the closure
                     setOnClickListener {
@@ -257,11 +256,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 }
             }
 
-            photoImageViews = Array(20) { i ->
+            photoImageViews = Array(19) { i ->
                 findViewById(resources.getIdentifier("imgPhoto${i+1}", "id", packageName))
             }
 
-            photoLabels = Array(20) { i ->
+            photoLabels = Array(19) { i ->
                 findViewById(resources.getIdentifier("tvPhotoLabel${i+1}", "id", packageName))
             }
 
@@ -494,7 +493,7 @@ class BASurveyBigActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Check for photo URLs using pattern photo1, photo2, etc.
-                for (i in 0 until 20) {
+                for (i in 0 until 19) {
                     val photoUrl = data["photo${i+1}"] as? String
                     if (!photoUrl.isNullOrEmpty()) {
                         try {
