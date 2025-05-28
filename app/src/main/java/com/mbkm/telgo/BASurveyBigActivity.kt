@@ -37,8 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-
-
+import kotlin.math.min
 
 class BASurveyBigActivity : AppCompatActivity() {
 
@@ -139,6 +138,8 @@ class BASurveyBigActivity : AppCompatActivity() {
     private val REQUEST_SIGNATURE_TSEL_RTPE = 204
     private val REQUEST_SIGNATURE_TELKOM = 205
     private val REQUEST_SIGNATURE_TIF = 206
+
+    private val marginX = 50f
 
     // Temporary file for camera
     private var tempPhotoUri: Uri? = null
@@ -479,7 +480,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                     loadSignatureData(data, "tselRtpdsName", "tselRtpdsNik", "tselRtpdsSignature", etTselRtpdsName, etTselRtpdsNik, imgTselRtpdsSignature)
                     loadSignatureData(data, "tselRtpeNfName", "tselRtpeNfNik", "tselRtpeNfSignature", etTselRtpeNfName, etTselRtpeNfNik, imgTselRtpeNfSignature)
 
-                    // Load photos
+                    // Load photos with improved quality
                     loadPhotosFromFirebase(data)
                 }
             }
@@ -498,13 +499,23 @@ class BASurveyBigActivity : AppCompatActivity() {
                     if (!photoUrl.isNullOrEmpty()) {
                         try {
                             val storageRef = storage.getReferenceFromUrl(photoUrl)
-                            val ONE_MEGABYTE: Long = 1024 * 1024
-                            val bytes = storageRef.getBytes(ONE_MEGABYTE).await()
-                            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+                            // Tambahkan opsi untuk mendapatkan resolusi lebih tinggi
+                            val FIVE_MEGABYTE: Long = 5 * 1024 * 1024  // Naikkan ke 5MB untuk kualitas lebih baik
+
+                            val bytes = storageRef.getBytes(FIVE_MEGABYTE).await()
+
+                            // Decode dengan opsi konfigurasi berkualitas tinggi
+                            val options = BitmapFactory.Options().apply {
+                                inPreferredConfig = Bitmap.Config.ARGB_8888
+                            }
+                            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
 
                             withContext(Dispatchers.Main) {
                                 photoImageViews[i].setImageBitmap(bitmap)
                                 photoImageViews[i].visibility = View.VISIBLE
+                                // Simpan bitmap dalam tag untuk digunakan saat generate PDF
+                                photoImageViews[i].tag = bitmap
                             }
                         } catch (e: Exception) {
                             Log.e("BASurveyBig", "Error loading photo ${i+1}: ${e.message}")
@@ -806,17 +817,14 @@ class BASurveyBigActivity : AppCompatActivity() {
                             // Store URI for later use
                             photoUris[currentPhotoIndex] = uri
 
-                            // Show the photo in UI
-                            photoImageViews[currentPhotoIndex].setImageURI(uri)
-                            photoImageViews[currentPhotoIndex].visibility = View.VISIBLE
+                            // Show the photo in UI with high quality
+                            displayHighQualityImage(uri, photoImageViews[currentPhotoIndex])
 
                             Toast.makeText(this, "Photo captured successfully", Toast.LENGTH_SHORT).show()
                         } else if (currentImageView != null) {
                             // For signature
                             try {
-                                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-                                currentImageView?.setImageBitmap(bitmap)
-                                currentImageView?.visibility = View.VISIBLE
+                                displayHighQualityImage(uri!!, currentImageView!!)
                             } catch (e: Exception) {
                                 Log.e("BASurveyBig", "Error setting signature image: ${e.message}")
                             }
@@ -838,23 +846,13 @@ class BASurveyBigActivity : AppCompatActivity() {
                             if (currentImageView != null) {
                                 // For signature
                                 Log.d("BASurveyBig", "Setting signature image")
-                                val inputStream = contentResolver.openInputStream(uri)
-                                val bitmap = BitmapFactory.decodeStream(inputStream)
-                                inputStream?.close()
-
-                                if (bitmap != null) {
-                                    currentImageView?.setImageBitmap(bitmap)
-                                    currentImageView?.visibility = View.VISIBLE
-                                    Toast.makeText(this, "Signature image selected", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(this, "Cannot load selected image", Toast.LENGTH_SHORT).show()
-                                }
+                                displayHighQualityImage(uri, currentImageView!!)
+                                Toast.makeText(this, "Signature image selected", Toast.LENGTH_SHORT).show()
                             } else if (currentPhotoIndex >= 0) {
                                 // For photo
                                 Log.d("BASurveyBig", "Setting photo image for index: $currentPhotoIndex")
                                 photoUris[currentPhotoIndex] = uri
-                                photoImageViews[currentPhotoIndex].setImageURI(uri)
-                                photoImageViews[currentPhotoIndex].visibility = View.VISIBLE
+                                displayHighQualityImage(uri, photoImageViews[currentPhotoIndex])
                                 Toast.makeText(this, "Photo selected successfully", Toast.LENGTH_SHORT).show()
                             } else {
                                 Log.e("BASurveyBig", "Invalid state: no current image view or photo index")
@@ -873,6 +871,55 @@ class BASurveyBigActivity : AppCompatActivity() {
         } else if (resultCode == RESULT_CANCELED) {
             Log.d("BASurveyBig", "Image selection cancelled")
             Toast.makeText(this, "Image selection cancelled", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // New method for displaying high quality images
+    private fun displayHighQualityImage(uri: Uri, imageView: ImageView) {
+        try {
+            val options = BitmapFactory.Options().apply {
+                inPreferredConfig = Bitmap.Config.ARGB_8888
+                inJustDecodeBounds = true
+            }
+
+            // First decode bounds only to determine dimensions
+            contentResolver.openInputStream(uri)?.use { input ->
+                BitmapFactory.decodeStream(input, null, options)
+            }
+
+            // Calculate optimal sample size for UI display (preserving memory)
+            val maxDimension = 1024 // Maximum dimension for UI
+            var inSampleSize = 1
+
+            if (options.outHeight > maxDimension || options.outWidth > maxDimension) {
+                val heightRatio = Math.round(options.outHeight.toFloat() / maxDimension.toFloat())
+                val widthRatio = Math.round(options.outWidth.toFloat() / maxDimension.toFloat())
+                inSampleSize = Math.max(1, Math.min(heightRatio, widthRatio))
+            }
+
+            // Decode again with sample size
+            options.inJustDecodeBounds = false
+            options.inSampleSize = inSampleSize
+
+            contentResolver.openInputStream(uri)?.use { input ->
+                val bitmap = BitmapFactory.decodeStream(input, null, options)
+                if (bitmap != null) {
+                    imageView.setImageBitmap(bitmap)
+                    imageView.visibility = View.VISIBLE
+
+                    // For keeping original URI for later use
+                    imageView.tag = uri
+                } else {
+                    // Fallback to simple URI loading if bitmap loading fails
+                    imageView.setImageURI(uri)
+                    imageView.visibility = View.VISIBLE
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("BASurveyBig", "Error loading high quality image: ${e.message}", e)
+            // Fallback to basic URI display
+            imageView.setImageURI(uri)
+            imageView.visibility = View.VISIBLE
         }
     }
 
@@ -1118,7 +1165,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                                 if (imageView.drawable != null && imageView.visibility == View.VISIBLE) {
                                     val bitmap = (imageView.drawable as BitmapDrawable).bitmap
                                     val baos = java.io.ByteArrayOutputStream()
-                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 95, baos) // Tingkatkan kualitas ke 95
                                     val data = baos.toByteArray()
 
                                     val storageRef = storage.reference.child(storagePath)
@@ -1129,22 +1176,60 @@ class BASurveyBigActivity : AppCompatActivity() {
                                 }
                             }
 
-                            // Handle photo uploads
+                            // Handle photo uploads with high quality
                             if (photoUris.isNotEmpty()) {
                                 for ((index, uri) in photoUris) {
                                     val photoPath = "ba_survey_big_olt_photos/${formId}/photo${index+1}_${UUID.randomUUID()}.jpg"
                                     val photoRef = storage.reference.child(photoPath)
 
                                     try {
-                                        // Upload the photo and wait for completion
+                                        // Upload high-quality image
                                         contentResolver.openInputStream(uri)?.use { inputStream ->
-                                            val bytes = inputStream.readBytes()
-                                            val uploadTask = photoRef.putBytes(bytes).await()
-                                            val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
+                                            // Load high-quality bitmap first
+                                            val options = BitmapFactory.Options().apply {
+                                                inPreferredConfig = Bitmap.Config.ARGB_8888
+                                                inJustDecodeBounds = true
+                                            }
+                                            BitmapFactory.decodeStream(inputStream, null, options)
 
-                                            // Add directly to formData
-                                            formData["photo${index+1}"] = downloadUrl
-                                            formData["photoLabel${index+1}"] = photoLabelTexts[index]
+                                            // Calculate sample size - use small sample size for high quality
+                                            val sampleSize = calculateOptimalSampleSize(
+                                                options.outWidth, options.outHeight,
+                                                2048, 2048 // Target high but reasonable resolution
+                                            )
+
+                                            // Set options for actual decoding
+                                            options.inJustDecodeBounds = false
+                                            options.inSampleSize = sampleSize
+
+                                            // Decode with optimal quality
+                                            contentResolver.openInputStream(uri)?.use { input2 ->
+                                                val bitmap = BitmapFactory.decodeStream(input2, null, options)
+
+                                                // Compress with high quality
+                                                val baos = java.io.ByteArrayOutputStream()
+                                                bitmap?.compress(Bitmap.CompressFormat.JPEG, 95, baos)
+                                                val bytes = baos.toByteArray()
+
+                                                // Upload and get URL
+                                                val uploadTask = photoRef.putBytes(bytes).await()
+                                                val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
+
+                                                // Add directly to formData
+                                                formData["photo${index+1}"] = downloadUrl
+                                                formData["photoLabel${index+1}"] = photoLabelTexts[index]
+                                            }
+                                        } ?: run {
+                                            // Fallback if loading bitmap fails
+                                            val bytes = contentResolver.openInputStream(uri)?.readBytes()
+                                            if (bytes != null) {
+                                                val uploadTask = photoRef.putBytes(bytes).await()
+                                                val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
+
+                                                // Add directly to formData
+                                                formData["photo${index+1}"] = downloadUrl
+                                                formData["photoLabel${index+1}"] = photoLabelTexts[index]
+                                            }
                                         }
                                     } catch (e: Exception) {
                                         Log.e("BASurveyBig", "Error uploading photo $index: ${e.message}")
@@ -1263,6 +1348,67 @@ class BASurveyBigActivity : AppCompatActivity() {
         return "Pada hari ini, $currentDate, telah dilakukan survey bersama terhadap pekerjaan \"$projectTitle\" " +
                 "yang dilaksanakan oleh $executor yang terikat Perjanjian Pemborongan \"$contractNumber\" " +
                 "dengan hasil sebagai berikut:"
+    }
+
+    // Helper function to calculate optimal sampling size for bitmap loading
+    private fun calculateOptimalSampleSize(width: Int, height: Int, reqWidth: Int, reqHeight: Int): Int {
+        // Calculate optimal sample size for memory efficiency
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+
+            // Use power-of-2 for efficient memory usage
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+
+        // Important: ensure we don't downsample too much
+        // Limit maximum inSampleSize to maintain quality
+        return min(inSampleSize, 4) // Maximum downsampling 1/4 of original size
+    }
+
+    // Improved high-quality bitmap scaling
+    private fun highQualityScaleBitmap(source: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+        val width = source.width
+        val height = source.height
+
+        val ratio = Math.min(
+            maxWidth.toFloat() / width.toFloat(),
+            maxHeight.toFloat() / height.toFloat()
+        )
+
+        // If minimal scaling needed, use original bitmap
+        if (ratio > 0.9) {
+            return source
+        }
+
+        val newWidth = (width * ratio).toInt()
+        val newHeight = (height * ratio).toInt()
+
+        // Create high-quality bitmap configuration
+        val scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+        val scaleCanvas = Canvas(scaledBitmap)
+
+        // Configure paint for maximum quality
+        val paint = Paint().apply {
+            isFilterBitmap = true  // Crucial to prevent pixelation when scaling
+            isAntiAlias = true     // Smooth edges
+            isDither = true        // Improve color quality
+            color = Color.BLACK    // Ensure correct color
+        }
+
+        // Scale with high-accuracy matrix
+        val scaleMatrix = Matrix().apply {
+            setScale(ratio, ratio)
+        }
+
+        // Draw bitmap to canvas with high quality
+        scaleCanvas.drawBitmap(source, scaleMatrix, paint)
+
+        return scaledBitmap
     }
 
     private suspend fun generateStyledPdf(): File {
@@ -1509,163 +1655,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                     canvas.drawText(currentDate, maxX, y + 10f, boldPaint) // Right-aligned position
                 }
 
-                // Function to scale bitmap while maintaining aspect ratio
-                fun scaleBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
-                    val width = bitmap.width
-                    val height = bitmap.height
-
-                    val ratio = Math.min(
-                        maxWidth.toFloat() / width.toFloat(),
-                        maxHeight.toFloat() / height.toFloat()
-                    )
-
-                    val newWidth = (width * ratio).toInt()
-                    val newHeight = (height * ratio).toInt()
-
-                    return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
-                }
-
-                // Add signatures to last page with formatted titles
-                fun drawSignaturesWithFormattedTitles(
-                    canvas: Canvas,
-                    region: String,
-                    yStart: Float,
-                    paint: Paint,
-                    boldPaint: Paint,
-                    executor: String // Add executor parameter
-                ) {
-                    val boxWidth = (595 - (marginX * 2)) / 3 // Signature box width
-                    val signatureBoxHeight = 150f // Signature box height
-                    var y = yStart
-
-                    // Paint for drawing box outline
-                    val boxPaint = Paint().apply {
-                        color = Color.BLACK
-                        style = Paint.Style.STROKE // Only draw outline
-                        strokeWidth = 2f
-                    }
-
-                    // Function to draw formatted company name with special format (2 or 3 lines)
-                    fun drawFormattedTitle(
-                        canvas: Canvas,
-                        lines: List<String>,
-                        x: Float,
-                        y: Float,
-                        maxWidth: Float,
-                        boldPaint: Paint
-                    ): Float {
-                        val lineHeight = boldPaint.textSize + 4f // Height of each line
-                        var currentY = y
-
-                        for (line in lines) {
-                            canvas.drawText(line, x, currentY, boldPaint)
-                            currentY += lineHeight
-                        }
-
-                        return currentY // Return Y position after last text
-                    }
-
-                    // Function to draw signature box
-                    fun drawSignatureBox(
-                        lines: List<String>,
-                        name: String,
-                        nik: String,
-                        signature: Drawable?,
-                        x: Float,
-                        y: Float
-                    ) {
-                        // Draw box
-                        val rect = RectF(x, y, x + boxWidth, y + signatureBoxHeight)
-                        canvas.drawRect(rect, boxPaint)
-
-                        // Write company name with 2 or 3-line format
-                        val titleY = drawFormattedTitle(
-                            canvas,
-                            lines,
-                            x + 10f,
-                            y + 20f,
-                            boxWidth - 20f,
-                            boldPaint
-                        )
-
-                        // Draw signature in center of box
-                        val signatureY = titleY + 10f
-                        if (signature != null) {
-                            val bitmap = (signature as BitmapDrawable).bitmap
-                            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 100, 50, false)
-                            canvas.drawBitmap(
-                                scaledBitmap,
-                                x + (boxWidth / 2 - 50f),
-                                signatureY,
-                                null
-                            )
-                        }
-
-                        // Write name and NIK below signature
-                        val nameY = y + signatureBoxHeight - 40f // Fixed aligned position
-                        canvas.drawText("($name)", x + 10f, nameY, paint)
-                        canvas.drawText("NIK: $nik", x + 10f, nameY + 20f, paint)
-                    }
-
-                    // Get signature inputs
-                    val zteName = findViewById<EditText>(R.id.etZteName).text.toString()
-                    val zteNik = findViewById<EditText>(R.id.etZteNik).text.toString()
-                    val zteSignature = findViewById<ImageView>(R.id.imgZteSignature).drawable
-
-                    val tifName = findViewById<EditText>(R.id.etTifName).text.toString()
-                    val tifNik = findViewById<EditText>(R.id.etTifNik).text.toString()
-                    val tifSignature = findViewById<ImageView>(R.id.imgTifSignature).drawable
-
-                    val telkomName = findViewById<EditText>(R.id.etTelkomName).text.toString()
-                    val telkomNik = findViewById<EditText>(R.id.etTelkomNik).text.toString()
-                    val telkomSignature = findViewById<ImageView>(R.id.imgTelkomSignature).drawable
-
-                    val tselNopName = findViewById<EditText>(R.id.etTselNopName).text.toString()
-                    val tselNopNik = findViewById<EditText>(R.id.etTselNopNik).text.toString()
-                    val tselNopSignature = findViewById<ImageView>(R.id.imgTselNopSignature).drawable
-                    val tselRtpdsName = findViewById<EditText>(R.id.etTselRtpdsName).text.toString()
-                    val tselRtpdsNik = findViewById<EditText>(R.id.etTselRtpdsNik).text.toString()
-                    val tselRtpdsSignature = findViewById<ImageView>(R.id.imgTselRtpdsSignature).drawable
-
-                    val tselRtpeName = findViewById<EditText>(R.id.etTselRtpeNfName).text.toString()
-                    val tselRtpeNik = findViewById<EditText>(R.id.etTselRtpeNfNik).text.toString()
-                    val tselRtpeSignature = findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
-
-                    // First row (Executor, TIF, TELKOM)
-                    val surveyCompany = if (executor == "PT Huawei Tech Investment")
-                        listOf("PT. Huawei Tech Investment", "TIM SURVEY")
-                    else
-                        listOf("PT. ZTE INDONESIA", "TIM SURVEY")
-
-                    drawSignatureBox(
-                        surveyCompany,
-                        zteName, zteNik, zteSignature, marginX, y
-                    )
-                    drawSignatureBox(
-                        listOf("PT. TIF", "TIM SURVEY"),
-                        tifName, tifNik, tifSignature, marginX + boxWidth, y
-                    )
-                    drawSignatureBox(
-                        listOf("PT. TELKOM", "MGR NDPS TR1"),
-                        telkomName, telkomNik, telkomSignature, marginX + (2 * boxWidth), y
-                    )
-
-                    // Second row (NOP, RTPDS, RTPE)
-                    y += signatureBoxHeight + 20f
-                    drawSignatureBox(
-                        listOf("PT. TELKOMSEL", "MGR NOP", region),
-                        tselNopName, tselNopNik, tselNopSignature, marginX, y
-                    )
-                    drawSignatureBox(
-                        listOf("PT. TELKOMSEL", "MGR RTPDS", region),
-                        tselRtpdsName, tselRtpdsNik, tselRtpdsSignature, marginX + boxWidth, y
-                    )
-                    drawSignatureBox(
-                        listOf("PT. TELKOMSEL", "MGR RTPE", region),
-                        tselRtpeName, tselRtpeNik, tselRtpeSignature, marginX + (2 * boxWidth), y
-                    )
-                }
-
                 drawHeader(executor)
 
                 // Project Information
@@ -1874,156 +1863,161 @@ class BASurveyBigActivity : AppCompatActivity() {
                 drawFooter()
                 document.finishPage(page)
 
+                // Enhanced photo rendering paint for high quality images
                 val photoRenderPaint = Paint().apply {
-                    isFilterBitmap = true // Crucial for preventing pixelation when scaling/drawing
-                    isAntiAlias = true   // For smoother edges
-                    isDither = true      // Improves color rendering
+                    isFilterBitmap = true
+                    isAntiAlias = true
+                    isDither = true
                 }
 
-                // *** PHOTO DOCUMENTATION SECTION ***
-                // *** IMPROVED PHOTO DOCUMENTATION SECTION WITH HIGH QUALITY IMAGES ***
+                // *** IMPROVED PHOTO DOCUMENTATION SECTION ***
                 if (photoUris.isNotEmpty()) {
-                    // Load and prepare photos with high quality settings
-                    val photoBitmaps = mutableListOf<Pair<Bitmap, String>>()
+                    // Create a new page for photos
+                    page = createPage()
+                    canvas = page.canvas
+                    y = marginTop
 
-                    for (i in 0 until 20) {
-                        val uri = photoUris[i]
-                        if (uri != null) {
-                            try {
-                                // Use options for high quality bitmap loading
-                                val options = BitmapFactory.Options().apply {
-                                    inPreferredConfig = Bitmap.Config.ARGB_8888  // Use highest quality config
-                                    inMutable = true
-                                }
+                    // Draw photo page header
+                    drawHeader(executor)
 
-                                val inputStream = contentResolver.openInputStream(uri)
-                                val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
-                                inputStream?.close()
-
-                                if (bitmap != null) {
-                                    photoBitmaps.add(Pair(bitmap, photoLabelTexts[i]))
-                                }
-                            } catch (e: Exception) {
-                                Log.e("BASurveyBig", "Error loading photo $i: ${e.message}")
-                            }
-                        }
+                    // Add photo section title
+                    val photoTitlePaint = Paint(titlePaint).apply {
+                        textAlign = Paint.Align.CENTER
+                        textSize = 16f
                     }
+                    canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
+                    y += 40f
 
-                    // If we have photos, create high-quality photo pages
-                    if (photoBitmaps.isNotEmpty()) {
-                        // Create a new page for photos
-                        page = createPage()
-                        canvas = page.canvas
-                        y = marginTop
+                    // Layout constants for photo grid (2x2)
+                    val photoAreaWidth = maxX - marginX
+                    val photoContainerWidth = photoAreaWidth / 2 - 10f
+                    val photoWidth = photoContainerWidth
+                    val photoHeight = 190f
+                    val captionHeight = 30f
+                    val rowHeight = photoHeight + captionHeight + 20f
 
-                        // Draw photo page header
-                        drawHeader(executor)
+                    var currentCol = 0
+                    var photosOnCurrentPage = 0
 
-                        // Add photo section title
-                        val photoTitlePaint = Paint(titlePaint).apply {
-                            textAlign = Paint.Align.CENTER
-                            textSize = 16f
+                    // Process photos in order
+                    for (i in 0 until photoUris.size) {
+                        val uri = photoUris[i] ?: continue
+                        val caption = if (i < photoLabelTexts.size) photoLabelTexts[i] else "Photo ${i+1}"
+
+                        // Check if we need a new page
+                        if (currentCol == 0 && (photosOnCurrentPage == 4 || y + rowHeight > pageHeight - marginBottom)) {
+                            drawFooter()
+                            document.finishPage(page)
+                            page = createPage()
+                            canvas = page.canvas
+                            y = marginTop
+                            drawHeader(executor)
+                            canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
+                            y += 40f
+                            photosOnCurrentPage = 0
                         }
-                        canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
-                        y += 40f
 
-                        // Layout constants for photo grid (2x2)
-                        val photoAreaWidth = maxX - marginX
-                        val photoContainerWidth = photoAreaWidth / 2 - 10f // 2 columns with 10f gap between
-                        val photoWidth = photoContainerWidth + 20f // 10f padding on each side
-                        val photoHeight = 190f // Increased height for better quality display
-                        val captionHeight = 30f // Space for caption
-                        val rowHeight = photoHeight + captionHeight + 30f // Total height for photo + caption + spacing
+                        // Calculate position
+                        val photoX = if (currentCol == 0) marginX else marginX + photoContainerWidth + 20f
 
-                        // Local variables for grid placement
-                        var currentCol = 0
-                        var photosOnCurrentPage = 0
+                        // Draw caption
+                        canvas.drawText(caption, photoX, y + 12f, boldPaint)
 
-                        // Draw photos in a 2x2 grid with high quality
-                        for (i in photoBitmaps.indices) {
-                            val (bitmap, caption) = photoBitmaps[i]
+                        // Draw photo frame
+                        val photoRect = RectF(photoX, y + 15f, photoX + photoWidth, y + 15f + photoHeight)
 
-                            // Check if we need a new row
-                            if (currentCol == 0 && (photosOnCurrentPage == 4 || y + rowHeight > pageHeight - marginBottom)) {
-                                // End current page and start a new one
-                                drawFooter()
-                                document.finishPage(page)
-                                page = createPage()
-                                canvas = page.canvas
-                                y = marginTop
-                                drawHeader(executor)
+                        // LOAD HIGH QUALITY BITMAP
+                        try {
+                            // Use contentResolver to get high-quality bitmap
+                            contentResolver.openInputStream(uri)?.use { inputStream ->
+                                // Decode options
+                                val options = BitmapFactory.Options().apply {
+                                    inPreferredConfig = Bitmap.Config.ARGB_8888
+                                    // First decode with inJustDecodeBounds to get dimensions
+                                    inJustDecodeBounds = true
+                                }
 
-                                // Reset page state
-                                photosOnCurrentPage = 0
+                                BitmapFactory.decodeStream(inputStream, null, options)
 
-                                // Add photo section title for each new page
-                                canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
-                                y += 40f
+                                // Calculate optimal sample size
+                                val sampleSize = calculateOptimalSampleSize(
+                                    options.outWidth, options.outHeight,
+                                    photoWidth.toInt(), photoHeight.toInt()
+                                )
+
+                                // Decode again with the proper sample size
+                                options.inJustDecodeBounds = false
+                                options.inSampleSize = sampleSize
+
+                                // Reset stream and decode
+                                contentResolver.openInputStream(uri)?.use { input2 ->
+                                    val bitmap = BitmapFactory.decodeStream(input2, null, options)
+
+                                    if (bitmap != null) {
+                                        // Calculate scaling to fit while maintaining aspect ratio
+                                        val originalRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+
+                                        val displayWidth: Float
+                                        val displayHeight: Float
+
+                                        if (originalRatio > 1) {
+                                            // Landscape
+                                            displayWidth = photoWidth
+                                            displayHeight = photoWidth / originalRatio
+                                        } else {
+                                            // Portrait
+                                            displayHeight = photoHeight
+                                            displayWidth = photoHeight * originalRatio
+                                        }
+
+                                        // Center the photo
+                                        val xOffset = photoX + (photoWidth - displayWidth) / 2
+                                        val yOffset = y + 15f + (photoHeight - displayHeight) / 2
+
+                                        // Draw with high quality
+                                        val destRect = RectF(
+                                            xOffset, yOffset,
+                                            xOffset + displayWidth, yOffset + displayHeight
+                                        )
+
+                                        canvas.drawBitmap(bitmap, null, destRect, photoRenderPaint)
+
+                                        // Add border
+                                        val borderPaint = Paint().apply {
+                                            style = Paint.Style.STROKE
+                                            strokeWidth = 0.5f
+                                            color = Color.BLACK
+                                        }
+                                        canvas.drawRect(destRect, borderPaint)
+                                    }
+                                }
                             }
-
-                            // Calculate position for this photo
-                            val photoX = if (currentCol == 0) marginX else marginX + photoContainerWidth + 20f
-
-                            // Draw caption first
-                            val captionPaint = Paint(boldPaint).apply {
-                                textSize = 10f
-                            }
-                            canvas.drawText(caption, photoX, y + 12f, captionPaint)
-
-                            // Draw photo frame
-                            val photoFramePaint = Paint().apply {
+                        } catch (e: Exception) {
+                            Log.e("PDF", "Error drawing photo: ${e.message}")
+                            // Draw placeholder if image fails
+                            val borderPaint = Paint().apply {
                                 style = Paint.Style.STROKE
                                 strokeWidth = 0.5f
-                                color = Color.GRAY
+                                color = Color.BLACK
                             }
-                            val photoRect = RectF(photoX, y + 15f, photoX + photoWidth, y + 15f + photoHeight)
-                            canvas.drawRect(photoRect, photoFramePaint)
-
-                            // Use high-quality scaling for the PDF
-                            val scaledBitmap = highQualityScaleBitmap(bitmap, photoWidth.toInt(), photoHeight.toInt())
-
-                            // Center the scaled bitmap in the frame
-                            val offsetX = (photoWidth - scaledBitmap.width) / 2
-                            val offsetY = (photoHeight - scaledBitmap.height) / 2
-                            canvas.drawBitmap(
-                                scaledBitmap,
-                                photoX + offsetX,
-                                y + 15f + offsetY,
-                                photoRenderPaint // Apply the quality paint here
-                            )
-
-                            // Move to next column or row as needed
-                            currentCol = (currentCol + 1) % 2
-                            photosOnCurrentPage++
-
-                            // If we've completed a row of 2 photos, move to next row
-                            if (currentCol == 0) {
-                                y += rowHeight
-                            }
-
-                            // Clean up bitmap memory
-                            if (scaledBitmap != bitmap) {
-                                scaledBitmap.recycle()
-                            }
+                            canvas.drawRect(photoRect, borderPaint)
+                            canvas.drawText("Error loading photo", photoX + 20, y + 100, paint)
                         }
 
-                        // Finish the last photo page
-                        drawFooter()
-                        document.finishPage(page)
+                        // Update position tracking
+                        currentCol = (currentCol + 1) % 2
+                        photosOnCurrentPage++
 
-                        // Clean up original bitmaps to avoid memory leaks
-                        photoBitmaps.forEach { (bitmap, _) ->
-                            try {
-                                if (!bitmap.isRecycled) {
-                                    bitmap.recycle()
-                                }
-                            } catch (e: Exception) {
-                                // Ignore recycling errors
-                            }
+                        // Move to next row if needed
+                        if (currentCol == 0) {
+                            y += rowHeight
                         }
                     }
-                }
 
+                    // Finish the last photo page
+                    drawFooter()
+                    document.finishPage(page)
+                }
 
                 // Save document with better error handling
                 try {
@@ -2118,38 +2112,162 @@ class BASurveyBigActivity : AppCompatActivity() {
         return createdFile!!
     }
 
-    // Function for high-quality bitmap scaling (Updated for clarity)
-    private fun highQualityScaleBitmap(source: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
-        val width = source.width
-        val height = source.height
+    // Function to draw signatures grid with formatted titles
+    private fun drawSignaturesWithFormattedTitles(
+        canvas: Canvas,
+        region: String,
+        yStart: Float,
+        paint: Paint,
+        boldPaint: Paint,
+        executor: String
+    ) {
+        val boxWidth = (595 - (marginX * 2)) / 3 // Signature box width
+        val signatureBoxHeight = 150f // Signature box height
+        var y = yStart
 
-        val ratio = Math.min(
-            maxWidth.toFloat() / width.toFloat(),
-            maxHeight.toFloat() / height.toFloat()
-        )
-
-        val newWidth = (width * ratio).toInt()
-        val newHeight = (height * ratio).toInt()
-
-        // If no scaling needed, return original (but consider ARGB_8888 copy)
-        if (newWidth == width && newHeight == height) {
-            return source.copy(Bitmap.Config.ARGB_8888, true) ?: source
+        // Paint for drawing box outline
+        val boxPaint = Paint().apply {
+            color = Color.BLACK
+            style = Paint.Style.STROKE
+            strokeWidth = 2f
         }
 
-        val scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
-        val scaleCanvas = Canvas(scaledBitmap)
+        // Function to draw formatted company name with special format (2 or 3 lines)
+        fun drawFormattedTitle(
+            canvas: Canvas,
+            lines: List<String>,
+            x: Float,
+            y: Float,
+            maxWidth: Float,
+            boldPaint: Paint
+        ): Float {
+            val lineHeight = boldPaint.textSize + 4f // Height of each line
+            var currentY = y
 
-        val paint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG)
+            for (line in lines) {
+                canvas.drawText(line, x, currentY, boldPaint)
+                currentY += lineHeight
+            }
 
-        val scaleMatrix = Matrix()
-        scaleMatrix.setScale(ratio, ratio)
-        scaleCanvas.drawBitmap(source, scaleMatrix, paint)
+            return currentY // Return Y position after last text
+        }
 
-        return scaledBitmap
-    }
+        // Function to draw signature box
+        fun drawSignatureBox(
+            lines: List<String>,
+            name: String,
+            nik: String,
+            signature: Drawable?,
+            x: Float,
+            y: Float
+        ) {
+            // Draw box
+            val rect = RectF(x, y, x + boxWidth, y + signatureBoxHeight)
+            canvas.drawRect(rect, boxPaint)
 
-    private fun scaleBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
-        return highQualityScaleBitmap(bitmap, maxWidth, maxHeight) // Use high quality scaling
+            // Write company name with 2 or 3-line format
+            val titleY = drawFormattedTitle(
+                canvas,
+                lines,
+                x + 10f,
+                y + 20f,
+                boxWidth - 20f,
+                boldPaint
+            )
+
+            // Draw signature in center of box
+            val signatureY = titleY + 10f
+            if (signature != null) {
+                try {
+                    val bitmap = (signature as BitmapDrawable).bitmap
+
+                    // Enhanced signature rendering
+                    val signatureWidth = 100f
+                    val signatureHeight = 50f
+
+                    val renderPaint = Paint().apply {
+                        isAntiAlias = true
+                        isFilterBitmap = true
+                        isDither = true
+                    }
+
+                    val destRect = RectF(
+                        x + (boxWidth / 2 - signatureWidth / 2),
+                        signatureY,
+                        x + (boxWidth / 2 + signatureWidth / 2),
+                        signatureY + signatureHeight
+                    )
+
+                    canvas.drawBitmap(bitmap, null, destRect, renderPaint)
+                } catch (e: Exception) {
+                    Log.e("BASurveyBig", "Error rendering signature: ${e.message}")
+                }
+            }
+
+            // Write name and NIK below signature
+            val nameY = y + signatureBoxHeight - 40f // Fixed aligned position
+            canvas.drawText("($name)", x + 10f, nameY, paint)
+            canvas.drawText("NIK: $nik", x + 10f, nameY + 20f, paint)
+        }
+
+        // Get signature inputs
+        val zteName = findViewById<EditText>(R.id.etZteName).text.toString()
+        val zteNik = findViewById<EditText>(R.id.etZteNik).text.toString()
+        val zteSignature = findViewById<ImageView>(R.id.imgZteSignature).drawable
+
+        val tifName = findViewById<EditText>(R.id.etTifName).text.toString()
+        val tifNik = findViewById<EditText>(R.id.etTifNik).text.toString()
+        val tifSignature = findViewById<ImageView>(R.id.imgTifSignature).drawable
+
+        val telkomName = findViewById<EditText>(R.id.etTelkomName).text.toString()
+        val telkomNik = findViewById<EditText>(R.id.etTelkomNik).text.toString()
+        val telkomSignature = findViewById<ImageView>(R.id.imgTelkomSignature).drawable
+
+        val tselNopName = findViewById<EditText>(R.id.etTselNopName).text.toString()
+        val tselNopNik = findViewById<EditText>(R.id.etTselNopNik).text.toString()
+        val tselNopSignature = findViewById<ImageView>(R.id.imgTselNopSignature).drawable
+
+        val tselRtpdsName = findViewById<EditText>(R.id.etTselRtpdsName).text.toString()
+        val tselRtpdsNik = findViewById<EditText>(R.id.etTselRtpdsNik).text.toString()
+        val tselRtpdsSignature = findViewById<ImageView>(R.id.imgTselRtpdsSignature).drawable
+
+        val tselRtpeName = findViewById<EditText>(R.id.etTselRtpeNfName).text.toString()
+        val tselRtpeNik = findViewById<EditText>(R.id.etTselRtpeNfNik).text.toString()
+        val tselRtpeSignature = findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
+
+        // First row (Executor, TIF, TELKOM)
+        val surveyCompany = if (executor == "PT Huawei Tech Investment")
+            listOf("PT. Huawei Tech Investment", "TIM SURVEY")
+        else
+            listOf("PT. ZTE INDONESIA", "TIM SURVEY")
+
+        drawSignatureBox(
+            surveyCompany,
+            zteName, zteNik, zteSignature, marginX, y
+        )
+        drawSignatureBox(
+            listOf("PT. TIF", "TIM SURVEY"),
+            tifName, tifNik, tifSignature, marginX + boxWidth, y
+        )
+        drawSignatureBox(
+            listOf("PT. TELKOM", "MGR NDPS TR1"),
+            telkomName, telkomNik, telkomSignature, marginX + (2 * boxWidth), y
+        )
+
+        // Second row (NOP, RTPDS, RTPE)
+        y += signatureBoxHeight + 20f
+        drawSignatureBox(
+            listOf("PT. TELKOMSEL", "MGR NOP", region),
+            tselNopName, tselNopNik, tselNopSignature, marginX, y
+        )
+        drawSignatureBox(
+            listOf("PT. TELKOMSEL", "MGR RTPDS", region),
+            tselRtpdsName, tselRtpdsNik, tselRtpdsSignature, marginX + boxWidth, y
+        )
+        drawSignatureBox(
+            listOf("PT. TELKOMSEL", "MGR RTPE", region),
+            tselRtpeName, tselRtpeNik, tselRtpeSignature, marginX + (2 * boxWidth), y
+        )
     }
 
     // Function to draw justified text using wrapText
@@ -2192,7 +2310,7 @@ class BASurveyBigActivity : AppCompatActivity() {
         return currentY
     }
 
-    // Improved wrapText function to handle text overflow issues
+    // Improved wrapText function with better handling of very long words
     private fun wrapText(text: String, maxWidth: Float, paint: Paint): List<String> {
         // If text is empty, return empty list
         if (text.isEmpty()) return listOf("")
