@@ -629,15 +629,7 @@ class CAFActivity : AppCompatActivity() {
             isValid = false
         }
 
-        if (etSiteType.text.toString().isEmpty()) {
-            etSiteType.error = "Required field"
-            isValid = false
-        }
-
-        if (etClient.text.toString().isEmpty()) {
-            etClient.error = "Required field"
-            isValid = false
-        }
+       
 
         return isValid
     }
