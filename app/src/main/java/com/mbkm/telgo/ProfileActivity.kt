@@ -33,6 +33,7 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
     private lateinit var ivProfileImage: ImageView
     private lateinit var tvVerificationStatus: TextView
     private lateinit var verificationBadge: View
+    private lateinit var cardSecuritySettings: CardView
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -68,6 +69,8 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
         ivProfileImage = findViewById(R.id.ivProfileImage)
         tvVerificationStatus = findViewById(R.id.tvVerificationStatus)
         verificationBadge = findViewById(R.id.verificationBadge)
+
+        cardSecuritySettings = findViewById(R.id.cardSecuritySettings)
 
         // Load user role and status from SharedPreferences
         val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
@@ -134,6 +137,15 @@ class ProfileActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             }.start()
         }
+        cardSecuritySettings.setOnClickListener {
+            it.animate().scaleX(0.96f).scaleY(0.96f).setDuration(100).withEndAction {
+                it.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
+                val intent = Intent(this, SecuritySettingsActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            }.start()
+        }
+
     }
 
     override fun onResume() {

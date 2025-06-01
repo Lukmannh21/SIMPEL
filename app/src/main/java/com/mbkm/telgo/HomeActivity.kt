@@ -19,6 +19,7 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
+
 class HomeActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var bottomNavigationView: BottomNavigationView

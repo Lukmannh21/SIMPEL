@@ -132,6 +132,33 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Fingerprint Login Option - ADDED -->
+                    <LinearLayout
+                        android:id="@+id/fingerprintPromptLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="12dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Login with fingerprint"
+                            android:textColor="@color/red_telkomsel_dark" />
+
+                        <ImageButton
+                            android:id="@+id/btnFingerprint"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_fingerprint"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            app:tint="@color/red_telkomsel_dark"
+                            android:contentDescription="Login with fingerprint" />
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/tvForgotPassword"
                         android:layout_width="wrap_content"

@@ -23,12 +23,14 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var biometricHelper: BiometricHelper
 
     private lateinit var tilEmail: TextInputLayout
     private lateinit var tilPassword: TextInputLayout
     private lateinit var etEmail: TextInputEditText
     private lateinit var etPassword: TextInputEditText
     private lateinit var btnLogin: Button
+    private lateinit var btnFingerprint: ImageButton
     private lateinit var tvForgotPassword: TextView
     private lateinit var tvRegister: TextView
     private lateinit var progressBar: ProgressBar
@@ -37,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var ivShowPassword: ImageView
     private lateinit var welcomeText: TextView
     private lateinit var telgoText: TextView
+    private lateinit var fingerprintPromptLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        biometricHelper = BiometricHelper(this)
 
         // Initialize UI components
         initializeViews()
@@ -58,6 +62,24 @@ class LoginActivity : AppCompatActivity() {
 
             if (validateInputs(email, password)) {
                 loginUser(email, password)
+            }
+        }
+
+        btnFingerprint.setOnClickListener {
+            animateButtonClick(it)
+            val email = etEmail.text.toString().trim()
+
+            if (email.isEmpty()) {
+                tilEmail.error = "Email is required"
+                shakeView(tilEmail)
+                return@setOnClickListener
+            }
+
+            if (biometricHelper.isFingerprintEnabledForEmail(email)) {
+                // Show biometric prompt
+                showBiometricLogin(email)
+            } else {
+                Toast.makeText(this, "Fingerprint login not enabled for this account", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -79,6 +101,18 @@ class LoginActivity : AppCompatActivity() {
         ivShowPassword.setOnClickListener {
             togglePasswordVisibility()
         }
+
+        // Add email field change listener to check for fingerprint availability
+        etEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val email = s.toString().trim()
+                updateFingerprintVisibility(email)
+            }
+        })
     }
 
     private fun initializeViews() {
@@ -87,6 +121,7 @@ class LoginActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
+        btnFingerprint = findViewById(R.id.btnFingerprint)
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
         tvRegister = findViewById(R.id.tvRegister)
         progressBar = findViewById(R.id.progressBar)
@@ -95,11 +130,48 @@ class LoginActivity : AppCompatActivity() {
         ivShowPassword = findViewById(R.id.ivShowPassword)
         welcomeText = findViewById(R.id.welcomeTextView)
         telgoText = findViewById(R.id.telgoTextView)
+        fingerprintPromptLayout = findViewById(R.id.fingerprintPromptLayout)
     }
 
     private fun setupTextWatchers() {
         etEmail.addTextChangedListener(createTextWatcher(tilEmail))
         etPassword.addTextChangedListener(createTextWatcher(tilPassword))
+    }
+
+    private fun updateFingerprintVisibility(email: String) {
+        if (biometricHelper.isBiometricAvailable() && email.isNotEmpty()) {
+            if (biometricHelper.isFingerprintEnabledForEmail(email)) {
+                fingerprintPromptLayout.visibility = View.VISIBLE
+                btnFingerprint.visibility = View.VISIBLE
+            } else {
+                fingerprintPromptLayout.visibility = View.GONE
+                btnFingerprint.visibility = View.GONE
+            }
+        } else {
+            fingerprintPromptLayout.visibility = View.GONE
+            btnFingerprint.visibility = View.GONE
+        }
+    }
+
+    private fun showBiometricLogin(email: String) {
+        biometricHelper.showBiometricPrompt(
+            this,
+            onSuccess = {
+                val password = biometricHelper.getStoredPassword(email)
+                if (password != null) {
+                    // Authenticate with Firebase using the stored credentials
+                    loginUser(email, password)
+                } else {
+                    Toast.makeText(this, "No stored credentials found. Please log in with your password", Toast.LENGTH_LONG).show()
+                }
+            },
+            onError = { _, message ->
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            },
+            onFailed = {
+                Toast.makeText(this, "Authentication failed. Please try again or use your password", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     private fun createTextWatcher(textInputLayout: TextInputLayout): TextWatcher {
@@ -159,6 +231,10 @@ class LoginActivity : AppCompatActivity() {
             .setDuration(500)
             .setStartDelay(600)
             .start()
+
+        // Make fingerprint button invisible initially (will show based on email)
+        fingerprintPromptLayout.visibility = View.GONE
+        btnFingerprint.visibility = View.GONE
     }
 
     private fun animateButtonClick(view: View) {
@@ -217,6 +293,9 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null) {
+                        // Store credentials for future fingerprint authentication
+                        biometricHelper.storeCredentialsAfterLogin(email, password)
+
                         // Check if user is admin before updating last login
                         checkIfUserIsAdmin(user.uid)
                     } else {
@@ -263,12 +342,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun updateLastLogin(userId: String) {
-        // Update last login timestamp
-        val timestamp = "2025-05-16 01:54:44" // Using provided timestamp
+        // Update last login timestamp with current date/time
+        val timestamp = "2025-06-01 13:50:23" // Current timestamp from your input
         val lastLoginUpdate = hashMapOf<String, Any>(
             "lastLoginDate" to Date().time,
             "updatedAt" to timestamp,
-            "lastUpdatedBy" to "Lukmannh21"
+            "lastUpdatedBy" to "Lukmannh21" // Current user login from your input
         )
 
         firestore.collection("users").document(userId)

@@ -26,6 +26,7 @@ import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+
 class LastUpdateActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var recyclerView: RecyclerView
