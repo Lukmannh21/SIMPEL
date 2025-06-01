@@ -46,9 +46,10 @@ class SplashActivity : AppCompatActivity() {
         watermarkTextView.startAnimation(watermarkAnimation)
         pulseView.startAnimation(pulseAnimation)
 
-        // Delay for checking user login status
+        // Delay for displaying splash and then directing to login
         Handler(Looper.getMainLooper()).postDelayed({
-            checkUserLoggedInAndUpdateUserInfo()
+            // Always log user out and redirect to login screen
+            forceLoginScreen()
         }, 2500) // Extended to 2.5 seconds to enjoy the animations
     }
 
@@ -69,70 +70,28 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkUserLoggedInAndUpdateUserInfo() {
-        // Check if user is signed in
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            // User is signed in, update user info from Firestore before proceeding
-            updateUserInfoFromFirestore(currentUser.uid) { success ->
-                // Continue to ServicesActivity regardless of the update result
-                // The important thing is we tried to update the user info
-                val intent = Intent(this, ServicesActivity::class.java)
-                startActivity(intent)
+    private fun forceLoginScreen() {
+        // Always sign out the user if there's an existing session
+        if (auth.currentUser != null) {
+            auth.signOut()
 
-                // Request battery optimization exemption if the user is logged in
-                if (NotificationManager.shouldRequestBatteryOptimization(this)) {
-                    try {
-                        NotificationManager.requestBatteryOptimizationExemption(this)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error requesting battery optimization: ${e.message}", e)
-                        // Continue without stopping the flow if this fails
-                    }
-                }
-
-                // Apply exit animation and finish
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                finish()
+            // Clear user data from SharedPreferences
+            val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
+            preferences.edit().apply {
+                remove("userRole")
+                remove("userStatus")
+                remove("lastUserInfoUpdate")
+                apply()
             }
-        } else {
-            // No user is signed in, go to LoginActivity
-            startActivity(Intent(this, LoginActivity::class.java))
 
-            // Apply exit animation
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-            finish()
+            Log.d(TAG, "User signed out to enforce fresh login")
         }
-    }
 
-    private fun updateUserInfoFromFirestore(userId: String, callback: (Boolean) -> Unit) {
-        firestore.collection("users").document(userId)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    // Get user status and role
-                    val status = document.getString("status") ?: "unverified"
-                    val role = document.getString("role") ?: "user"
+        // Direct to LoginActivity
+        startActivity(Intent(this, LoginActivity::class.java))
 
-                    // Update SharedPreferences
-                    val preferences = getSharedPreferences("TelGoPrefs", MODE_PRIVATE)
-                    preferences.edit().apply {
-                        putString("userRole", role)
-                        putString("userStatus", status)
-                        putLong("lastUserInfoUpdate", System.currentTimeMillis())
-                        apply()
-                    }
-
-                    Log.d(TAG, "User info updated - Role: $role, Status: $status")
-                    callback(true)
-                } else {
-                    // Document doesn't exist
-                    Log.d(TAG, "User document not found")
-                    callback(false)
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error updating user info: ${e.message}")
-                callback(false)
-            }
+        // Apply exit animation
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+        finish()
     }
 }
