@@ -1,2 +1,2 @@
-# TelGO
+# SIMPEL
  Dashboard App
