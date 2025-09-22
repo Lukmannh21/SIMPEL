@@ -341,31 +341,60 @@
                         android:paddingVertical="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Kendala Dropdown - Enhanced with icon and styling -->
+                <!-- Kendala Multi-Select Section -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Kendala:"
                     android:textStyle="bold"
-                    android:textColor="#555555"/>
+                    android:textColor="#555555"
+                    android:layout_marginBottom="8dp"/>
 
+                <!-- Kendala Dropdown untuk memilih kendala -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/kendalaInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="8dp"
                     app:startIconDrawable="@drawable/ic_problem"
                     app:startIconTint="#E62020"
                     app:boxStrokeColor="#E62020"
                     app:hintAnimationEnabled="true"
+                    android:hint="Pilih kendala"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
                     <AutoCompleteTextView
-                        android:id="@+id/dropdownKendala"
+                        android:id="@+id/kendalaDropdown"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="none"
                         android:paddingVertical="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Button untuk menambah kendala -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddKendala"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tambah Kendala"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="12dp"
+                    app:cornerRadius="8dp"
+                    android:backgroundTint="#E62020"
+                    app:rippleColor="#80FFFFFF"
+                    app:icon="@drawable/ic_add"
+                    app:iconGravity="textStart"
+                    app:iconTint="@android:color/white"
+                    app:iconSize="18dp" />
+
+                <!-- Container untuk chip kendala yang dipilih -->
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupKendala"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:chipSpacing="8dp"
+                    app:lineSpacing="4dp" />
 
                 <!-- TGL PLAN OA Date Picker - Enhanced with icon -->
                 <TextView

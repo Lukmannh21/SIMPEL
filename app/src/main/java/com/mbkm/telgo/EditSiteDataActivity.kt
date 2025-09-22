@@ -27,6 +27,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -93,7 +95,11 @@ class EditSiteDataActivity : AppCompatActivity() {
     private lateinit var btnToggleUpdateFields: MaterialButton
     private lateinit var cardUpdateFields: CardView
     private lateinit var dropdownStatus: AutoCompleteTextView
-    private lateinit var dropdownKendala: AutoCompleteTextView
+
+    // CHANGED: Replace dropdownKendala with ChipGroup
+    private lateinit var kendalaChipGroup: ChipGroup
+    private lateinit var btnAddKendala: MaterialButton
+
     private lateinit var etTglPlanOa: TextInputEditText
 
     // Expandable section components
@@ -122,8 +128,12 @@ class EditSiteDataActivity : AppCompatActivity() {
 
     private val kendalaOptions = listOf(
         "COMMCASE", "NEW PLN", "NO ISSUE", "PERMIT", "PONDASI",
-        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK", "L2SWITCH", "MIGRASI", "UPGRADE PLN"
+        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK", "L2SWITCH", "MIGRASI", "UPGRADE PLN", "BA SURVEY", "TEST 3P", "CORE NODE B", "WAITING REDAMAN",
+        "SITAC"
     )
+
+    // ADDED: Track selected kendala items
+    private val selectedKendalaItems = mutableSetOf<String>()
 
     // Request codes
     private val REQUEST_CAMERA_PERMISSION = 101
@@ -178,6 +188,9 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         // Set up adapters for dropdowns
         setupDropdowns()
+
+        // NEW: Setup kendala multi-select
+        setupKendalaMultiSelect()
 
         // Set up date picker
         setupDatePicker()
@@ -244,7 +257,13 @@ class EditSiteDataActivity : AppCompatActivity() {
         btnToggleUpdateFields = findViewById(R.id.btnToggleUpdateFields)
         cardUpdateFields = findViewById(R.id.cardUpdateFields)
         dropdownStatus = findViewById(R.id.dropdownStatus)
-        dropdownKendala = findViewById(R.id.dropdownKendala)
+
+        // CHANGED: Initialize kendala components
+        // CHANGED: id harus sama dengan di XML
+        kendalaChipGroup = findViewById(R.id.chipGroupKendala)
+
+        btnAddKendala = findViewById(R.id.btnAddKendala)
+
         etTglPlanOa = findViewById(R.id.etTglPlanOa)
 
         // Expandable section components
@@ -344,10 +363,110 @@ class EditSiteDataActivity : AppCompatActivity() {
         // Set up Status dropdown
         val statusAdapter = ArrayAdapter(this, R.layout.dropdown_item, statusOptions)
         dropdownStatus.setAdapter(statusAdapter)
+    }
 
-        // Set up Kendala dropdown
-        val kendalaAdapter = ArrayAdapter(this, R.layout.dropdown_item, kendalaOptions)
-        dropdownKendala.setAdapter(kendalaAdapter)
+    // NEW: Setup kendala multi-select functionality
+    private fun setupKendalaMultiSelect() {
+        btnAddKendala.setOnClickListener {
+            showKendalaSelectionDialog()
+        }
+    }
+
+    // NEW: Show dialog for selecting kendala options
+    private fun showKendalaSelectionDialog() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setTitle("Pilih Kendala")
+
+        // Create checkboxes for each kendala option
+        val checkedItems = BooleanArray(kendalaOptions.size)
+
+        // Mark currently selected items as checked
+        kendalaOptions.forEachIndexed { index, option ->
+            checkedItems[index] = selectedKendalaItems.contains(option)
+        }
+
+        dialogBuilder.setMultiChoiceItems(
+            kendalaOptions.toTypedArray(),
+            checkedItems
+        ) { _, which, isChecked ->
+            if (isChecked) {
+                selectedKendalaItems.add(kendalaOptions[which])
+            } else {
+                selectedKendalaItems.remove(kendalaOptions[which])
+            }
+        }
+
+        dialogBuilder.setPositiveButton("OK") { dialog, _ ->
+            updateKendalaChips()
+            dialog.dismiss()
+        }
+
+        dialogBuilder.setNegativeButton("Batal") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val dialog = dialogBuilder.create()
+        dialog.show()
+    }
+
+    // NEW: Update chip group with selected kendala items
+    private fun updateKendalaChips() {
+        // Clear existing chips
+        kendalaChipGroup.removeAllViews()
+
+        // Add chips for selected items
+        selectedKendalaItems.forEach { kendalaItem ->
+            val chip = Chip(this)
+            chip.text = kendalaItem
+            chip.isCloseIconVisible = true
+            chip.setChipBackgroundColorResource(R.color.chip_background_color)
+            chip.setTextColor(ContextCompat.getColor(this, R.color.chip_text_color))
+            chip.closeIconTint = ContextCompat.getColorStateList(this, R.color.chip_close_icon_color)
+
+            // Handle chip close (remove) action
+            chip.setOnCloseIconClickListener {
+                selectedKendalaItems.remove(kendalaItem)
+                kendalaChipGroup.removeView(chip)
+
+                // Animate chip removal
+                chip.animate()
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction {
+                        kendalaChipGroup.removeView(chip)
+                    }
+                    .start()
+            }
+
+            // Add chip to group with animation
+            kendalaChipGroup.addView(chip)
+            chip.scaleX = 0f
+            chip.scaleY = 0f
+            chip.alpha = 0f
+            chip.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(1f)
+                .setDuration(200)
+                .start()
+        }
+    }
+
+    // NEW: Get selected kendala as comma-separated string
+    private fun getSelectedKendalaString(): String {
+        return selectedKendalaItems.joinToString(", ")
+    }
+
+    // NEW: Set kendala from comma-separated string
+    private fun setKendalaFromString(kendalaString: String) {
+        selectedKendalaItems.clear()
+        if (kendalaString.isNotEmpty()) {
+            val items = kendalaString.split(", ").map { it.trim() }
+            selectedKendalaItems.addAll(items.filter { it.isNotEmpty() })
+        }
+        updateKendalaChips()
     }
 
     // Ganti fungsi calculateIdLopOlt dengan fungsi berikut:
@@ -545,10 +664,11 @@ class EditSiteDataActivity : AppCompatActivity() {
                     }
                 }
 
-                site?.get("kendala")?.toString()?.let {
-                    initialKendala = it
-                    if (it.isNotEmpty()) {
-                        dropdownKendala.setText(it, false)
+                // CHANGED: Handle kendala as string and convert to chips
+                site?.get("kendala")?.toString()?.let { kendalaString ->
+                    initialKendala = kendalaString
+                    if (kendalaString.isNotEmpty()) {
+                        setKendalaFromString(kendalaString)
                     }
                 }
 
@@ -1208,7 +1328,8 @@ class EditSiteDataActivity : AppCompatActivity() {
 
         // Check if fields are updated
         val currentStatus = dropdownStatus.text.toString().trim()
-        val currentKendala = dropdownKendala.text.toString().trim()
+        // CHANGED: Get kendala from selected chips
+        val currentKendala = getSelectedKendalaString()
         val currentTglPlanOa = etTglPlanOa.text.toString().trim()
 
         val isStatusChanged = currentStatus.isNotEmpty() && currentStatus != initialStatus

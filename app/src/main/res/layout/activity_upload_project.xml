@@ -751,24 +751,43 @@
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
-                <!-- Kendala Dropdown -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/kendalaInputLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                <!-- Kendala Multiple Selection -->
+                <!-- Replace the existing kendala dropdown section with this multi-select version -->
+                <!-- Kendala Multi-Select with Chips -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:hint="Kendala (X)"
-                    app:startIconDrawable="@drawable/ic_issue">
+                    android:orientation="vertical"
+                    android:layout_marginTop="12dp">
 
-                    <AutoCompleteTextView
-                        android:id="@+id/kendalaDropdown"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/kendalaInputLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="none"
-                        android:textSize="14sp"/>
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:hint="Kendala (X)"
+                        app:startIconDrawable="@drawable/ic_issue">
 
+                        <AutoCompleteTextView
+                            android:id="@+id/kendalaDropdown"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:textSize="14sp"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Container for selected kendala chips -->
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/kendalaChipGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        app:chipSpacing="8dp"
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="4dp"/>
+                </LinearLayout>
                 <!-- Last Issue -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lastIssueInputLayout"

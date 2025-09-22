@@ -29,6 +29,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import android.widget.LinearLayout
+import android.widget.TextView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.textfield.TextInputLayout
 
 class UploadProjectActivity : AppCompatActivity() {
 
@@ -65,6 +70,11 @@ class UploadProjectActivity : AppCompatActivity() {
     private lateinit var weekPlanOaInput: EditText
     private lateinit var odpInput: EditText
     private lateinit var portInput: EditText
+
+    // Multi-select kendala components
+    private lateinit var kendalaInputLayout: TextInputLayout
+    private lateinit var kendalaChipGroup: ChipGroup
+    private val selectedKendalaList = mutableListOf<String>()
 
     // Firebase
     private lateinit var firestore: FirebaseFirestore
@@ -104,7 +114,8 @@ class UploadProjectActivity : AppCompatActivity() {
 
     private val kendalaOptions = listOf(
         "COMMCASE", "NEW PLN", "NO ISSUE", "PERMIT", "PONDASI",
-        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK", "L2SWITCH", "MIGRASI", "UPGRADE PLN"
+        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK", "L2SWITCH", "MIGRASI", "UPGRADE PLN", "BA SURVEY", "TEST 3P", "CORE NODE B", "WAITING REDAMAN",
+        "SITAC"
     )
 
     private val siteProviderOptions = listOf(
@@ -112,7 +123,7 @@ class UploadProjectActivity : AppCompatActivity() {
         "NOT READY", "PROTELINDO", "PT Centratama Menara Indonesia",
         "PT Gihon Telekomunikasi Indonesia", "PT Quattro International",
         "PT.Era Bangun Towerindo", "PT.Protelindo", "READY", "STO ROOM",
-        "STP", "TBG", "TELKOM", "TELKOMSEL", "TSEL"
+        "STP", "TBG", "TELKOM", "TELKOMSEL", "TSEL", "Camat", "Kades", "Pemko"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,6 +142,9 @@ class UploadProjectActivity : AppCompatActivity() {
 
         // Set up adapters for dropdowns
         setupDropdowns()
+
+        // Set up multi-select kendala
+        setupMultiSelectKendala()
 
         // Set up date pickers
         setupDatePickers()
@@ -191,6 +205,22 @@ class UploadProjectActivity : AppCompatActivity() {
         weekPlanOaInput = findViewById(R.id.weekPlanOaInput)
         odpInput = findViewById(R.id.odpInput)
         portInput = findViewById(R.id.portInput)
+
+        // Initialize multi-select kendala components
+        kendalaInputLayout = findViewById(R.id.kendalaInputLayout)
+
+        // Create ChipGroup programmatically and add it to the layout
+        kendalaChipGroup = ChipGroup(this)
+        kendalaChipGroup.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        kendalaChipGroup.visibility = View.GONE // Initially hidden
+
+        // Add ChipGroup below the kendala input layout
+        val parentLayout = kendalaInputLayout.parent as LinearLayout
+        val kendalaIndex = parentLayout.indexOfChild(kendalaInputLayout)
+        parentLayout.addView(kendalaChipGroup, kendalaIndex + 1)
     }
 
     private fun setupDropdowns() {
@@ -213,11 +243,53 @@ class UploadProjectActivity : AppCompatActivity() {
         val catuanAcAdapter = ArrayAdapter(this, R.layout.dropdown_item, catuanAcOptions)
         catuanAcDropdown.setAdapter(catuanAcAdapter)
 
+        val siteProviderAdapter = ArrayAdapter(this, R.layout.dropdown_item, siteProviderOptions)
+        siteProviderInput.setAdapter(siteProviderAdapter)
+    }
+
+    private fun setupMultiSelectKendala() {
+        // Set up adapter for kendala dropdown
         val kendalaAdapter = ArrayAdapter(this, R.layout.dropdown_item, kendalaOptions)
         kendalaDropdown.setAdapter(kendalaAdapter)
 
-        val siteProviderAdapter = ArrayAdapter(this, R.layout.dropdown_item, siteProviderOptions)
-        siteProviderInput.setAdapter(siteProviderAdapter)
+        // Handle selection from dropdown
+        kendalaDropdown.setOnItemClickListener { _, _, position, _ ->
+            val selectedKendala = kendalaOptions[position]
+
+            // Add to selected list if not already present
+            if (!selectedKendalaList.contains(selectedKendala)) {
+                selectedKendalaList.add(selectedKendala)
+                addKendalaChip(selectedKendala)
+                updateKendalaChipGroupVisibility()
+                updateProgressBar()
+            }
+
+            // Clear the dropdown selection
+            kendalaDropdown.setText("")
+        }
+    }
+
+    private fun addKendalaChip(kendala: String) {
+        val chip = Chip(this)
+        chip.text = kendala
+        chip.isCloseIconVisible = true
+        chip.setChipBackgroundColorResource(R.color.chip_background_color) // Add this color to your colors.xml
+        chip.setTextColor(ContextCompat.getColor(this, R.color.chip_text_color)) // Add this color to your colors.xml
+        chip.setCloseIconTintResource(R.color.chip_close_icon_color) // Add this color to your colors.xml
+
+        // Handle chip removal
+        chip.setOnCloseIconClickListener {
+            selectedKendalaList.remove(kendala)
+            kendalaChipGroup.removeView(chip)
+            updateKendalaChipGroupVisibility()
+            updateProgressBar()
+        }
+
+        kendalaChipGroup.addView(chip)
+    }
+
+    private fun updateKendalaChipGroupVisibility() {
+        kendalaChipGroup.visibility = if (selectedKendalaList.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun setupDatePickers() {
@@ -243,12 +315,12 @@ class UploadProjectActivity : AppCompatActivity() {
             hostnameInput, sizeOltDropdown, platformDropdown, typeDropdown,
             jmlModulInput, siteProviderInput, kecamatanLokasiInput,
             kodeIhldInput, lopDownlinkInput, kontrakPengadaanInput,
-            tocInput, startProjectInput, catuanAcDropdown, kendalaDropdown,
+            tocInput, startProjectInput, catuanAcDropdown,
             tglPlanOaInput, odpInput, portInput, lastIssueInput
         )
 
-        // Jumlah total field
-        val totalFields = fields.size
+        // Jumlah total field (termasuk kendala multi-select)
+        val totalFields = fields.size + 1 // +1 for kendala multi-select
 
         // Tambahkan TextWatcher ke setiap field
         fields.forEach { field ->
@@ -275,11 +347,26 @@ class UploadProjectActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateProgressBar(fields: List<Any>, totalFields: Int) {
+    private fun updateProgressBar(fields: List<Any> = listOf(), totalFields: Int = 0) {
+        // If called without parameters, get current field list
+        val currentFields = if (fields.isEmpty()) {
+            listOf(
+                siteIdInput, witelDropdown, statusDropdown, koordinatInput,
+                kodeStoInput, namaStoInput, portMetroInput, sfpInput,
+                hostnameInput, sizeOltDropdown, platformDropdown, typeDropdown,
+                jmlModulInput, siteProviderInput, kecamatanLokasiInput,
+                kodeIhldInput, lopDownlinkInput, kontrakPengadaanInput,
+                tocInput, startProjectInput, catuanAcDropdown,
+                tglPlanOaInput, odpInput, portInput, lastIssueInput
+            )
+        } else fields
+
+        val currentTotalFields = if (totalFields == 0) currentFields.size + 1 else totalFields
+
         var filledFields = 0
 
         // Hitung berapa field yang sudah diisi
-        fields.forEach { field ->
+        currentFields.forEach { field ->
             when (field) {
                 is EditText -> {
                     if (field.text.toString().isNotEmpty()) filledFields++
@@ -290,8 +377,11 @@ class UploadProjectActivity : AppCompatActivity() {
             }
         }
 
+        // Add kendala multi-select to filled count
+        if (selectedKendalaList.isNotEmpty()) filledFields++
+
         // Update progress bar
-        val progressPercentage = (filledFields * 100) / totalFields
+        val progressPercentage = (filledFields * 100) / currentTotalFields
         formProgressBar.progress = progressPercentage
     }
 
@@ -386,7 +476,10 @@ class UploadProjectActivity : AppCompatActivity() {
         val toc = tocInput.text.toString().trim()
         val startProject = startProjectInput.text.toString().trim()
         val catuanAc = catuanAcDropdown.text.toString()
-        val kendala = kendalaDropdown.text.toString()
+
+        // Get selected kendala as comma-separated string
+        val kendala = selectedKendalaList.joinToString(", ")
+
         val tglPlanOa = tglPlanOaInput.text.toString().trim()
         val weekPlanOa = weekPlanOaInput.text.toString().trim()
         val odp = odpInput.text.toString().trim()
@@ -1070,6 +1163,24 @@ class UploadProjectActivity : AppCompatActivity() {
                     showToast("Izin lokasi tidak diberikan")
                 }
             }
+        }
+    }
+
+    // Helper method to load existing kendala when editing
+    fun loadExistingKendala(kendalaString: String) {
+        if (kendalaString.isNotEmpty()) {
+            val kendalaList = kendalaString.split(", ").map { it.trim() }
+            selectedKendalaList.clear()
+            kendalaChipGroup.removeAllViews()
+
+            kendalaList.forEach { kendala ->
+                if (kendala.isNotEmpty()) {
+                    selectedKendalaList.add(kendala)
+                    addKendalaChip(kendala)
+                }
+            }
+            updateKendalaChipGroupVisibility()
+            updateProgressBar()
         }
     }
 }
