@@ -29,6 +29,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import android.widget.LinearLayout
+import android.widget.TextView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.textfield.TextInputLayout
 
 class UploadProjectActivity : AppCompatActivity() {
 
@@ -65,6 +70,13 @@ class UploadProjectActivity : AppCompatActivity() {
     private lateinit var weekPlanOaInput: EditText
     private lateinit var odpInput: EditText
     private lateinit var portInput: EditText
+    // New field for Project Type
+    private lateinit var projectTypeDropdown: AutoCompleteTextView
+
+    // Multi-select kendala components
+    private lateinit var kendalaInputLayout: TextInputLayout
+    private lateinit var kendalaChipGroup: ChipGroup
+    private val selectedKendalaList = mutableListOf<String>()
 
     // Firebase
     private lateinit var firestore: FirebaseFirestore
@@ -104,7 +116,8 @@ class UploadProjectActivity : AppCompatActivity() {
 
     private val kendalaOptions = listOf(
         "COMMCASE", "NEW PLN", "NO ISSUE", "PERMIT", "PONDASI",
-        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK", "L2SWITCH", "MIGRASI", "UPGRADE PLN"
+        "RELOC", "SFP BIDI", "WAITING OTN", "WAITING UPLINK", "L2SWITCH", "MIGRASI", "UPGRADE PLN", "BA SURVEY", "TEST 3P", "CORE NODE B", "WAITING REDAMAN",
+        "SITAC"
     )
 
     private val siteProviderOptions = listOf(
@@ -112,7 +125,12 @@ class UploadProjectActivity : AppCompatActivity() {
         "NOT READY", "PROTELINDO", "PT Centratama Menara Indonesia",
         "PT Gihon Telekomunikasi Indonesia", "PT Quattro International",
         "PT.Era Bangun Towerindo", "PT.Protelindo", "READY", "STO ROOM",
-        "STP", "TBG", "TELKOM", "TELKOMSEL", "TSEL"
+        "STP", "TBG", "TELKOM", "TELKOMSEL", "TSEL", "Camat", "Kades", "Pemko"
+    )
+
+    // New options for Project Type
+    private val projectTypeOptions = listOf(
+        "Project Mitratel", "Project TA"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,6 +149,9 @@ class UploadProjectActivity : AppCompatActivity() {
 
         // Set up adapters for dropdowns
         setupDropdowns()
+
+        // Set up multi-select kendala
+        setupMultiSelectKendala()
 
         // Set up date pickers
         setupDatePickers()
@@ -191,6 +212,24 @@ class UploadProjectActivity : AppCompatActivity() {
         weekPlanOaInput = findViewById(R.id.weekPlanOaInput)
         odpInput = findViewById(R.id.odpInput)
         portInput = findViewById(R.id.portInput)
+        // Initialize the new Project Type dropdown
+        projectTypeDropdown = findViewById(R.id.projectTypeDropdown)
+
+        // Initialize multi-select kendala components
+        kendalaInputLayout = findViewById(R.id.kendalaInputLayout)
+
+        // Create ChipGroup programmatically and add it to the layout
+        kendalaChipGroup = ChipGroup(this)
+        kendalaChipGroup.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        kendalaChipGroup.visibility = View.GONE // Initially hidden
+
+        // Add ChipGroup below the kendala input layout
+        val parentLayout = kendalaInputLayout.parent as LinearLayout
+        val kendalaIndex = parentLayout.indexOfChild(kendalaInputLayout)
+        parentLayout.addView(kendalaChipGroup, kendalaIndex + 1)
     }
 
     private fun setupDropdowns() {
@@ -213,11 +252,57 @@ class UploadProjectActivity : AppCompatActivity() {
         val catuanAcAdapter = ArrayAdapter(this, R.layout.dropdown_item, catuanAcOptions)
         catuanAcDropdown.setAdapter(catuanAcAdapter)
 
+        val siteProviderAdapter = ArrayAdapter(this, R.layout.dropdown_item, siteProviderOptions)
+        siteProviderInput.setAdapter(siteProviderAdapter)
+
+        // Set up adapter for the new Project Type dropdown
+        val projectTypeAdapter = ArrayAdapter(this, R.layout.dropdown_item, projectTypeOptions)
+        projectTypeDropdown.setAdapter(projectTypeAdapter)
+    }
+
+    private fun setupMultiSelectKendala() {
+        // Set up adapter for kendala dropdown
         val kendalaAdapter = ArrayAdapter(this, R.layout.dropdown_item, kendalaOptions)
         kendalaDropdown.setAdapter(kendalaAdapter)
 
-        val siteProviderAdapter = ArrayAdapter(this, R.layout.dropdown_item, siteProviderOptions)
-        siteProviderInput.setAdapter(siteProviderAdapter)
+        // Handle selection from dropdown
+        kendalaDropdown.setOnItemClickListener { _, _, position, _ ->
+            val selectedKendala = kendalaOptions[position]
+
+            // Add to selected list if not already present
+            if (!selectedKendalaList.contains(selectedKendala)) {
+                selectedKendalaList.add(selectedKendala)
+                addKendalaChip(selectedKendala)
+                updateKendalaChipGroupVisibility()
+                updateProgressBar()
+            }
+
+            // Clear the dropdown selection
+            kendalaDropdown.setText("")
+        }
+    }
+
+    private fun addKendalaChip(kendala: String) {
+        val chip = Chip(this)
+        chip.text = kendala
+        chip.isCloseIconVisible = true
+        chip.setChipBackgroundColorResource(R.color.chip_background_color) // Add this color to your colors.xml
+        chip.setTextColor(ContextCompat.getColor(this, R.color.chip_text_color)) // Add this color to your colors.xml
+        chip.setCloseIconTintResource(R.color.chip_close_icon_color) // Add this color to your colors.xml
+
+        // Handle chip removal
+        chip.setOnCloseIconClickListener {
+            selectedKendalaList.remove(kendala)
+            kendalaChipGroup.removeView(chip)
+            updateKendalaChipGroupVisibility()
+            updateProgressBar()
+        }
+
+        kendalaChipGroup.addView(chip)
+    }
+
+    private fun updateKendalaChipGroupVisibility() {
+        kendalaChipGroup.visibility = if (selectedKendalaList.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun setupDatePickers() {
@@ -243,12 +328,13 @@ class UploadProjectActivity : AppCompatActivity() {
             hostnameInput, sizeOltDropdown, platformDropdown, typeDropdown,
             jmlModulInput, siteProviderInput, kecamatanLokasiInput,
             kodeIhldInput, lopDownlinkInput, kontrakPengadaanInput,
-            tocInput, startProjectInput, catuanAcDropdown, kendalaDropdown,
-            tglPlanOaInput, odpInput, portInput, lastIssueInput
+            tocInput, startProjectInput, catuanAcDropdown,
+            tglPlanOaInput, odpInput, portInput, lastIssueInput,
+            projectTypeDropdown // Add the new Project Type field to the list
         )
 
-        // Jumlah total field
-        val totalFields = fields.size
+        // Jumlah total field (termasuk kendala multi-select)
+        val totalFields = fields.size + 1 // +1 for kendala multi-select
 
         // Tambahkan TextWatcher ke setiap field
         fields.forEach { field ->
@@ -275,11 +361,27 @@ class UploadProjectActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateProgressBar(fields: List<Any>, totalFields: Int) {
+    private fun updateProgressBar(fields: List<Any> = listOf(), totalFields: Int = 0) {
+        // If called without parameters, get current field list
+        val currentFields = if (fields.isEmpty()) {
+            listOf(
+                siteIdInput, witelDropdown, statusDropdown, koordinatInput,
+                kodeStoInput, namaStoInput, portMetroInput, sfpInput,
+                hostnameInput, sizeOltDropdown, platformDropdown, typeDropdown,
+                jmlModulInput, siteProviderInput, kecamatanLokasiInput,
+                kodeIhldInput, lopDownlinkInput, kontrakPengadaanInput,
+                tocInput, startProjectInput, catuanAcDropdown,
+                tglPlanOaInput, odpInput, portInput, lastIssueInput,
+                projectTypeDropdown // Add the new Project Type field here too
+            )
+        } else fields
+
+        val currentTotalFields = if (totalFields == 0) currentFields.size + 1 else totalFields
+
         var filledFields = 0
 
         // Hitung berapa field yang sudah diisi
-        fields.forEach { field ->
+        currentFields.forEach { field ->
             when (field) {
                 is EditText -> {
                     if (field.text.toString().isNotEmpty()) filledFields++
@@ -290,8 +392,11 @@ class UploadProjectActivity : AppCompatActivity() {
             }
         }
 
+        // Add kendala multi-select to filled count
+        if (selectedKendalaList.isNotEmpty()) filledFields++
+
         // Update progress bar
-        val progressPercentage = (filledFields * 100) / totalFields
+        val progressPercentage = (filledFields * 100) / currentTotalFields
         formProgressBar.progress = progressPercentage
     }
 
@@ -386,7 +491,12 @@ class UploadProjectActivity : AppCompatActivity() {
         val toc = tocInput.text.toString().trim()
         val startProject = startProjectInput.text.toString().trim()
         val catuanAc = catuanAcDropdown.text.toString()
-        val kendala = kendalaDropdown.text.toString()
+        // Get the new Project Type value
+        val projectType = projectTypeDropdown.text.toString()
+
+        // Get selected kendala as comma-separated string
+        val kendala = selectedKendalaList.joinToString(", ")
+
         val tglPlanOa = tglPlanOaInput.text.toString().trim()
         val weekPlanOa = weekPlanOaInput.text.toString().trim()
         val odp = odpInput.text.toString().trim()
@@ -416,11 +526,20 @@ class UploadProjectActivity : AppCompatActivity() {
             return
         }
 
+        // Validasi untuk witel (wajib dipilih)
+        if (witel.isEmpty()) {
+            showError(witelDropdown, "Witel harus dipilih")
+            btnAddData.isEnabled = true
+            btnAddData.alpha = 1.0f
+            return
+        }
+
         // Langsung lanjut ke pengecekan Site ID di database
         checkSiteIdExists(siteId, witel, status, lastIssue, koordinat, kodeSto, namaSto,
             portMetro, sfp, hostname, sizeOlt, platform, type, jmlModul,
             siteProvider, kecamatanLokasi, kodeIhld, lopDownlink, kontrakPengadaan,
-            toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port)
+            toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port,
+            projectType) // Pass the new Project Type field
     }
 
     // Add this new method to show the verification required dialog
@@ -450,13 +569,20 @@ class UploadProjectActivity : AppCompatActivity() {
         showToast(message)
     }
 
+    private fun showError(input: AutoCompleteTextView, message: String) {
+        input.error = message
+        input.requestFocus()
+        showToast(message)
+    }
+
     private fun checkSiteIdExists(
         siteId: String, witel: String, status: String, lastIssue: String, koordinat: String,
         kodeSto: String, namaSto: String, portMetro: String, sfp: String, hostname: String,
         sizeOlt: String, platform: String, type: String, jmlModul: String,
         siteProvider: String, kecamatanLokasi: String, kodeIhld: String, lopDownlink: String,
         kontrakPengadaan: String, toc: String, startProject: String, catuanAc: String,
-        kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String
+        kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String,
+        projectType: String // Add the new Project Type parameter
     ) {
         // Show loading dialog
         val loadingDialog = AlertDialog.Builder(this)
@@ -504,41 +630,12 @@ class UploadProjectActivity : AppCompatActivity() {
                         weekPlanOa = weekPlanOa,
                         odp = odp,
                         port = port,
+                        projectType = projectType, // Add the new Project Type field
                         isNewProject = true
                     )
                 } else {
-                    // Site ID exists, show edit dialog
-                    showConfirmationDialog(
-                        siteId = siteId,
-                        witel = witel,
-                        status = status,
-                        lastIssue = lastIssue,
-                        koordinat = koordinat,
-                        kodeSto = kodeSto,
-                        namaSto = namaSto,
-                        portMetro = portMetro,
-                        sfp = sfp,
-                        hostname = hostname,
-                        sizeOlt = sizeOlt,
-                        platform = platform,
-                        type = type,
-                        jmlModul = jmlModul,
-                        siteProvider = siteProvider,
-                        kecamatanLokasi = kecamatanLokasi,
-                        kodeIhld = kodeIhld,
-                        lopDownlink = lopDownlink,
-                        kontrakPengadaan = kontrakPengadaan,
-                        toc = toc,
-                        startProject = startProject,
-                        catuanAc = catuanAc,
-                        kendala = kendala,
-                        tglPlanOa = tglPlanOa,
-                        weekPlanOa = weekPlanOa,
-                        odp = odp,
-                        port = port,
-                        isNewProject = false,
-                        existingProjectId = documents.documents[0].id
-                    )
+                    // Site ID already exists - show error message instead of edit dialog
+                    showSiteIdExistsErrorDialog(siteId)
                 }
             }
             .addOnFailureListener { e ->
@@ -549,6 +646,22 @@ class UploadProjectActivity : AppCompatActivity() {
             }
     }
 
+    // New method to show error when site ID already exists
+    private fun showSiteIdExistsErrorDialog(siteId: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Site ID Sudah Ada")
+            .setMessage("Site ID '$siteId' sudah terdaftar dalam sistem. Tidak dapat menambahkan proyek dengan ID yang sama.")
+            .setIcon(R.drawable.ic_image_error)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+        val dialog = builder.create()
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        dialog.show()
+    }
+
+    // Add new parameter to the showConfirmationDialog method
     private fun showConfirmationDialog(
         siteId: String, witel: String, status: String, lastIssue: String, koordinat: String,
         kodeSto: String, namaSto: String, portMetro: String, sfp: String, hostname: String,
@@ -556,6 +669,7 @@ class UploadProjectActivity : AppCompatActivity() {
         siteProvider: String, kecamatanLokasi: String, kodeIhld: String, lopDownlink: String,
         kontrakPengadaan: String, toc: String, startProject: String, catuanAc: String,
         kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String,
+        projectType: String, // Add the new Project Type field
         isNewProject: Boolean, existingProjectId: String = ""
     ) {
         val title = if (isNewProject) "Konfirmasi Data Baru" else "Edit Data Projek"
@@ -572,7 +686,9 @@ class UploadProjectActivity : AppCompatActivity() {
             if (kodeIhld.isNotEmpty()) append("Kode IHLD: $kodeIhld\n")
             if (toc.isNotEmpty()) append("TOC: $toc\n")
             if (startProject.isNotEmpty()) append("Start Project: $startProject\n")
-            if (kendala.isNotEmpty()) append("Kendala: $kendala\n\n")
+            if (kendala.isNotEmpty()) append("Kendala: $kendala\n")
+            if (projectType.isNotEmpty()) append("Project Type: $projectType\n") // Display Project Type in confirmation
+            append("\n")
 
             append(if (isNewProject)
                 "Apakah data di atas sudah benar?"
@@ -598,6 +714,7 @@ class UploadProjectActivity : AppCompatActivity() {
                         portMetro, sfp, hostname, sizeOlt, platform, type, jmlModul,
                         siteProvider, kecamatanLokasi, kodeIhld, lopDownlink, kontrakPengadaan,
                         toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port,
+                        projectType, // Add the new Project Type field
                         onSuccess = {
                             loadingDialog.dismiss()
                         },
@@ -612,6 +729,7 @@ class UploadProjectActivity : AppCompatActivity() {
                         portMetro, sfp, hostname, sizeOlt, platform, type, jmlModul,
                         siteProvider, kecamatanLokasi, kodeIhld, lopDownlink, kontrakPengadaan,
                         toc, startProject, catuanAc, kendala, tglPlanOa, weekPlanOa, odp, port,
+                        projectType, // Add the new Project Type field
                         onSuccess = {
                             loadingDialog.dismiss()
                         },
@@ -680,6 +798,7 @@ class UploadProjectActivity : AppCompatActivity() {
             }
     }
 
+    // Update saveNewProject method to include the new Project Type field
     private fun saveNewProject(
         siteId: String, witel: String, status: String, lastIssue: String, koordinat: String,
         kodeSto: String, namaSto: String, portMetro: String, sfp: String, hostname: String,
@@ -687,6 +806,7 @@ class UploadProjectActivity : AppCompatActivity() {
         siteProvider: String, kecamatanLokasi: String, kodeIhld: String, lopDownlink: String,
         kontrakPengadaan: String, toc: String, startProject: String, catuanAc: String,
         kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String,
+        projectType: String, // Add the new Project Type parameter
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
@@ -720,6 +840,7 @@ class UploadProjectActivity : AppCompatActivity() {
             "uploadedBy" to userEmail, // Using logged-in user's email
             "createdAt" to currentTime,
             "updatedAt" to currentTime,
+            "editHistory" to listOf("$currentTime - Created by $userEmail"), // Track edit history
 
             // New fields
             "kodeSto" to kodeSto,
@@ -744,6 +865,7 @@ class UploadProjectActivity : AppCompatActivity() {
             "weekPlanOa" to weekPlanOa,
             "odp" to odp,
             "port" to port,
+            "projectType" to projectType, // Add the new Project Type field
 
             // Calculated fields
             "idLopOlt" to idLopOlt,
@@ -766,6 +888,7 @@ class UploadProjectActivity : AppCompatActivity() {
             }
     }
 
+    // Update updateExistingProject method to include the new Project Type field
     private fun updateExistingProject(
         projectId: String, siteId: String, witel: String, status: String, lastIssue: String, koordinat: String,
         kodeSto: String, namaSto: String, portMetro: String, sfp: String, hostname: String,
@@ -773,6 +896,7 @@ class UploadProjectActivity : AppCompatActivity() {
         siteProvider: String, kecamatanLokasi: String, kodeIhld: String, lopDownlink: String,
         kontrakPengadaan: String, toc: String, startProject: String, catuanAc: String,
         kendala: String, tglPlanOa: String, weekPlanOa: String, odp: String, port: String,
+        projectType: String, // Add the new Project Type parameter
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
@@ -802,9 +926,20 @@ class UploadProjectActivity : AppCompatActivity() {
                 val existingData = document.data
                 val existingIssueHistory = existingData?.get("lastIssueHistory") as? List<String> ?: listOf()
 
+                // Get existing edit history or create new list
+                val existingEditHistory = existingData?.get("editHistory") as? List<String> ?: listOf()
+
                 // Create updated issue history with new issue at the beginning (most recent)
-                val updatedIssueHistory = mutableListOf(issueWithTimestamp)
+                val updatedIssueHistory = mutableListOf<String>()
+                if (lastIssue.isNotEmpty()) {
+                    updatedIssueHistory.add(issueWithTimestamp)
+                }
                 updatedIssueHistory.addAll(existingIssueHistory)
+
+                // Create updated edit history with new edit at beginning (most recent)
+                val updatedEditHistory = mutableListOf<String>()
+                updatedEditHistory.add("$currentTime - Edited by $userEmail")
+                updatedEditHistory.addAll(existingEditHistory)
 
                 // Update project
                 val updateData = hashMapOf(
@@ -815,6 +950,7 @@ class UploadProjectActivity : AppCompatActivity() {
                     "koordinat" to koordinat,
                     "uploadedBy" to userEmail, // Using logged-in user's email
                     "updatedAt" to currentTime,
+                    "editHistory" to updatedEditHistory, // Track edit history
 
                     // New fields
                     "kodeSto" to kodeSto,
@@ -839,6 +975,7 @@ class UploadProjectActivity : AppCompatActivity() {
                     "weekPlanOa" to weekPlanOa,
                     "odp" to odp,
                     "port" to port,
+                    "projectType" to projectType, // Add the new Project Type field
 
                     // Calculated fields
                     "idLopOlt" to idLopOlt,
@@ -1070,6 +1207,24 @@ class UploadProjectActivity : AppCompatActivity() {
                     showToast("Izin lokasi tidak diberikan")
                 }
             }
+        }
+    }
+
+    // Helper method to load existing kendala when editing
+    fun loadExistingKendala(kendalaString: String) {
+        if (kendalaString.isNotEmpty()) {
+            val kendalaList = kendalaString.split(", ").map { it.trim() }
+            selectedKendalaList.clear()
+            kendalaChipGroup.removeAllViews()
+
+            kendalaList.forEach { kendala ->
+                if (kendala.isNotEmpty()) {
+                    selectedKendalaList.add(kendala)
+                    addKendalaChip(kendala)
+                }
+            }
+            updateKendalaChipGroupVisibility()
+            updateProgressBar()
         }
     }
 }
