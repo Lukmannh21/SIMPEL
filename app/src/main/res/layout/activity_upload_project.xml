@@ -146,6 +146,26 @@
                         android:inputType="text"
                         android:textSize="14sp"/>
                 </com.google.android.material.textfield.TextInputLayout>
+                <!-- Tambahkan ini di dalam LinearLayout "Informasi Dasar Proyek" setelah siteIdInput (sekitar baris 174) -->
+
+                <!-- Project Type Dropdown -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/projectTypeInputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Project Type"
+                    app:startIconDrawable="@drawable/ic_document">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/projectTypeDropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:textSize="14sp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
