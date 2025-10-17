@@ -69,6 +69,7 @@ class UserListFragment : Fragment() {
             val intent = Intent(requireContext(), UserDetailActivity::class.java)
             intent.putExtra("USER_ID", user.uid)
             intent.putExtra("USER_STATUS", user.status)
+            intent.putExtra("USER_ROLE", user.role) // NEW: Pass role to detail activity
             startActivity(intent)
             activity?.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
@@ -81,16 +82,18 @@ class UserListFragment : Fragment() {
         progressBar.visibility = View.VISIBLE
         emptyView.visibility = View.GONE
 
+        // FIXED: Load users based on status only, not role
         val query = if (userStatus == "verified") {
+            // For verified tab: Show users with status="verified"
+            // EXCLUDE admin role (show both "user" and "editor" roles)
             firestore.collection("users")
                 .whereEqualTo("status", "verified")
-                .whereEqualTo("role", "user")
                 .orderBy("registrationDate", Query.Direction.DESCENDING)
         } else {
-            // For unverified, we need to check both "unverified" and null values
+            // For unverified tab: Show users with status="unverified"
+            // EXCLUDE admin role
             firestore.collection("users")
-                .whereNotEqualTo("status", "verified")
-                .whereEqualTo("role", "user")
+                .whereEqualTo("status", "unverified")
                 .orderBy("registrationDate", Query.Direction.DESCENDING)
         }
 
@@ -98,25 +101,33 @@ class UserListFragment : Fragment() {
             .addOnSuccessListener { documents ->
                 progressBar.visibility = View.GONE
 
+                // Filter out admin users in the app layer (since Firestore doesn't support NOT EQUAL easily)
                 allUsers = documents.mapNotNull { doc ->
                     try {
-                        UserModel(
-                            uid = doc.getString("uid") ?: doc.id,
-                            fullName = doc.getString("fullName") ?: "",
-                            email = doc.getString("email") ?: "",
-                            nik = doc.getString("nik") ?: "",
-                            companyName = doc.getString("companyName") ?: "",
-                            unit = doc.getString("unit") ?: "",
-                            position = doc.getString("position") ?: "",
-                            phone = doc.getString("phone") ?: "",
-                            role = doc.getString("role") ?: "user",
-                            status = doc.getString("status") ?: "unverified",
-                            registrationDate = doc.getLong("registrationDate") ?: 0,
-                            lastLoginDate = doc.getLong("lastLoginDate") ?: 0,
-                            createdAt = doc.getString("createdAt") ?: "",
-                            updatedAt = doc.getString("updatedAt") ?: "",
-                            createdBy = doc.getString("createdBy") ?: ""
-                        )
+                        val role = doc.getString("role") ?: "user"
+
+                        // Only include users that are NOT admin
+                        if (role != "admin") {
+                            UserModel(
+                                uid = doc.getString("uid") ?: doc.id,
+                                fullName = doc.getString("fullName") ?: "",
+                                email = doc.getString("email") ?: "",
+                                nik = doc.getString("nik") ?: "",
+                                companyName = doc.getString("companyName") ?: "",
+                                unit = doc.getString("unit") ?: "",
+                                position = doc.getString("position") ?: "",
+                                phone = doc.getString("phone") ?: "",
+                                role = role,
+                                status = doc.getString("status") ?: "unverified",
+                                registrationDate = doc.getLong("registrationDate") ?: 0,
+                                lastLoginDate = doc.getLong("lastLoginDate") ?: 0,
+                                createdAt = doc.getString("createdAt") ?: "",
+                                updatedAt = doc.getString("updatedAt") ?: "",
+                                createdBy = doc.getString("createdBy") ?: ""
+                            )
+                        } else {
+                            null // Exclude admin users
+                        }
                     } catch (e: Exception) {
                         null
                     }

@@ -59,4 +59,6 @@
     <color name="chip_background_color">#E3F2FD</color>
     <color name="chip_text_color">#1976D2</color>
     <color name="chip_close_icon_color">#757575</color>
+
+    <color name="purple">#9C27B0</color>
 </resources>

@@ -27,16 +27,21 @@ class UserDetailActivity : AppCompatActivity() {
     private lateinit var tvPhone: TextView
     private lateinit var tvRegistrationDate: TextView
     private lateinit var tvLastLogin: TextView
+    private lateinit var tvRole: TextView // NEW: Role display
     private lateinit var btnVerifyUser: Button
+    private lateinit var btnManageRole: Button // NEW: Role management button
     private lateinit var btnBack: MaterialButton
     private lateinit var progressBar: ProgressBar
     private lateinit var ivUserProfile: ImageView
     private lateinit var statusBadge: View
     private lateinit var statusText: TextView
+    private lateinit var roleBadge: View // NEW: Role badge
+    private lateinit var roleText: TextView // NEW: Role text
 
     private lateinit var firestore: FirebaseFirestore
     private var userId: String = ""
     private var userStatus: String = "unverified"
+    private var userRole: String = "user" // NEW: Track user role
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,12 +73,16 @@ class UserDetailActivity : AppCompatActivity() {
         tvPhone = findViewById(R.id.tvPhone)
         tvRegistrationDate = findViewById(R.id.tvRegistrationDate)
         tvLastLogin = findViewById(R.id.tvLastLogin)
+        tvRole = findViewById(R.id.tvRole) // NEW
         btnVerifyUser = findViewById(R.id.btnVerifyUser)
+        btnManageRole = findViewById(R.id.btnManageRole) // NEW
         btnBack = findViewById(R.id.btnBack)
         progressBar = findViewById(R.id.progressBar)
         ivUserProfile = findViewById(R.id.ivUserProfile)
         statusBadge = findViewById(R.id.statusBadge)
         statusText = findViewById(R.id.statusText)
+        roleBadge = findViewById(R.id.roleBadge) // NEW
+        roleText = findViewById(R.id.roleText) // NEW
 
         // Set up back button
         btnBack.setOnClickListener {
@@ -83,6 +92,9 @@ class UserDetailActivity : AppCompatActivity() {
 
         // Set up verification button based on current status
         setupVerifyButton()
+
+        // NEW: Set up role management button
+        setupRoleButton()
 
         // Load user data
         loadUserData()
@@ -113,6 +125,42 @@ class UserDetailActivity : AppCompatActivity() {
                     onConfirm = { updateUserStatus("verified") }
                 )
             }
+        }
+    }
+
+    // NEW: Setup role management button
+    private fun setupRoleButton() {
+        // Only show role button if user is verified
+        if (userStatus == "verified") {
+            btnManageRole.visibility = View.VISIBLE
+
+            if (userRole == "editor") {
+                btnManageRole.text = "Remove Editor Role"
+                btnManageRole.backgroundTintList = ContextCompat.getColorStateList(this, R.color.orange)
+
+                btnManageRole.setOnClickListener {
+                    showConfirmationDialog(
+                        title = "Remove Editor Role",
+                        message = "Are you sure you want to remove the editor role from this user? They will return to being a regular user.",
+                        action = "Remove Role",
+                        onConfirm = { updateUserRole("user") }
+                    )
+                }
+            } else {
+                btnManageRole.text = "Assign Editor Role"
+                btnManageRole.backgroundTintList = ContextCompat.getColorStateList(this, R.color.blue)
+
+                btnManageRole.setOnClickListener {
+                    showConfirmationDialog(
+                        title = "Assign Editor Role",
+                        message = "Are you sure you want to make this user an editor? They will gain permissions to edit project data.",
+                        action = "Assign Role",
+                        onConfirm = { updateUserRole("editor") }
+                    )
+                }
+            }
+        } else {
+            btnManageRole.visibility = View.GONE
         }
     }
 
@@ -153,6 +201,10 @@ class UserDetailActivity : AppCompatActivity() {
                         "Never logged in"
                     }
 
+                    // NEW: Get and display role
+                    val role = document.getString("role") ?: "user"
+                    updateRoleUI(role)
+
                     // Status
                     val status = document.getString("status") ?: "unverified"
                     updateStatusUI(status)
@@ -187,6 +239,42 @@ class UserDetailActivity : AppCompatActivity() {
 
         // Update verify button
         setupVerifyButton()
+
+        // NEW: Update role button visibility based on status
+        setupRoleButton()
+    }
+
+    // NEW: Update role UI
+    private fun updateRoleUI(role: String) {
+        userRole = role
+
+        tvRole.text = when (role) {
+            "admin" -> "Administrator"
+            "editor" -> "Editor"
+            else -> "User"
+        }
+
+        // Update role badge color and icon based on role
+        when (role) {
+            "admin" -> {
+                roleBadge.background = ContextCompat.getDrawable(this, R.drawable.bg_admin_role)
+                roleText.text = "Admin"
+                roleText.setTextColor(ContextCompat.getColor(this, R.color.purple))
+            }
+            "editor" -> {
+                roleBadge.background = ContextCompat.getDrawable(this, R.drawable.bg_editor_role)
+                roleText.text = "Editor"
+                roleText.setTextColor(ContextCompat.getColor(this, R.color.blue))
+            }
+            else -> {
+                roleBadge.background = ContextCompat.getDrawable(this, R.drawable.bg_user_role)
+                roleText.text = "User"
+                roleText.setTextColor(ContextCompat.getColor(this, R.color.gray))
+            }
+        }
+
+        // Setup role button
+        setupRoleButton()
     }
 
     private fun updateUserStatus(newStatus: String) {
@@ -195,8 +283,8 @@ class UserDetailActivity : AppCompatActivity() {
 
         val update = hashMapOf<String, Any>(
             "status" to newStatus,
-            "updatedAt" to "2025-05-10 15:53:29", // Using the provided timestamp
-            "lastUpdatedBy" to "Lukmannh21" // Using the provided username
+            "updatedAt" to getCurrentDateTime(),
+            "lastUpdatedBy" to "Lukmannh21"
         )
 
         firestore.collection("users").document(userId)
@@ -225,6 +313,42 @@ class UserDetailActivity : AppCompatActivity() {
             }
     }
 
+    // NEW: Update user role
+    private fun updateUserRole(newRole: String) {
+        progressBar.visibility = View.VISIBLE
+        btnManageRole.isEnabled = false
+
+        val update = hashMapOf<String, Any>(
+            "role" to newRole,
+            "updatedAt" to getCurrentDateTime(),
+            "lastUpdatedBy" to "Lukmannh21"
+        )
+
+        firestore.collection("users").document(userId)
+            .update(update)
+            .addOnSuccessListener {
+                progressBar.visibility = View.GONE
+                btnManageRole.isEnabled = true
+
+                val message = when (newRole) {
+                    "editor" -> "User successfully assigned as editor"
+                    else -> "Editor role removed from user"
+                }
+
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
+                // Update UI
+                updateRoleUI(newRole)
+            }
+            .addOnFailureListener { e ->
+                progressBar.visibility = View.GONE
+                btnManageRole.isEnabled = true
+
+                Toast.makeText(this, "Failed to update user role: ${e.message}",
+                    Toast.LENGTH_SHORT).show()
+            }
+    }
+
     private fun showConfirmationDialog(
         title: String,
         message: String,
@@ -242,6 +366,12 @@ class UserDetailActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    // NEW: Helper function to get current date time
+    private fun getCurrentDateTime(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return dateFormat.format(Date())
     }
 
     override fun onBackPressed() {

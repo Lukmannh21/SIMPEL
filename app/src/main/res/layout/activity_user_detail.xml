@@ -120,6 +120,7 @@
                                 android:textSize="14sp"
                                 tools:text="john.doe@example.com" />
 
+                            <!-- Status Badge -->
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -142,9 +143,88 @@
                                     android:textColor="@color/orange"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
+
+                                <!-- NEW: Role Badge -->
+                                <View
+                                    android:id="@+id/roleBadge"
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:layout_marginStart="16dp"
+                                    android:background="@drawable/bg_user_role" />
+
+                                <TextView
+                                    android:id="@+id/roleText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="User"
+                                    android:textColor="@color/gray"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- NEW: Role Information Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="User Role"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#DDDDDD" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:text="Role"
+                            android:textColor="@color/gray"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvRole"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            tools:text="User" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="User: Can only view and report issues\nEditor: Can edit project data and manage issues\nAdmin: Full access to all features"
+                        android:textColor="@color/gray"
+                        android:textSize="12sp"
+                        android:lineSpacingMultiplier="1.4" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -369,20 +449,42 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Verify/Unverify Button -->
-            <Button
-                android:id="@+id/btnVerifyUser"
+            <!-- Buttons Container -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="32dp"
-                android:backgroundTint="@color/green"
-                android:padding="14dp"
-                android:text="Verify User"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:cornerRadius="10dp" />
+                android:layout_marginBottom="32dp">
+
+                <!-- Verify/Unverify Button -->
+                <Button
+                    android:id="@+id/btnVerifyUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:backgroundTint="@color/green"
+                    android:padding="14dp"
+                    android:text="Verify User"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:cornerRadius="10dp" />
+
+                <!-- NEW: Manage Role Button -->
+                <Button
+                    android:id="@+id/btnManageRole"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/blue"
+                    android:padding="14dp"
+                    android:text="Assign Editor Role"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    app:cornerRadius="10dp" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
