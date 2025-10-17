@@ -62,7 +62,7 @@
                     android:id="@+id/logoImageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/logo_splash_screen"
+                    android:src="@drawable/logo_baru"
                     android:scaleType="centerCrop"
                     android:contentDescription="App Logo"/>
             </androidx.cardview.widget.CardView>

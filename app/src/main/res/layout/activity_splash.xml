@@ -12,7 +12,7 @@
         android:id="@+id/splash_logo"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:src="@drawable/logo_splash_screen"
+        android:src="@drawable/logo_baru"
         android:scaleType="fitCenter"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
