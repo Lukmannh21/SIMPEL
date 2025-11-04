@@ -54,6 +54,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import android.view.inputmethod.InputMethodManager
 
 class BaSurveyMiniOltActivity : AppCompatActivity() {
 
@@ -66,12 +67,18 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     private lateinit var etHeaderNo: EditText
 
     // Form input fields
-    private lateinit var etLocation: EditText
+    private lateinit var etLocation: AutoCompleteTextView // CHANGED from EditText
     private lateinit var etNoIhld: EditText
     private lateinit var platformDropdown: AutoCompleteTextView
     private lateinit var etSiteProvider: AutoCompleteTextView
     private lateinit var etContractNumber: EditText
     private lateinit var tvCurrentDate: TextView
+
+    // NEW: For Site ID validation and autocomplete
+    private val validSiteIds = ArrayList<String>()
+    private lateinit var siteIdAdapter: ArrayAdapter<String>
+    private var isSiteIdValid = false
+    private var isLoadingSiteIds = false
 
     // PM/PBM Dropdowns
     private lateinit var rackDropdown: AutoCompleteTextView
@@ -166,7 +173,6 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     private val signatureUris = HashMap<Int, Uri>()
     private val searchResults = ArrayList<BaSurveyMiniOltModel>()
     private lateinit var searchAdapter: BaSurveyMiniOltAdapter
-
 
     //signature
     private lateinit var etTselNopRegion: EditText
@@ -325,13 +331,16 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         searchContainer = findViewById(R.id.searchContainer)
         btnBack = findViewById(R.id.btnBack)
 
-        // Form input fields
+        // Form input fields - etLocation is now AutoCompleteTextView
         etLocation = findViewById(R.id.etLocation)
         etNoIhld = findViewById(R.id.etNoIhld)
         platformDropdown = findViewById(R.id.platformDropdown)
         etSiteProvider = findViewById(R.id.etSiteProvider)
         etContractNumber = findViewById(R.id.etContractNumber)
         tvCurrentDate = findViewById(R.id.tvCurrentDate)
+
+        // NEW: Setup Site ID autocomplete and validation
+        setupSiteIdAutocomplete()
 
         // PM/PBM dropdowns
         rackDropdown = findViewById(R.id.rackDropdown)
@@ -406,7 +415,6 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         imgTelkomSignature = findViewById(R.id.imgTelkomSignature)
         imgTifSignature = findViewById(R.id.imgTifSignature)
 
-        // Dan inisialisasi di initializeUI()
         etHeaderNo = findViewById(R.id.etHeaderNo)
 
         // Photo containers, buttons and image views
@@ -436,6 +444,275 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         searchView = findViewById(R.id.searchView)
         rvSearchResults = findViewById(R.id.rvSearchResults)
     }
+
+    // ========================================
+    // NEW FUNCTIONS FOR SITE ID VALIDATION
+    // ========================================
+
+    private fun setupSiteIdAutocomplete() {
+        // Initialize adapter
+        siteIdAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            validSiteIds
+        )
+        etLocation.setAdapter(siteIdAdapter)
+
+        // Load site IDs from database
+        loadValidSiteIds()
+
+        // Setup text change listener for validation
+        etLocation.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Reset validation state
+                isSiteIdValid = false
+                // Clear any drawable indicators
+                etLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) {
+                val input = s?.toString()?.trim() ?: ""
+
+                if (input.isEmpty()) {
+                    // Clear validation
+                    etLocation.error = null
+                    isSiteIdValid = false
+                    return
+                }
+
+                // Validate Site ID after user stops typing (debounce)
+                etLocation.removeCallbacks(validationRunnable)
+                etLocation.postDelayed(validationRunnable, 800) // 800ms delay
+            }
+        })
+
+        // Handle item selection from dropdown
+        etLocation.setOnItemClickListener { parent, view, position, id ->
+            val selectedSiteId = parent.getItemAtPosition(position) as String
+            isSiteIdValid = true
+            etLocation.error = null
+
+            // Show green checkmark
+            val checkDrawable = ContextCompat.getDrawable(this, android.R.drawable.ic_menu_info_details)
+            checkDrawable?.setTint(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+            etLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, checkDrawable, null)
+
+            // Optional: Auto-fill other data if available
+            autoFillSiteData(selectedSiteId)
+        }
+
+        // Handle focus change
+        etLocation.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus && !isSiteIdValid) {
+                val input = etLocation.text.toString().trim()
+
+                // NEW: Hanya validasi dan show dialog jika:
+                // 1. Input tidak kosong
+                // 2. Input >= 3 karakter
+                // 3. User sudah selesai mengetik (focus hilang)
+                if (input.isNotEmpty() && input.length >= 3) {
+                    // Validasi dulu
+                    if (!validSiteIds.contains(input)) {
+                        // ONLY NOW show the dialog - user sudah selesai
+                        showSiteIdNotFoundDialog(input)
+                    }
+                }
+            }
+        }
+    }
+
+    // Debounce validation runnable
+    private val validationRunnable = Runnable {
+        val input = etLocation.text.toString().trim()
+        if (input.isNotEmpty()) {
+            validateSiteId(input)
+        }
+    }
+
+    private fun loadValidSiteIds() {
+        if (isLoadingSiteIds) return
+
+        isLoadingSiteIds = true
+
+        // Show loading indicator on the field
+        etLocation.isEnabled = false
+        etLocation.hint = "Memuat daftar Site ID..."
+
+        firestore.collection("projects")
+            .get()
+            .addOnSuccessListener { documents ->
+                validSiteIds.clear()
+
+                for (document in documents) {
+                    val siteId = document.getString("siteId")
+                    if (!siteId.isNullOrEmpty() && !validSiteIds.contains(siteId)) {
+                        validSiteIds.add(siteId)
+                    }
+                }
+
+                // Sort alphabetically for better UX
+                validSiteIds.sort()
+
+                // Update adapter
+                siteIdAdapter.notifyDataSetChanged()
+
+                // Re-enable field
+                etLocation.isEnabled = true
+                etLocation.hint = "Lokasi (ID Site)"
+                isLoadingSiteIds = false
+
+                Log.d("BaSurveyMiniOlt", "Loaded ${validSiteIds.size} valid Site IDs")
+
+                // Show hint if list is empty
+                if (validSiteIds.isEmpty()) {
+                    showToast("Tidak ada Site ID yang tersedia. Silakan tambahkan LOP terlebih dahulu.")
+                }
+            }
+            .addOnFailureListener { e ->
+                etLocation.isEnabled = true
+                etLocation.hint = "Lokasi (ID Site)"
+                isLoadingSiteIds = false
+                Log.e("BaSurveyMiniOlt", "Error loading Site IDs: ${e.message}")
+                showToast("Gagal memuat daftar Site ID: ${e.message}")
+            }
+    }
+
+    private fun validateSiteId(siteId: String) {
+        // NEW: Minimum character check - hanya validasi jika >= 3 karakter
+        if (siteId.length < 4) {
+            // Terlalu pendek, belum validasi
+            isSiteIdValid = false
+            etLocation.error = null // Clear error
+            etLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+            return
+        }
+
+        if (validSiteIds.contains(siteId)) {
+            // Site ID is valid
+            isSiteIdValid = true
+            etLocation.error = null
+
+            // Show green checkmark
+            val checkDrawable = ContextCompat.getDrawable(this, android.R.drawable.ic_menu_info_details)
+            checkDrawable?.setTint(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+            etLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, checkDrawable, null)
+
+            // Optional: Haptic feedback
+            etLocation.performHapticFeedback(android.view.HapticFeedbackConstants.CONFIRM)
+
+            Log.d("BaSurveyMiniOlt", "Site ID '$siteId' is valid")
+        } else {
+            // Site ID is NOT valid
+            isSiteIdValid = false
+
+            // MODIFIED: Hanya tampilkan error text, JANGAN popup dialog
+            etLocation.error = "Site ID tidak ditemukan"
+            etLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+
+            // REMOVED: showSiteIdNotFoundDialog(siteId)
+            // Popup akan dipanggil hanya saat user kehilangan focus atau saat submit
+
+            Log.d("BaSurveyMiniOlt", "Site ID '$siteId' is invalid")
+        }
+    }
+
+    private fun showSiteIdNotFoundDialog(siteId: String) {
+        AlertDialog.Builder(this)
+            .setTitle("⚠️ Site ID Tidak Ditemukan")
+            .setMessage(
+                "Site ID '$siteId' tidak ditemukan dalam database.\n\n" +
+                        "Anda harus menambahkan LOP (List of Projects) terlebih dahulu " +
+                        "sebelum membuat BA Survey untuk site ini.\n\n" +
+                        "Apakah Anda ingin:\n" +
+                        "• Mengubah Site ID?\n" +
+                        "• Menambahkan LOP baru?"
+            )
+            .setIcon(android.R.drawable.ic_dialog_alert)
+
+            // done ini untuk  agar user tidak secara sembarangan menekan ubah site id nya
+//            .setPositiveButton("Ubah Site ID") { dialog, _ ->
+//                dialog.dismiss()
+//                etLocation.requestFocus()
+//                etLocation.selectAll()
+//                // Show keyboard
+//                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//                imm.showSoftInput(etLocation, InputMethodManager.SHOW_IMPLICIT)
+//            }
+            .setNeutralButton("Tambah LOP") { dialog, _ ->
+                dialog.dismiss()
+                // Navigate to Add LOP activity
+                navigateToAddLop()
+            }
+            .setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+                etLocation.setText("")
+            }
+            .setCancelable(true)
+            .show()
+    }
+
+    private fun navigateToAddLop() {
+        // Try to navigate to UploadProjectActivity
+        try {
+            val intent = Intent(this, UploadProjectActivity::class.java)
+            startActivityForResult(intent, REQUEST_ADD_LOP)
+        } catch (e: Exception) {
+            // If activity not found, show info
+            Toast.makeText(
+                this,
+                "Silakan tambahkan proyek baru melalui menu utama",
+                Toast.LENGTH_LONG
+            ).show()
+            finish() // Go back to main menu
+        }
+    }
+
+    private fun autoFillSiteData(siteId: String) {
+        // Show loading
+        val loadingDialog = AlertDialog.Builder(this)
+            .setView(R.layout.dialog_loading)
+            .setCancelable(false)
+            .create()
+        loadingDialog.show()
+
+        // Query site data
+        firestore.collection("projects")
+            .whereEqualTo("siteId", siteId)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { documents ->
+                loadingDialog.dismiss()
+
+                if (!documents.isEmpty) {
+                    val siteData = documents.documents[0].data
+
+                    // Auto-fill NO IHLD if available
+                    val noIhld = siteData?.get("noIhld") as? String
+                    if (!noIhld.isNullOrEmpty() && etNoIhld.text.toString().isEmpty()) {
+                        etNoIhld.setText(noIhld)
+                    }
+
+                    // Auto-fill Site Provider if available
+                    val siteProvider = siteData?.get("siteProvider") as? String
+                    if (!siteProvider.isNullOrEmpty() && etSiteProvider.text.toString().isEmpty()) {
+                        etSiteProvider.setText(siteProvider, false)
+                    }
+
+                    // Show info
+                    showToast("Data site berhasil dimuat dari database")
+                }
+            }
+            .addOnFailureListener { e ->
+                loadingDialog.dismiss()
+                Log.e("BaSurveyMiniOlt", "Error loading site data: ${e.message}")
+            }
+    }
+
+    // ========================================
+    // END OF NEW FUNCTIONS
+    // ========================================
 
     private fun setupPlatformDropdown() {
         val platformOptions = listOf(
@@ -838,6 +1115,23 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        // Handle return from Add LOP activity
+        if (requestCode == REQUEST_ADD_LOP && resultCode == Activity.RESULT_OK) {
+            // Reload site IDs after adding new LOP
+            loadValidSiteIds()
+
+            // Get the newly added site ID if passed back
+            val newSiteId = data?.getStringExtra("NEW_SITE_ID")
+            if (!newSiteId.isNullOrEmpty()) {
+                etLocation.setText(newSiteId)
+                isSiteIdValid = true
+
+                // Show success message
+                showToast("Site ID baru berhasil ditambahkan!")
+            }
+            return
+        }
+
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
@@ -1058,12 +1352,24 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     private fun validateForm(): Boolean {
         var isValid = true
 
-        // Check required fields
-        if (etLocation.text.toString().isEmpty()) {
-            etLocation.error = "Required field"
+        // NEW: Check Site ID first and foremost
+        val siteId = etLocation.text.toString().trim()
+        if (siteId.isEmpty()) {
+            etLocation.error = "Lokasi (Site ID) wajib diisi"
+            etLocation.requestFocus()
             isValid = false
+            return false // Stop immediately
+        } else if (!isSiteIdValid) {
+            etLocation.error = "Site ID tidak valid. Pilih dari daftar yang tersedia."
+            etLocation.requestFocus()
+            isValid = false
+
+            // Show dialog again
+            showSiteIdNotFoundDialog(siteId)
+            return false // Immediately return false
         }
 
+        // Check required fields
         if (etNoIhld.text.toString().isEmpty()) {
             etNoIhld.error = "Required field"
             isValid = false
@@ -1131,6 +1437,21 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
     }
 
     private fun submitForm() {
+        // NEW: Double-check Site ID validity before submission
+        if (!isSiteIdValid) {
+            AlertDialog.Builder(this)
+                .setTitle("❌ Tidak Dapat Submit")
+                .setMessage("Site ID tidak valid. Anda harus memilih Site ID yang sudah terdaftar dalam database.\n\nSilakan pilih Site ID yang benar atau tambahkan LOP terlebih dahulu.")
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                    etLocation.requestFocus()
+                    etLocation.selectAll()
+                }
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show()
+            return
+        }
+
         // Show loading dialog
         val loadingDialog = AlertDialog.Builder(this)
             .setView(R.layout.dialog_loading)
@@ -2544,12 +2865,13 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
 
     private fun showSuccessDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Success")
-            .setMessage("BA Survey Mini OLT has been successfully submitted")
+            .setTitle("✅ Success")
+            .setMessage("BA Survey Mini OLT has been successfully submitted and linked to the project!")
             .setPositiveButton("OK") { _, _ ->
                 // Reset form
                 resetForm()
             }
+            .setIcon(android.R.drawable.ic_dialog_info)
             .show()
     }
 
@@ -2560,6 +2882,11 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         platformDropdown.text.clear()
         etSiteProvider.text.clear()
         etContractNumber.text.clear()
+        etHeaderNo.text.clear()
+
+        // Reset validation state
+        isSiteIdValid = false
+        etLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
 
         // Reset PM/PBM dropdowns
         rackDropdown.setText("PM", false)
@@ -2603,8 +2930,6 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         etTelkomName.text.clear()
         etTifName.text.clear()
 
-
-
         // Clear EditText region Telkomsel yang baru
         etTselNopRegion.text.clear()
         etTselRtpdsRegion.text.clear()
@@ -2638,5 +2963,15 @@ class BaSurveyMiniOltActivity : AppCompatActivity() {
         // Reset permission tracking variables
         pendingGalleryLaunch = false
         permissionExplanationShown = false
+    }
+
+    // Helper function to show toast
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    // Companion object for constants
+    companion object {
+        private const val REQUEST_ADD_LOP = 1001
     }
 }

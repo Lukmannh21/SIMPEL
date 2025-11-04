@@ -172,16 +172,24 @@
                                 android:layout_marginBottom="12dp"
                                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                 app:boxStrokeColor="@color/red_telkomsel"
-                                app:hintTextColor="@color/red_telkomsel">
+                                app:hintTextColor="@color/red_telkomsel"
+                                app:startIconDrawable="@drawable/ic_location"
+                                app:startIconTint="@color/red_telkomsel"
+                                app:endIconMode="clear_text"
+                                app:endIconTint="@color/red_telkomsel"
+                                app:helperText="Pilih Site ID dari daftar atau ketik untuk mencari"
+                                app:helperTextTextColor="@android:color/darker_gray">
 
-                                <EditText
+                                <AutoCompleteTextView
                                     android:id="@+id/etLocation"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="Lokasi (ID Site)"
                                     android:inputType="text"
                                     android:paddingVertical="16dp"
-                                    android:textColor="@android:color/black"/>
+                                    android:textColor="@android:color/black"
+                                    android:completionThreshold="1"
+                                    android:dropDownHeight="250dp"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
                             <!-- No IHLD/LOP -->
@@ -1518,6 +1526,7 @@
                                             android:paddingVertical="16dp"
                                             android:textColor="@android:color/black"/>
                                     </com.google.android.material.textfield.TextInputLayout>
+<!--                                    jf-->
                                     <Button
                                         android:id="@+id/btnTselRtpdsSignature"
                                         android:layout_width="match_parent"
