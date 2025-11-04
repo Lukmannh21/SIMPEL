@@ -7,10 +7,10 @@
       </SelectionState>
       <SelectionState runConfigName="SIMPEL.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-05T10:32:34.153324400Z">
+        <DropdownSelection timestamp="2025-11-04T06:42:28.933553100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Default" identifier="serial=emulator-5554;connection=247fe3c4" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=5p4t4ptkxskbmnea" />
             </handle>
           </Target>
         </DropdownSelection>
