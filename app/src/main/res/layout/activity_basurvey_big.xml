@@ -218,13 +218,24 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="12dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="@color/red_telkomsel"
+                            app:hintTextColor="@color/red_telkomsel"
+                            app:endIconMode="clear_text"
+                            app:endIconTint="@color/red_telkomsel"
+                            app:helperText="Pilih Site ID dari daftar atau ketik untuk mencari"
+                            app:helperTextTextColor="@android:color/darker_gray">
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <AutoCompleteTextView
                                 android:id="@+id/inputLocation"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Lokasi/ID SITE"/>
+                                android:hint="Lokasi/ID SITE"
+                                android:inputType="text"
+                                android:paddingVertical="16dp"
+                                android:textColor="@android:color/black"
+                                android:completionThreshold="1"
+                                android:dropDownHeight="250dp"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
