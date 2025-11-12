@@ -120,6 +120,14 @@ class BASurveyBigDetailActivity : AppCompatActivity() {
             finish()
         }
 
+        // Set up edit button
+        val btnEdit = findViewById<Button>(R.id.btnEdit)
+        btnEdit.setOnClickListener {
+            val intent = Intent(this, BASurveyBigEditActivity::class.java)
+            intent.putExtra("SURVEY_ID", surveyId)
+            startActivity(intent)
+        }
+
         // Set up download PDF button
         btnDownloadPdf.setOnClickListener {
             downloadPdf()

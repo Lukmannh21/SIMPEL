@@ -1,0 +1,2743 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient"
+    tools:context=".BASurveyBigEditActivity">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/toolbarCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/toolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit BA Survey Big OLT"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/red_telkomsel"
+                android:layout_marginStart="16dp"
+                android:fontFamily="sans-serif-medium"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/formContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbarCard"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="visible">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="EDIT BERITA ACARA SURVEY BIG OLT"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/red_telkomsel"
+                    android:gravity="center"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="24dp"/>
+
+                <!-- Basic Information Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/red_telkomsel"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_document"
+                                app:tint="@color/red_telkomsel"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Basic Information"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/red_telkomsel"
+                                android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputProjectTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Proyek"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputContractNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Nomor Kontrak KHS"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pelaksana"
+                                android:textSize="12sp"
+                                android:textColor="#757575"
+                                android:layout_marginBottom="4dp"/>
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="0dp"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginEnd="2dp">
+
+                                <Spinner
+                                    android:id="@+id/inputExecutor"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:entries="@array/executor_options"
+                                    android:background="@drawable/spinner_background"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"/>
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputLocation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Lokasi/ID SITE"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputDescription"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Deskripsi(Auto Generated)"
+                                android:focusable="false"
+                                android:cursorVisible="false"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- ITEMS Section (1-19) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/red_telkomsel"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_document"
+                                app:tint="@color/red_telkomsel"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ITEM"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/red_telkomsel"
+                                android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <!-- Item 1 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="1. Propose OLT"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual1"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan1"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 2 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="2. Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual2"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan2"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 3 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="3. Panjang Bundlecore Uplink (Dari Rack ET ke OLT)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual3"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan3"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 4 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="4. Panjang Bundlecore Downlink (Dari Rack EA ke OLT)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual4"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan4"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 5 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="5. Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual5"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan5"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 6 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="6. Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual6"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan6"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 7 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="7. Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual7"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan7"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 8 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="8. Kebutuhan catuan daya di Recti"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual8"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan8"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 9 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="9. Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual9"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan9"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 10 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="10. Kebutuhan Tray @3m (pcs) dari Tray Eksisting ke OLT-turunan Dan Rack FTM-EA kalau diperlukan"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual10"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan10"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 11 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="11. Kebutuhan MCB 63A-Schneider"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual11"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan11"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 12 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="12. Space 2 pcs FTB untuk di install di rack EA"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Meter"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual12"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan12"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 13 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="13. FTB yang kita gunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual13"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan13"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 14 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="14. Kebutuhan Rack EA"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual14"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan14"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 15 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="15. Alokasi Port Metro"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Port"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual15"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan15"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 16 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="16. Kebutuhan SFP"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual16"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan16"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 17 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="17. Alokasi Core di FTB Eksisting (di Rack ET)"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Core"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual17"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan17"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 18 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="18. Kondisi Penerangan di ruangan OLT"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: OK/NOK"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual18"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan18"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Item 19 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="2dp"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#E0E0E0">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="16dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="19. CME – Kebutuhan Air Conditioner"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:textColor="@color/red_telkomsel"
+                                        android:layout_marginBottom="8dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="Satuan: Pcs"
+                                        android:textStyle="italic"
+                                        android:textSize="14sp"
+                                        android:textColor="#757575" />
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputAktual19"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Aktual" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputKeterangan19"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Keterangan" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Photo Documentation Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/red_telkomsel"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_camera"
+                                app:tint="@color/red_telkomsel"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Photo Documentation"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/red_telkomsel"
+                                android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+
+                        <!-- Photo 1 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="1. Akses Gerbang"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 2 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="2. Name Plate"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 3 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="3. Sto Tampak Depan"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 4 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="4. Foto Ruangan"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 5 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="5. Rectifier A"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 6 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel6"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="6. Rectifier B"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto6"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto6"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 7 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel7"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="7. Panel SDP AC"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto7"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto7"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 8 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel8"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="8. Propose Space Cabinet Big OLT"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto8"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto8"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 9 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel9"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="9. Foto Rack Cabinet (Insert Frame)"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto9"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto9"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 10 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel10"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="10. Foto Runaway"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto10"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto10"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 11 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel11"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="11. PLN Fase R"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto11"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto11"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 12 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel12"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="12. PLN Fase S"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto12"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto12"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 13 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel13"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="13. PLN Fase T"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto13"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto13"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 14 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel14"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="14. Grounding"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto14"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto14"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 15 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel15"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="15. Port Metro"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto15"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto15"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 16 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel16"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="16. OTB FA"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto16"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto16"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 17 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel17"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="17. Bundle Core"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto17"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto17"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 18 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel18"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="18. Ruang FTM"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto18"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto18"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Photo 19 -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+                                <TextView
+                                    android:id="@+id/tvPhotoLabel19"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="19. Foto Selfie Teknisi (Surveyor)"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:layout_marginBottom="8dp" />
+                                <Button
+                                    android:id="@+id/btnUploadPhoto19"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upload Photo"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+                                <ImageView
+                                    android:id="@+id/imgPhoto19"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="150dp"
+                                    android:scaleType="centerCrop"
+                                    android:background="@android:color/white"
+                                    android:layout_marginTop="8dp"
+                                    android:visibility="gone"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Signatures Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/red_telkomsel"
+                    app:strokeWidth="1dp"
+                    android:layout_marginBottom="24dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:src="@drawable/ic_signature"
+                                app:tint="@color/red_telkomsel"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Signatures"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/red_telkomsel"
+                                android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etTselRegion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Telkomsel Region (e.g., SUMBAGSEL)"
+                                android:inputType="text"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- ZTE Signature -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="PT. ZTE INDONESIA - TIM SURVEY"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etZteName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etZteNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnZteSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgZteSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- TIF Signature -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="PT. TIF - TIM SURVEY"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTifName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTifNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTifSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTifSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- TELKOM Signature -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="PT. TELKOM - MGR NDPS TR1"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTelkomName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTelkomNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTelkomSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTelkomSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- TSEL NOP Signature -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="PT. TELKOMSEL - MGR NOP"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselNopName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselNopNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTselNopSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTselNopSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- TSEL RTPDS Signature -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="PT. TELKOMSEL - MGR RTPDS"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselRtpdsName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselRtpdsNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTselRtpdsSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTselRtpdsSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- TSEL RTPE/NF Signature -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#E0E0E0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="PT. TELKOMSEL - MGR RTPE"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/red_telkomsel"
+                                    android:textSize="16sp"
+                                    android:layout_marginBottom="12dp"/>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselRtpeNfName"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Name"
+                                        android:inputType="textPersonName"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/etTselRtpeNfNik"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="NIK/NIP"
+                                        android:inputType="text"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <Button
+                                    android:id="@+id/btnTselRtpeNfSignature"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Add Signature"
+                                    android:backgroundTint="@color/red_telkomsel"/>
+
+                                <ImageView
+                                    android:id="@+id/imgTselRtpeNfSignature"
+                                    android:layout_width="150dp"
+                                    android:layout_height="80dp"
+                                    android:scaleType="fitCenter"
+                                    android:background="@android:color/white"
+                                    android:visibility="gone"
+                                    android:layout_marginTop="8dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Action Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="32dp">
+
+                    <Button
+                        android:id="@+id/btnCancel"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:text="Cancel"
+                        android:textSize="16sp"
+                        android:backgroundTint="#757575"
+                        android:layout_marginEnd="8dp"/>
+
+                    <Button
+                        android:id="@+id/btnUpdateForm"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:text="Update and Save"
+                        android:textSize="16sp"
+                        android:backgroundTint="@color/red_telkomsel"
+                        android:layout_marginEnd="8dp"/>
+
+                    <Button
+                        android:id="@+id/btnGeneratePdf"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:text="Preview PDF"
+                        android:textSize="16sp"
+                        android:backgroundTint="#4CAF50"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
