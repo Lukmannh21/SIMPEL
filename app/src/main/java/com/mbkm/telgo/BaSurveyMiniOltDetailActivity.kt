@@ -80,6 +80,8 @@ class BaSurveyMiniOltDetailActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
 
+    private lateinit var btnEdit: Button
+
     private var surveyId: String = ""
     private var pdfUrl: String = ""
 
@@ -107,6 +109,13 @@ class BaSurveyMiniOltDetailActivity : AppCompatActivity() {
             finish()
         }
 
+        // Setup button listener
+        btnEdit.setOnClickListener {
+            val intent = Intent(this, BaSurveyMiniOltEditActivity::class.java)
+            intent.putExtra("SURVEY_ID", surveyId)
+            startActivity(intent)
+        }
+
         // Set up download PDF button
         btnDownloadPdf.setOnClickListener {
             downloadPdf()
@@ -119,7 +128,7 @@ class BaSurveyMiniOltDetailActivity : AppCompatActivity() {
     private fun initializeUI() {
         btnBack = findViewById(R.id.btnBack)
         btnDownloadPdf = findViewById(R.id.btnDownloadPdf)
-
+        btnEdit = findViewById(R.id.btnEdit)
         // Basic info TextViews
         tvLocation = findViewById(R.id.tvLocation)
         tvNoIhld = findViewById(R.id.tvNoIhld)

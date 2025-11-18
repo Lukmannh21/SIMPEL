@@ -32,6 +32,12 @@
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
         <activity
+            android:name=".BaSurveyMiniOltEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BASurveyBigEditActivity"
+            android:exported="false" />
+        <activity
             android:name=".BASurveyBigDetailActivity"
             android:exported="false" />
         <activity
@@ -53,9 +59,15 @@
             android:name=".LastUpdateActivity"
             android:exported="false" />
 
-
-
-
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.mbkm.telgo.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.mbkm.telgo.fileprovider"
@@ -182,16 +194,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.mbkm.telgo.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
     </application>
 
 </manifest>

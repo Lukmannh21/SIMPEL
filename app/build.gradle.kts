@@ -94,4 +94,7 @@ dependencies {
 
     implementation ("com.prolificinteractive:material-calendarview:1.4.3")
 
+    implementation ("com.itextpdf:itext-core:8.0.3")
+    implementation ("com.itextpdf:layout:8.0.3")
+
 }

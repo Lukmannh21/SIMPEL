@@ -8,52 +8,78 @@
     android:background="@drawable/background_gradient"
     tools:context=".BASurveyBigDetailActivity">
 
-    <!-- Toolbar -->
-    <LinearLayout
-        android:id="@+id/toolbarLayout"
+    <!-- Updated Toolbar with Edit Button -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/toolbarCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_back"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back"/>
-
-        <TextView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/toolbarLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="BA Survey Big OLT Detail"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginStart="16dp"/>
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
 
-        <Button
-            android:id="@+id/btnDownloadPdf"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Download PDF"
-            android:textSize="12sp"
-            android:backgroundTint="@color/red_telkomsel"
-            android:drawableStart="@drawable/ic_download"
-            android:drawablePadding="8dp"
-            android:padding="8dp"/>
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="BA Survey Big OLT Detail"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/red_telkomsel"
+                android:layout_marginStart="12dp"
+                android:fontFamily="sans-serif-medium"/>
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:textSize="12sp"
+                android:backgroundTint="@color/red_telkomsel"
+                android:drawableStart="@drawable/ic_edit"
+                android:drawablePadding="4dp"
+                android:padding="8dp"
+                android:layout_marginEnd="6dp"
+                android:minWidth="80dp"/>
+
+            <Button
+                android:id="@+id/btnDownloadPdf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Download"
+                android:textSize="12sp"
+                android:backgroundTint="@color/red_telkomsel"
+                android:drawableStart="@drawable/ic_download"
+                android:drawablePadding="4dp"
+                android:padding="8dp"
+                android:minWidth="100dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/toolbarLayout"
+        app:layout_constraintTop_toBottomOf="@id/toolbarCard"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
@@ -97,39 +123,68 @@
                         android:layout_marginBottom="16dp"/>
 
                     <TextView
-                        android:id="@+id/tvProjectTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Proyek: "
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:id="@+id/tvContractNumber"
+                        android:id="@+id/tvProjectTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Nomor Kontrak KHS: "
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:id="@+id/tvExecutor"
+                        android:id="@+id/tvContractNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Pelaksana: "
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:id="@+id/tvLocation"
+                        android:id="@+id/tvExecutor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Lokasi: "
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:id="@+id/tvSurveyDate"
+                        android:id="@+id/tvLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Survey Date: "
                         android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/tvSurveyDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -181,13 +236,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -202,13 +259,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <!-- 2. Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET) -->
@@ -236,13 +295,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -257,22 +318,22 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 3. Panjang  Bundlecore Uplink
-(Dari Rack ET ke OLT) -->
+                    <!-- 3. Panjang Bundlecore Uplink (Dari Rack ET ke OLT) -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="3. Panjang  Bundlecore Uplink
-(Dari Rack ET ke OLT)"
+                        android:text="3. Panjang Bundlecore Uplink (Dari Rack ET ke OLT)"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp"/>
 
@@ -293,13 +354,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -314,13 +377,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <!-- 4. Panjang Bundlecore Downlink (Dari Rack EA ke OLT) -->
@@ -348,13 +413,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual4"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -369,16 +436,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan4"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 5. Pengecekan ground bar ruangan dan Panjang kabel grounding ke ground bar ruangan(kabel-25mm) -->
+                    <!-- 5. Pengecekan ground bar ruangan -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -403,13 +472,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual5"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -424,16 +495,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan5"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 6. Panjang Kabel Power (25mm) Dari OLT ke DCPDB Eksisting/New (Untuk 2 source) -->
+                    <!-- 6. Panjang Kabel Power (25mm) -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -458,13 +531,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual6"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -479,16 +554,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan6"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 7. Panjang Kabel Power (35mm). Kebutuhan yang diperlukan jika tidak ada DCPDB Eksisting / Menggunakan DCPDB New -->
+                    <!-- 7. Panjang Kabel Power (35mm) -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -513,13 +590,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual7"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -534,13 +613,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan7"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <!-- 8. Kebutuhan catuan daya di Recti -->
@@ -568,13 +649,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual8"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -589,16 +672,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan8"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 9. Kebutuhan DCPDB New, jika dibutuhkan dan Propose DCPDBnya -->
+                    <!-- 9. Kebutuhan DCPDB New -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -623,13 +708,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual9"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -644,22 +731,22 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan9"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-
-
-                    <!-- 10. Kebutuhan Tray @3m (pcs) dari Tray Eksistingke OLT-turunan Dan Rack FTM-EA kalau diperlukan -->
+                    <!-- 10. Kebutuhan Tray @3m -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="10. Kebutuhan Tray @3m (pcs) dari Tray Eksistingke OLT-turunan Dan Rack FTM-EA kalau diperlukan"
+                        android:text="10. Kebutuhan Tray @3m (pcs) dari Tray Eksisting ke OLT-turunan Dan Rack FTM-EA kalau diperlukan"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp"/>
 
@@ -680,13 +767,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual10"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -694,19 +783,22 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:background="#E8F5E9"
-                        android:padding="8dp">
+                        android:padding="8dp"
+                        android:layout_marginBottom="16dp">
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan10"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <!-- 11. Kebutuhan MCB 63A-Schneider -->
@@ -734,13 +826,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual11"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -755,16 +849,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan11"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 12. Space 2 pcs FTB untuk di install di rack EA -->
+                    <!-- 12. Space 2 pcs FTB -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -775,7 +871,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Satuan: OK/NOK" />
+                        android:text="Satuan: Meter" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -789,13 +885,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual12"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -810,20 +908,22 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan12"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 13. FTB yang kitagunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda -->
+                    <!-- 13. FTB Type TDS/MDT -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="13. FTB yang kitagunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda"
+                        android:text="13. FTB yang kita gunakan FTB Type TDS/MDT tidak bisa mengikuti FTB Eksisting jika ada yang beda"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp"/>
 
@@ -844,13 +944,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual13"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -865,13 +967,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan13"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <!-- 14. Kebutuhan Rack EA -->
@@ -899,13 +1003,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual14"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -920,13 +1026,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan14"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <!-- 15. Alokasi Port Metro -->
@@ -954,13 +1062,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual15"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -975,13 +1085,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan15"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <!-- 16. Kebutuhan SFP -->
@@ -1009,13 +1121,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual16"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -1030,22 +1144,22 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan16"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 17. Alokasi Core di FTB Eksisting (di Rack
-ET) -->
+                    <!-- 17. Alokasi Core di FTB Eksisting -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="17. Alokasi Core di FTB Eksisting (di Rack
-ET)"
+                        android:text="17. Alokasi Core di FTB Eksisting (di Rack ET)"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp"/>
 
@@ -1066,13 +1180,15 @@ ET)"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual17"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -1087,13 +1203,15 @@ ET)"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan17"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <!-- 18. Kondisi Penerangan di ruangan OLT -->
@@ -1121,13 +1239,15 @@ ET)"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual18"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -1142,16 +1262,18 @@ ET)"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan18"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
-                    <!-- 19. CME – Kebutuhan Air Conditioner -->
+                    <!-- 19. CME - Kebutuhan Air Conditioner -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1176,13 +1298,15 @@ ET)"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Aktual:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvAktual19"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -1197,13 +1321,15 @@ ET)"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Keterangan:"
-                            android:textStyle="italic"/>
+                            android:textStyle="italic"
+                            android:textSize="12sp"/>
 
                         <TextView
                             android:id="@+id/tvKeterangan19"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""/>
+                            android:text=""
+                            android:textSize="13sp"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
