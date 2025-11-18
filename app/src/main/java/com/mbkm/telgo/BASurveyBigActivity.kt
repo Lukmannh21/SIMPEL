@@ -1,7 +1,6 @@
 package com.mbkm.telgo
 
 import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,12 +13,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -59,7 +56,7 @@ class BASurveyBigActivity : AppCompatActivity() {
     private lateinit var inputProjectTitle: EditText
     private lateinit var inputContractNumber: EditText
     private lateinit var inputExecutor: Spinner
-    private lateinit var inputLocation: AutoCompleteTextView
+    private lateinit var inputLocation: EditText
     private lateinit var inputDescription: EditText
     private lateinit var etTselRegion: EditText
 
@@ -127,12 +124,6 @@ class BASurveyBigActivity : AppCompatActivity() {
         "19. Foto Selfie Teknisi (Surveyor)"
     )
 
-    // Site ID validation properties
-    private val validSiteIds = ArrayList<String>()
-    private lateinit var siteIdAdapter: ArrayAdapter<String>
-    private var isSiteIdValid = false
-    private var isLoadingSiteIds = false
-
     // Permissions
     private val CAMERA_PERMISSION_CODE = 100
     private val STORAGE_PERMISSION_CODE = 101
@@ -146,8 +137,6 @@ class BASurveyBigActivity : AppCompatActivity() {
     private val REQUEST_SIGNATURE_TSEL_RTPE = 204
     private val REQUEST_SIGNATURE_TELKOM = 205
     private val REQUEST_SIGNATURE_TIF = 206
-    private val REQUEST_ADD_LOP = 1001
-    private val REQUEST_PERMISSION_SETTINGS = 999
 
     private val marginX = 50f
 
@@ -158,10 +147,6 @@ class BASurveyBigActivity : AppCompatActivity() {
     // Data for search
     private var surveyList = mutableListOf<SurveyData>()
     private lateinit var searchAdapter: SurveyAdapter
-
-    // Permission tracking
-    private var pendingGalleryLaunch = false
-    private var permissionExplanationShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -185,9 +170,6 @@ class BASurveyBigActivity : AppCompatActivity() {
 
         // Initialize UI components
         initializeUI()
-
-        // Setup Site ID validation
-        setupSiteIdValidation()
 
         // Setup TabLayout
         setupTabs()
@@ -295,7 +277,7 @@ class BASurveyBigActivity : AppCompatActivity() {
             if (validateForm()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        generateStyledPdf()
+                        generateStyledPdf() // Call function to generate PDF
                     } catch (e: Exception) {
                         Log.e("BASurveyBig", "Error generating PDF: ${e.message}")
                         withContext(Dispatchers.Main) {
@@ -316,254 +298,6 @@ class BASurveyBigActivity : AppCompatActivity() {
             }
         }
     }
-
-    // ============================================
-    // SITE ID VALIDATION METHODS
-    // ============================================
-
-    private fun setupSiteIdValidation() {
-        // Initialize adapter
-        siteIdAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            validSiteIds
-        )
-        inputLocation.setAdapter(siteIdAdapter)
-
-        // Load site IDs from database
-        loadValidSiteIds()
-
-        // Setup text change listener for validation
-        inputLocation.addTextChangedListener(object : android.text.TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Reset validation state
-                isSiteIdValid = false
-                // Clear any drawable indicators
-                inputLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
-            }
-
-            override fun afterTextChanged(s: android.text.Editable?) {
-                val input = s?.toString()?.trim() ?: ""
-
-                if (input.isEmpty()) {
-                    // Clear validation
-                    inputLocation.error = null
-                    isSiteIdValid = false
-                    return
-                }
-
-                // Validate Site ID after user stops typing (debounce)
-                inputLocation.removeCallbacks(validationRunnable)
-                inputLocation.postDelayed(validationRunnable, 800) // 800ms delay
-            }
-        })
-
-        // Handle item selection from dropdown
-        inputLocation.setOnItemClickListener { parent, view, position, id ->
-            val selectedSiteId = parent.getItemAtPosition(position) as String
-            isSiteIdValid = true
-            inputLocation.error = null
-
-            // Show green checkmark
-            val checkDrawable = ContextCompat.getDrawable(this, android.R.drawable.ic_menu_info_details)
-            checkDrawable?.setTint(ContextCompat.getColor(this, android.R.color.holo_green_dark))
-            inputLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, checkDrawable, null)
-
-            // Optional: Auto-fill other data if available
-            autoFillSiteData(selectedSiteId)
-        }
-
-        // Handle focus change
-        inputLocation.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus && !isSiteIdValid) {
-                val input = inputLocation.text.toString().trim()
-
-                // NEW: Hanya validasi dan show dialog jika:
-                // 1. Input tidak kosong
-                // 2. Input >= 3 karakter
-                // 3. User sudah selesai mengetik (focus hilang)
-                if (input.isNotEmpty() && input.length >= 3) {
-                    // Validasi dulu
-                    if (!validSiteIds.contains(input)) {
-                        // ONLY NOW show the dialog - user sudah selesai
-                        showSiteIdNotFoundDialog(input)
-                    }
-                }
-            }
-        }
-    }
-
-    // Debounce validation runnable
-    private val validationRunnable = Runnable {
-        val input = inputLocation.text.toString().trim()
-        if (input.isNotEmpty()) {
-            validateSiteId(input)
-        }
-    }
-
-    private fun loadValidSiteIds() {
-        if (isLoadingSiteIds) return
-
-        isLoadingSiteIds = true
-
-        // Show loading indicator on the field
-        inputLocation.isEnabled = false
-        inputLocation.hint = "Memuat daftar Site ID..."
-
-        db.collection("projects")
-            .get()
-            .addOnSuccessListener { documents ->
-                validSiteIds.clear()
-
-                for (document in documents) {
-                    val siteId = document.getString("siteId")
-                    if (!siteId.isNullOrEmpty() && !validSiteIds.contains(siteId)) {
-                        validSiteIds.add(siteId)
-                    }
-                }
-
-                // Sort alphabetically for better UX
-                validSiteIds.sort()
-
-                // Update adapter
-                siteIdAdapter.notifyDataSetChanged()
-
-                // Re-enable field
-                inputLocation.isEnabled = true
-                inputLocation.hint = "Lokasi/ID SITE"
-                isLoadingSiteIds = false
-
-                Log.d("BASurveyBig", "Loaded ${validSiteIds.size} valid Site IDs")
-
-                // Show hint if list is empty
-                if (validSiteIds.isEmpty()) {
-                    showToast("Tidak ada Site ID yang tersedia. Silakan tambahkan LOP terlebih dahulu.")
-                }
-            }
-            .addOnFailureListener { e ->
-                inputLocation.isEnabled = true
-                inputLocation.hint = "Lokasi/ID SITE"
-                isLoadingSiteIds = false
-                Log.e("BASurveyBig", "Error loading Site IDs: ${e.message}")
-                showToast("Gagal memuat daftar Site ID: ${e.message}")
-            }
-    }
-
-    private fun validateSiteId(siteId: String) {
-        // NEW: Minimum character check - hanya validasi jika >= 3 karakter
-        if (siteId.length < 4) {
-            // Terlalu pendek, belum validasi
-            isSiteIdValid = false
-            inputLocation.error = null // Clear error
-            inputLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
-            return
-        }
-
-        if (validSiteIds.contains(siteId)) {
-            // Site ID is valid
-            isSiteIdValid = true
-            inputLocation.error = null
-
-            // Show green checkmark
-            val checkDrawable = ContextCompat.getDrawable(this, android.R.drawable.ic_menu_info_details)
-            checkDrawable?.setTint(ContextCompat.getColor(this, android.R.color.holo_green_dark))
-            inputLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, checkDrawable, null)
-
-            // Optional: Haptic feedback
-            inputLocation.performHapticFeedback(android.view.HapticFeedbackConstants.CONFIRM)
-
-            Log.d("BASurveyBig", "Site ID '$siteId' is valid")
-        } else {
-            // Site ID is NOT valid
-            isSiteIdValid = false
-
-            // MODIFIED: Hanya tampilkan error text, JANGAN popup dialog
-            inputLocation.error = "Site ID tidak ditemukan"
-            inputLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
-
-            Log.d("BASurveyBig", "Site ID '$siteId' is invalid")
-        }
-    }
-
-    private fun showSiteIdNotFoundDialog(siteId: String) {
-        AlertDialog.Builder(this)
-            .setTitle("⚠️ Site ID Tidak Ditemukan")
-            .setMessage(
-                "Site ID '$siteId' tidak ditemukan dalam database.\n\n" +
-                        "Anda harus menambahkan LOP (List of Projects) terlebih dahulu " +
-                        "sebelum membuat BA Survey untuk site ini.\n\n" +
-                        "Apakah Anda ingin menambahkan LOP baru?"
-            )
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .setPositiveButton("Tambah LOP") { dialog, _ ->
-                dialog.dismiss()
-                // Navigate to Add LOP activity
-                navigateToAddLop()
-            }
-            .setNegativeButton("Batal") { dialog, _ ->
-                dialog.dismiss()
-                inputLocation.setText("")
-            }
-            .setCancelable(true)
-            .show()
-    }
-
-    private fun navigateToAddLop() {
-        // Try to navigate to UploadProjectActivity
-        try {
-            val intent = Intent(this, UploadProjectActivity::class.java)
-            startActivityForResult(intent, REQUEST_ADD_LOP)
-        } catch (e: Exception) {
-            // If activity not found, show info
-            Toast.makeText(
-                this,
-                "Silakan tambahkan proyek baru melalui menu utama",
-                Toast.LENGTH_LONG
-            ).show()
-            finish() // Go back to main menu
-        }
-    }
-
-    private fun autoFillSiteData(siteId: String) {
-        // Show loading
-        val loadingDialog = AlertDialog.Builder(this)
-            .setView(R.layout.dialog_loading)
-            .setCancelable(false)
-            .create()
-        loadingDialog.show()
-
-        // Query site data
-        db.collection("projects")
-            .whereEqualTo("siteId", siteId)
-            .limit(1)
-            .get()
-            .addOnSuccessListener { documents ->
-                loadingDialog.dismiss()
-
-                if (!documents.isEmpty) {
-                    val siteData = documents.documents[0].data
-
-                    // Auto-fill Contract Number if available
-                    val contractNumber = siteData?.get("noIhld") as? String
-                    if (!contractNumber.isNullOrEmpty() && inputContractNumber.text.toString().isEmpty()) {
-                        inputContractNumber.setText(contractNumber)
-                    }
-
-                    // Show info
-                    showToast("Data site berhasil dimuat dari database")
-                }
-            }
-            .addOnFailureListener { e ->
-                loadingDialog.dismiss()
-                Log.e("BASurveyBig", "Error loading site data: ${e.message}")
-            }
-    }
-
-    // ============================================
-    // END OF SITE ID VALIDATION METHODS
-    // ============================================
 
     private fun setupTabs() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -698,10 +432,44 @@ class BASurveyBigActivity : AppCompatActivity() {
                     etTselRegion.setText(data["tselRegion"] as? String ?: "")
 
                     // Load actual and remark fields
-                    for (i in 1..19) {
-                        loadFieldIfExists(data, "actual$i", findViewById(resources.getIdentifier("inputAktual$i", "id", packageName)))
-                        loadFieldIfExists(data, "remark$i", findViewById(resources.getIdentifier("inputKeterangan$i", "id", packageName)))
-                    }
+                    loadFieldIfExists(data, "actual1", findViewById(R.id.inputAktual1))
+                    loadFieldIfExists(data, "remark1", findViewById(R.id.inputKeterangan1))
+                    loadFieldIfExists(data, "actual2", findViewById(R.id.inputAktual2))
+                    loadFieldIfExists(data, "remark2", findViewById(R.id.inputKeterangan2))
+                    loadFieldIfExists(data, "actual3", findViewById(R.id.inputAktual3))
+                    loadFieldIfExists(data, "remark3", findViewById(R.id.inputKeterangan3))
+                    loadFieldIfExists(data, "actual4", findViewById(R.id.inputAktual4))
+                    loadFieldIfExists(data, "remark4", findViewById(R.id.inputKeterangan4))
+                    loadFieldIfExists(data, "actual5", findViewById(R.id.inputAktual5))
+                    loadFieldIfExists(data, "remark5", findViewById(R.id.inputKeterangan5))
+                    loadFieldIfExists(data, "actual6", findViewById(R.id.inputAktual6))
+                    loadFieldIfExists(data, "remark6", findViewById(R.id.inputKeterangan6))
+                    loadFieldIfExists(data, "actual7", findViewById(R.id.inputAktual7))
+                    loadFieldIfExists(data, "remark7", findViewById(R.id.inputKeterangan7))
+                    loadFieldIfExists(data, "actual8", findViewById(R.id.inputAktual8))
+                    loadFieldIfExists(data, "remark8", findViewById(R.id.inputKeterangan8))
+                    loadFieldIfExists(data, "actual9", findViewById(R.id.inputAktual9))
+                    loadFieldIfExists(data, "remark9", findViewById(R.id.inputKeterangan9))
+                    loadFieldIfExists(data, "actual10", findViewById(R.id.inputAktual10))
+                    loadFieldIfExists(data, "remark10", findViewById(R.id.inputKeterangan10))
+                    loadFieldIfExists(data, "actual11", findViewById(R.id.inputAktual11))
+                    loadFieldIfExists(data, "remark11", findViewById(R.id.inputKeterangan11))
+                    loadFieldIfExists(data, "actual12", findViewById(R.id.inputAktual12))
+                    loadFieldIfExists(data, "remark12", findViewById(R.id.inputKeterangan12))
+                    loadFieldIfExists(data, "actual13", findViewById(R.id.inputAktual13))
+                    loadFieldIfExists(data, "remark13", findViewById(R.id.inputKeterangan13))
+                    loadFieldIfExists(data, "actual14", findViewById(R.id.inputAktual14))
+                    loadFieldIfExists(data, "remark14", findViewById(R.id.inputKeterangan14))
+                    loadFieldIfExists(data, "actual15", findViewById(R.id.inputAktual15))
+                    loadFieldIfExists(data, "remark15", findViewById(R.id.inputKeterangan15))
+                    loadFieldIfExists(data, "actual16", findViewById(R.id.inputAktual16))
+                    loadFieldIfExists(data, "remark16", findViewById(R.id.inputKeterangan16))
+                    loadFieldIfExists(data, "actual17", findViewById(R.id.inputAktual17))
+                    loadFieldIfExists(data, "remark17", findViewById(R.id.inputKeterangan17))
+                    loadFieldIfExists(data, "actual18", findViewById(R.id.inputAktual18))
+                    loadFieldIfExists(data, "remark18", findViewById(R.id.inputKeterangan18))
+                    loadFieldIfExists(data, "actual19", findViewById(R.id.inputAktual19))
+                    loadFieldIfExists(data, "remark19", findViewById(R.id.inputKeterangan19))
 
                     // Load signature fields
                     loadSignatureData(data, "zteName", "zteNik", "zteSignature", etZteName, etZteNik, imgZteSignature)
@@ -1038,23 +806,6 @@ class BASurveyBigActivity : AppCompatActivity() {
 
         Log.d("BASurveyBig", "onActivityResult: requestCode=$requestCode, resultCode=$resultCode, currentPhotoIndex=$currentPhotoIndex")
 
-        // Handle return from Add LOP activity
-        if (requestCode == REQUEST_ADD_LOP && resultCode == Activity.RESULT_OK) {
-            // Reload site IDs after adding new LOP
-            loadValidSiteIds()
-
-            // Get the newly added site ID if passed back
-            val newSiteId = data?.getStringExtra("NEW_SITE_ID")
-            if (!newSiteId.isNullOrEmpty()) {
-                inputLocation.setText(newSiteId)
-                isSiteIdValid = true
-
-                // Show success message
-                showToast("Site ID baru berhasil ditambahkan!")
-            }
-            return
-        }
-
         if (resultCode == RESULT_OK) {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
@@ -1282,23 +1033,6 @@ class BASurveyBigActivity : AppCompatActivity() {
     private fun validateForm(): Boolean {
         var isValid = true
 
-        // NEW: Check Site ID first and foremost
-        val siteId = inputLocation.text.toString().trim()
-        if (siteId.isEmpty()) {
-            inputLocation.error = "Lokasi (Site ID) wajib diisi"
-            inputLocation.requestFocus()
-            isValid = false
-            return false // Stop immediately
-        } else if (!isSiteIdValid) {
-            inputLocation.error = "Site ID tidak valid. Pilih dari daftar yang tersedia."
-            inputLocation.requestFocus()
-            isValid = false
-
-            // Show dialog again
-            showSiteIdNotFoundDialog(siteId)
-            return false // Immediately return false
-        }
-
         if (inputProjectTitle.text.isNullOrEmpty()) {
             inputProjectTitle.error = "Project title cannot be empty"
             isValid = false
@@ -1318,21 +1052,6 @@ class BASurveyBigActivity : AppCompatActivity() {
     }
 
     private fun submitForm() {
-        // NEW: Double-check Site ID validity before submission
-        if (!isSiteIdValid) {
-            AlertDialog.Builder(this)
-                .setTitle("❌ Tidak Dapat Submit")
-                .setMessage("Site ID tidak valid. Anda harus memilih Site ID yang sudah terdaftar dalam database.\n\nSilakan pilih Site ID yang benar atau tambahkan LOP terlebih dahulu.")
-                .setPositiveButton("OK") { dialog, _ ->
-                    dialog.dismiss()
-                    inputLocation.requestFocus()
-                    inputLocation.selectAll()
-                }
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show()
-            return
-        }
-
         val loadingDialog = AlertDialog.Builder(this)
             .setMessage("Submitting form...")
             .setCancelable(false)
@@ -1358,7 +1077,217 @@ class BASurveyBigActivity : AppCompatActivity() {
                     ).show()
                 } else {
                     // If location doesn't exist, continue with submission
-                    proceedWithSubmission(loadingDialog, inputLocationValue, formId)
+                    val formData = hashMapOf(
+                        "projectTitle" to inputProjectTitle.text.toString(),
+                        "contractNumber" to inputContractNumber.text.toString(),
+                        "executor" to inputExecutor.selectedItem.toString(),
+                        "location" to inputLocationValue,
+                        "description" to inputDescription.text.toString(),
+                        "tselRegion" to etTselRegion.text.toString(),
+
+                        // Actual and remarks data
+                        "actual1" to findViewById<EditText>(R.id.inputAktual1).text.toString(),
+                        "remark1" to findViewById<EditText>(R.id.inputKeterangan1).text.toString(),
+                        "actual2" to findViewById<EditText>(R.id.inputAktual2).text.toString(),
+                        "remark2" to findViewById<EditText>(R.id.inputKeterangan2).text.toString(),
+                        "actual3" to findViewById<EditText>(R.id.inputAktual3).text.toString(),
+                        "remark3" to findViewById<EditText>(R.id.inputKeterangan3).text.toString(),
+                        "actual4" to findViewById<EditText>(R.id.inputAktual4).text.toString(),
+                        "remark4" to findViewById<EditText>(R.id.inputKeterangan4).text.toString(),
+                        "actual5" to findViewById<EditText>(R.id.inputAktual5).text.toString(),
+                        "remark5" to findViewById<EditText>(R.id.inputKeterangan5).text.toString(),
+                        "actual6" to findViewById<EditText>(R.id.inputAktual6).text.toString(),
+                        "remark6" to findViewById<EditText>(R.id.inputKeterangan6).text.toString(),
+                        "actual7" to findViewById<EditText>(R.id.inputAktual7).text.toString(),
+                        "remark7" to findViewById<EditText>(R.id.inputKeterangan7).text.toString(),
+                        "actual8" to findViewById<EditText>(R.id.inputAktual8).text.toString(),
+                        "remark8" to findViewById<EditText>(R.id.inputKeterangan8).text.toString(),
+                        "actual9" to findViewById<EditText>(R.id.inputAktual9).text.toString(),
+                        "remark9" to findViewById<EditText>(R.id.inputKeterangan9).text.toString(),
+                        "actual10" to findViewById<EditText>(R.id.inputAktual10).text.toString(),
+                        "remark10" to findViewById<EditText>(R.id.inputKeterangan10).text.toString(),
+                        "actual11" to findViewById<EditText>(R.id.inputAktual11).text.toString(),
+                        "remark11" to findViewById<EditText>(R.id.inputKeterangan11).text.toString(),
+                        "actual12" to findViewById<EditText>(R.id.inputAktual12).text.toString(),
+                        "remark12" to findViewById<EditText>(R.id.inputKeterangan12).text.toString(),
+                        "actual13" to findViewById<EditText>(R.id.inputAktual13).text.toString(),
+                        "remark13" to findViewById<EditText>(R.id.inputKeterangan13).text.toString(),
+                        "actual14" to findViewById<EditText>(R.id.inputAktual14).text.toString(),
+                        "remark14" to findViewById<EditText>(R.id.inputKeterangan14).text.toString(),
+                        "actual15" to findViewById<EditText>(R.id.inputAktual15).text.toString(),
+                        "remark15" to findViewById<EditText>(R.id.inputKeterangan15).text.toString(),
+                        "actual16" to findViewById<EditText>(R.id.inputAktual16).text.toString(),
+                        "remark16" to findViewById<EditText>(R.id.inputKeterangan16).text.toString(),
+                        "actual17" to findViewById<EditText>(R.id.inputAktual17).text.toString(),
+                        "remark17" to findViewById<EditText>(R.id.inputKeterangan17).text.toString(),
+                        "actual18" to findViewById<EditText>(R.id.inputAktual18).text.toString(),
+                        "remark18" to findViewById<EditText>(R.id.inputKeterangan18).text.toString(),
+                        "actual19" to findViewById<EditText>(R.id.inputAktual19).text.toString(),
+                        "remark19" to findViewById<EditText>(R.id.inputKeterangan19).text.toString(),
+
+                        // Signature names and NIKs
+                        "zteName" to etZteName.text.toString(),
+                        "zteNik" to etZteNik.text.toString(),
+
+                        "tifName" to etTifName.text.toString(),
+                        "tifNik" to etTifNik.text.toString(),
+
+                        "telkomName" to etTelkomName.text.toString(),
+                        "telkomNik" to etTelkomNik.text.toString(),
+
+                        "tselNopName" to etTselNopName.text.toString(),
+                        "tselNopNik" to etTselNopNik.text.toString(),
+
+                        "tselRtpdsName" to etTselRtpdsName.text.toString(),
+                        "tselRtpdsNik" to etTselRtpdsNik.text.toString(),
+
+                        "tselRtpeNfName" to etTselRtpeNfName.text.toString(),
+                        "tselRtpeNfNik" to etTselRtpeNfNik.text.toString(),
+
+                        "createdAt" to System.currentTimeMillis()
+                    )
+
+                    // Upload signatures first if available
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            // Upload signatures if available
+                            val signatureFields = listOf(
+                                Triple("zteSignature", imgZteSignature, "ba_survey_big_olt_signatures/zte_${UUID.randomUUID()}.jpg"),
+                                Triple("tifSignature", imgTifSignature, "ba_survey_big_olt_signatures/tif_${UUID.randomUUID()}.jpg"),
+                                Triple("telkomSignature", imgTelkomSignature, "ba_survey_big_olt_signatures/telkom_${UUID.randomUUID()}.jpg"),
+                                Triple("tselNopSignature", imgTselNopSignature, "ba_survey_big_olt_signatures/tsel_nop_${UUID.randomUUID()}.jpg"),
+                                Triple("tselRtpdsSignature", imgTselRtpdsSignature, "ba_survey_big_olt_signatures/tsel_rtpds_${UUID.randomUUID()}.jpg"),
+                                Triple("tselRtpeNfSignature", imgTselRtpeNfSignature, "ba_survey_big_olt_signatures/tsel_rtpe_${UUID.randomUUID()}.jpg")
+                            )
+
+                            for ((fieldName, imageView, storagePath) in signatureFields) {
+                                if (imageView.drawable != null && imageView.visibility == View.VISIBLE) {
+                                    val bitmap = (imageView.drawable as BitmapDrawable).bitmap
+                                    val baos = java.io.ByteArrayOutputStream()
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 95, baos) // Tingkatkan kualitas ke 95
+                                    val data = baos.toByteArray()
+
+                                    val storageRef = storage.reference.child(storagePath)
+                                    val uploadTask = storageRef.putBytes(data).await()
+                                    val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
+
+                                    formData[fieldName] = downloadUrl
+                                }
+                            }
+
+                            // Handle photo uploads with high quality
+                            if (photoUris.isNotEmpty()) {
+                                for ((index, uri) in photoUris) {
+                                    val photoPath = "ba_survey_big_olt_photos/${formId}/photo${index+1}_${UUID.randomUUID()}.jpg"
+                                    val photoRef = storage.reference.child(photoPath)
+
+                                    try {
+                                        // Upload high-quality image
+                                        contentResolver.openInputStream(uri)?.use { inputStream ->
+                                            // Load high-quality bitmap first
+                                            val options = BitmapFactory.Options().apply {
+                                                inPreferredConfig = Bitmap.Config.ARGB_8888
+                                                inJustDecodeBounds = true
+                                            }
+                                            BitmapFactory.decodeStream(inputStream, null, options)
+
+                                            // Calculate sample size - use small sample size for high quality
+                                            val sampleSize = calculateOptimalSampleSize(
+                                                options.outWidth, options.outHeight,
+                                                2048, 2048 // Target high but reasonable resolution
+                                            )
+
+                                            // Set options for actual decoding
+                                            options.inJustDecodeBounds = false
+                                            options.inSampleSize = sampleSize
+
+                                            // Decode with optimal quality
+                                            contentResolver.openInputStream(uri)?.use { input2 ->
+                                                val bitmap = BitmapFactory.decodeStream(input2, null, options)
+
+                                                // Compress with high quality
+                                                val baos = java.io.ByteArrayOutputStream()
+                                                bitmap?.compress(Bitmap.CompressFormat.JPEG, 95, baos)
+                                                val bytes = baos.toByteArray()
+
+                                                // Upload and get URL
+                                                val uploadTask = photoRef.putBytes(bytes).await()
+                                                val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
+
+                                                // Add directly to formData
+                                                formData["photo${index+1}"] = downloadUrl
+                                                formData["photoLabel${index+1}"] = photoLabelTexts[index]
+                                            }
+                                        } ?: run {
+                                            // Fallback if loading bitmap fails
+                                            val bytes = contentResolver.openInputStream(uri)?.readBytes()
+                                            if (bytes != null) {
+                                                val uploadTask = photoRef.putBytes(bytes).await()
+                                                val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
+
+                                                // Add directly to formData
+                                                formData["photo${index+1}"] = downloadUrl
+                                                formData["photoLabel${index+1}"] = photoLabelTexts[index]
+                                            }
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.e("BASurveyBig", "Error uploading photo $index: ${e.message}")
+                                    }
+                                }
+                            }
+
+                            // Upload PDF if possible
+                            try {
+                                val pdfFile = generateStyledPdf()
+
+                                val pdfPath = "ba_survey_big_olt_pdf/$formId.pdf"
+                                val pdfStorageRef = storage.reference.child(pdfPath)
+                                pdfStorageRef.putFile(Uri.fromFile(pdfFile)).await()
+                                val pdfDownloadUrl = pdfStorageRef.downloadUrl.await().toString()
+                                formData["pdfUrl"] = pdfDownloadUrl
+                            } catch (e: Exception) {
+                                Log.e("BASurveyBig", "Error generating PDF: ${e.message}")
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        this@BASurveyBigActivity,
+                                        "PDF tidak berhasil dibuat, melanjutkan tanpa PDF",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
+
+                            // Save data to Firestore
+                            db.collection("big_surveys")
+                                .add(formData)
+                                .addOnSuccessListener { documentReference ->
+                                    loadingDialog.dismiss()
+                                    Toast.makeText(
+                                        this@BASurveyBigActivity,
+                                        "Form submitted successfully with ID: ${documentReference.id}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    resetForm()
+                                }
+                                .addOnFailureListener { e ->
+                                    loadingDialog.dismiss()
+                                    Toast.makeText(
+                                        this@BASurveyBigActivity,
+                                        "Error submitting form: ${e.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                loadingDialog.dismiss()
+                                Toast.makeText(
+                                    this@BASurveyBigActivity,
+                                    "Error uploading signatures: ${e.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
                 }
             }
             .addOnFailureListener { e ->
@@ -1369,221 +1298,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
-    }
-
-    private fun proceedWithSubmission(loadingDialog: AlertDialog, inputLocationValue: String, formId: String) {
-        // Ensure all actual and remark fields are properly retrieved
-        val formData = hashMapOf(
-            "projectTitle" to inputProjectTitle.text.toString(),
-            "contractNumber" to inputContractNumber.text.toString(),
-            "executor" to inputExecutor.selectedItem.toString(),
-            "location" to inputLocationValue,
-            "description" to inputDescription.text.toString(),
-            "tselRegion" to etTselRegion.text.toString(),
-
-            // Actual and remarks data
-            "actual1" to findViewById<EditText>(R.id.inputAktual1).text.toString(),
-            "remark1" to findViewById<EditText>(R.id.inputKeterangan1).text.toString(),
-            "actual2" to findViewById<EditText>(R.id.inputAktual2).text.toString(),
-            "remark2" to findViewById<EditText>(R.id.inputKeterangan2).text.toString(),
-            "actual3" to findViewById<EditText>(R.id.inputAktual3).text.toString(),
-            "remark3" to findViewById<EditText>(R.id.inputKeterangan3).text.toString(),
-            "actual4" to findViewById<EditText>(R.id.inputAktual4).text.toString(),
-            "remark4" to findViewById<EditText>(R.id.inputKeterangan4).text.toString(),
-            "actual5" to findViewById<EditText>(R.id.inputAktual5).text.toString(),
-            "remark5" to findViewById<EditText>(R.id.inputKeterangan5).text.toString(),
-            "actual6" to findViewById<EditText>(R.id.inputAktual6).text.toString(),
-            "remark6" to findViewById<EditText>(R.id.inputKeterangan6).text.toString(),
-            "actual7" to findViewById<EditText>(R.id.inputAktual7).text.toString(),
-            "remark7" to findViewById<EditText>(R.id.inputKeterangan7).text.toString(),
-            "actual8" to findViewById<EditText>(R.id.inputAktual8).text.toString(),
-            "remark8" to findViewById<EditText>(R.id.inputKeterangan8).text.toString(),
-            "actual9" to findViewById<EditText>(R.id.inputAktual9).text.toString(),
-            "remark9" to findViewById<EditText>(R.id.inputKeterangan9).text.toString(),
-            "actual10" to findViewById<EditText>(R.id.inputAktual10).text.toString(),
-            "remark10" to findViewById<EditText>(R.id.inputKeterangan10).text.toString(),
-            "actual11" to findViewById<EditText>(R.id.inputAktual11).text.toString(),
-            "remark11" to findViewById<EditText>(R.id.inputKeterangan11).text.toString(),
-            "actual12" to findViewById<EditText>(R.id.inputAktual12).text.toString(),
-            "remark12" to findViewById<EditText>(R.id.inputKeterangan12).text.toString(),
-            "actual13" to findViewById<EditText>(R.id.inputAktual13).text.toString(),
-            "remark13" to findViewById<EditText>(R.id.inputKeterangan13).text.toString(),
-            "actual14" to findViewById<EditText>(R.id.inputAktual14).text.toString(),
-            "remark14" to findViewById<EditText>(R.id.inputKeterangan14).text.toString(),
-            "actual15" to findViewById<EditText>(R.id.inputAktual15).text.toString(),
-            "remark15" to findViewById<EditText>(R.id.inputKeterangan15).text.toString(),
-            "actual16" to findViewById<EditText>(R.id.inputAktual16).text.toString(),
-            "remark16" to findViewById<EditText>(R.id.inputKeterangan16).text.toString(),
-            "actual17" to findViewById<EditText>(R.id.inputAktual17).text.toString(),
-            "remark17" to findViewById<EditText>(R.id.inputKeterangan17).text.toString(),
-            "actual18" to findViewById<EditText>(R.id.inputAktual18).text.toString(),
-            "remark18" to findViewById<EditText>(R.id.inputKeterangan18).text.toString(),
-            "actual19" to findViewById<EditText>(R.id.inputAktual19).text.toString(),
-            "remark19" to findViewById<EditText>(R.id.inputKeterangan19).text.toString(),
-
-            // Signature names and NIKs
-            "zteName" to etZteName.text.toString(),
-            "zteNik" to etZteNik.text.toString(),
-
-            "tifName" to etTifName.text.toString(),
-            "tifNik" to etTifNik.text.toString(),
-
-            "telkomName" to etTelkomName.text.toString(),
-            "telkomNik" to etTelkomNik.text.toString(),
-
-            "tselNopName" to etTselNopName.text.toString(),
-            "tselNopNik" to etTselNopNik.text.toString(),
-
-            "tselRtpdsName" to etTselRtpdsName.text.toString(),
-            "tselRtpdsNik" to etTselRtpdsNik.text.toString(),
-
-            "tselRtpeNfName" to etTselRtpeNfName.text.toString(),
-            "tselRtpeNfNik" to etTselRtpeNfNik.text.toString(),
-
-            "createdAt" to System.currentTimeMillis()
-        )
-
-        // Upload signatures first if available
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                // Upload signatures if available
-                val signatureFields = listOf(
-                    Triple("zteSignature", imgZteSignature, "ba_survey_big_olt_signatures/zte_${UUID.randomUUID()}.jpg"),
-                    Triple("tifSignature", imgTifSignature, "ba_survey_big_olt_signatures/tif_${UUID.randomUUID()}.jpg"),
-                    Triple("telkomSignature", imgTelkomSignature, "ba_survey_big_olt_signatures/telkom_${UUID.randomUUID()}.jpg"),
-                    Triple("tselNopSignature", imgTselNopSignature, "ba_survey_big_olt_signatures/tsel_nop_${UUID.randomUUID()}.jpg"),
-                    Triple("tselRtpdsSignature", imgTselRtpdsSignature, "ba_survey_big_olt_signatures/tsel_rtpds_${UUID.randomUUID()}.jpg"),
-                    Triple("tselRtpeNfSignature", imgTselRtpeNfSignature, "ba_survey_big_olt_signatures/tsel_rtpe_${UUID.randomUUID()}.jpg")
-                )
-
-                for ((fieldName, imageView, storagePath) in signatureFields) {
-                    if (imageView.drawable != null && imageView.visibility == View.VISIBLE) {
-                        val bitmap = (imageView.drawable as BitmapDrawable).bitmap
-                        val baos = java.io.ByteArrayOutputStream()
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 95, baos)
-                        val data = baos.toByteArray()
-
-                        val storageRef = storage.reference.child(storagePath)
-                        val uploadTask = storageRef.putBytes(data).await()
-                        val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
-
-                        formData[fieldName] = downloadUrl
-                    }
-                }
-
-                // Handle photo uploads with high quality
-                if (photoUris.isNotEmpty()) {
-                    for ((index, uri) in photoUris) {
-                        val photoPath = "ba_survey_big_olt_photos/${formId}/photo${index+1}_${UUID.randomUUID()}.jpg"
-                        val photoRef = storage.reference.child(photoPath)
-
-                        try {
-                            // Upload high-quality image
-                            contentResolver.openInputStream(uri)?.use { inputStream ->
-                                // Load high-quality bitmap first
-                                val options = BitmapFactory.Options().apply {
-                                    inPreferredConfig = Bitmap.Config.ARGB_8888
-                                    inJustDecodeBounds = true
-                                }
-                                BitmapFactory.decodeStream(inputStream, null, options)
-
-                                // Calculate sample size - use small sample size for high quality
-                                val sampleSize = calculateOptimalSampleSize(
-                                    options.outWidth, options.outHeight,
-                                    2048, 2048 // Target high but reasonable resolution
-                                )
-
-                                // Set options for actual decoding
-                                options.inJustDecodeBounds = false
-                                options.inSampleSize = sampleSize
-
-                                // Decode with optimal quality
-                                contentResolver.openInputStream(uri)?.use { input2 ->
-                                    val bitmap = BitmapFactory.decodeStream(input2, null, options)
-
-                                    // Compress with high quality
-                                    val baos = java.io.ByteArrayOutputStream()
-                                    bitmap?.compress(Bitmap.CompressFormat.JPEG, 95, baos)
-                                    val bytes = baos.toByteArray()
-
-                                    // Upload and get URL
-                                    val uploadTask = photoRef.putBytes(bytes).await()
-                                    val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
-
-                                    // Add directly to formData
-                                    formData["photo${index+1}"] = downloadUrl
-                                    formData["photoLabel${index+1}"] = photoLabelTexts[index]
-                                }
-                            } ?: run {
-                                // Fallback if loading bitmap fails
-                                val bytes = contentResolver.openInputStream(uri)?.readBytes()
-                                if (bytes != null) {
-                                    val uploadTask = photoRef.putBytes(bytes).await()
-                                    val downloadUrl = uploadTask.storage.downloadUrl.await().toString()
-
-                                    // Add directly to formData
-                                    formData["photo${index+1}"] = downloadUrl
-                                    formData["photoLabel${index+1}"] = photoLabelTexts[index]
-                                }
-                            }
-                        } catch (e: Exception) {
-                            Log.e("BASurveyBig", "Error uploading photo $index: ${e.message}")
-                        }
-                    }
-                }
-
-                // Upload PDF if possible
-                try {
-                    val pdfFile = generateStyledPdf()
-
-                    val pdfPath = "ba_survey_big_olt_pdf/$formId.pdf"
-                    val pdfStorageRef = storage.reference.child(pdfPath)
-                    pdfStorageRef.putFile(Uri.fromFile(pdfFile)).await()
-                    val pdfDownloadUrl = pdfStorageRef.downloadUrl.await().toString()
-                    formData["pdfUrl"] = pdfDownloadUrl
-                } catch (e: Exception) {
-                    Log.e("BASurveyBig", "Error generating PDF: ${e.message}")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            this@BASurveyBigActivity,
-                            "PDF tidak berhasil dibuat, melanjutkan tanpa PDF",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-
-                // Save data to Firestore
-                db.collection("big_surveys")
-                    .add(formData)
-                    .addOnSuccessListener { documentReference ->
-                        loadingDialog.dismiss()
-                        Toast.makeText(
-                            this@BASurveyBigActivity,
-                            "Form submitted successfully with ID: ${documentReference.id}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        resetForm()
-                    }
-                    .addOnFailureListener { e ->
-                        loadingDialog.dismiss()
-                        Toast.makeText(
-                            this@BASurveyBigActivity,
-                            "Error submitting form: ${e.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    loadingDialog.dismiss()
-                    Toast.makeText(
-                        this@BASurveyBigActivity,
-                        "Error uploading signatures: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
     }
 
     private fun resetForm() {
@@ -1619,10 +1333,6 @@ class BASurveyBigActivity : AppCompatActivity() {
             imageView.setImageDrawable(null)
             imageView.visibility = View.GONE
         }
-
-        // Reset validation
-        isSiteIdValid = false
-        inputLocation.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
     }
 
     private fun resetSignatureFields(nameField: EditText, nikField: EditText, signatureImage: ImageView) {
@@ -1908,40 +1618,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                     canvas.drawLine(marginX, footerY, pageWidth - marginX, footerY, linePaint)
 
                     // Document text
-                    paint.textSize = 8f
-                    paint.color = Color.BLACK
-                    paint.alpha = 220
-
-                    val footerY = pageHeight - 30f
-
-                    paint.style = Paint.Style.STROKE
-                    paint.strokeWidth = 0.5f
-                    canvas.drawLine(
-                        marginX,
-                        footerY,
-                        pageWidth - marginX,
-                        footerY,
-                        paint
-                    )
-
-                    paint.style = Paint.Style.FILL
-                    paint.textAlign = Paint.Align.LEFT
                     val documentText = "Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku"
                     val pageText = "Halaman ${pageCount - 1}"
 
                     val combinedText = "$documentText     $pageText"
                     canvas.drawText(combinedText, marginX, footerY + 15f, footerPaint)
-                    paint.textAlign = Paint.Align.LEFT
-                    canvas.drawText(
-                        combinedText,
-                        marginX,
-                        footerY + 15f,
-                        paint
-                    )
-
-                    paint.textSize = 11f
-                    paint.alpha = 255
-                    paint.textAlign = Paint.Align.LEFT
                 }
 
                 // Add closing text below the last table
@@ -1971,11 +1652,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                         textAlign = Paint.Align.RIGHT
                     }
                     canvas.drawText(currentDate, maxX, y + 10f, closingBoldPaint)
-                    val boldPaint = Paint(paint).apply {
-                        typeface = Typeface.DEFAULT_BOLD
-                        textAlign = Paint.Align.RIGHT
-                    }
-                    canvas.drawText(currentDate, maxX, y + 10f, boldPaint)
                 }
 
                 drawHeader(executor)
@@ -2002,9 +1678,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 drawInfo("Pelaksana", executor)
                 drawInfo("Lokasi", location, isBold = true)
 
+                // Separator line below location
                 canvas.drawLine(marginX, y + 5f, maxX, y + 5f, paint)
                 y += 20f
 
+                // Description
                 val descMaxWidth = maxX - marginX * 2
                 y = drawJustifiedText(canvas, description, marginX, y, descMaxWidth, paint)
 
@@ -2168,7 +1846,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                 drawClosingStatement()
 
                 // Add signatures - ensure enough space
-                // Add signatures
                 val signaturesHeight = 2 * 150f + 20f
                 if (y + signaturesHeight > pageHeight - marginBottom - 50f) {
                     drawFooter()
@@ -2192,12 +1869,14 @@ class BASurveyBigActivity : AppCompatActivity() {
                     isDither = true
                 }
 
-                // IMPROVED PHOTO DOCUMENTATION SECTION
+                // *** IMPROVED PHOTO DOCUMENTATION SECTION (for HashMap<Int, Uri>) ***
                 if (photoUris.isNotEmpty()) {
+                    // Buat halaman baru untuk foto
                     page = createPage()
                     canvas = page.canvas
                     y = marginTop
 
+                    // Header halaman foto
                     drawHeader(executor)
 
                     // Judul section foto dengan Times New Roman
@@ -2209,16 +1888,18 @@ class BASurveyBigActivity : AppCompatActivity() {
                     canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
                     y += 40f
 
+                    // Konstanta grid foto (2 kolom)
                     val photoAreaWidth = maxX - marginX
                     val photoContainerWidth = photoAreaWidth / 2 - 10f
                     val photoWidth = photoContainerWidth
                     val photoHeight = 190f
                     val captionHeight = 30f
-                    val rowHeight2 = photoHeight + captionHeight + 20f
+                    val rowHeight = photoHeight + captionHeight + 20f
 
                     var currentCol = 0
                     var photosOnCurrentPage = 0
 
+                    // Urutkan foto berdasar key, lalu pasangkan dengan caption
                     val photoList = photoUris.entries
                         .sortedBy { it.key }
                         .map { entry ->
@@ -2231,7 +1912,8 @@ class BASurveyBigActivity : AppCompatActivity() {
                     for ((_, photoPair) in photoList.withIndex()) {
                         val (uri, caption) = photoPair
 
-                        if (currentCol == 0 && (photosOnCurrentPage == 4 || y + rowHeight2 > pageHeight - marginBottom)) {
+                        // Cek perlu halaman baru
+                        if (currentCol == 0 && (photosOnCurrentPage == 4 || y + rowHeight > pageHeight - marginBottom)) {
                             drawFooter()
                             document.finishPage(page)
                             page = createPage()
@@ -2243,13 +1925,16 @@ class BASurveyBigActivity : AppCompatActivity() {
                             photosOnCurrentPage = 0
                         }
 
+                        // Hitung posisi kolom
                         val photoX = if (currentCol == 0) marginX else marginX + photoContainerWidth + 20f
 
                         // Gambar caption dengan Times New Roman Bold
                         canvas.drawText(caption, photoX, y + 12f, boldPaint)
 
+                        // Frame foto
                         val photoRect = RectF(photoX, y + 15f, photoX + photoWidth, y + 15f + photoHeight)
 
+                        // Render foto kualitas tinggi
                         try {
                             contentResolver.openInputStream(uri)?.use { inputStream ->
                                 val options = BitmapFactory.Options().apply {
@@ -2294,16 +1979,26 @@ class BASurveyBigActivity : AppCompatActivity() {
                             }
                         } catch (e: Exception) {
                             Log.e("PDF", "Error drawing photo: ${e.message}")
+                            val borderPaint = Paint().apply {
+                                style = Paint.Style.STROKE
+                                strokeWidth = 0.5f
+                                color = Color.BLACK
+                            }
+                            canvas.drawRect(photoRect, borderPaint)
+                            canvas.drawText("Error loading photo", photoX + 20, y + 100, paint)
                         }
 
+                        // Update posisi grid
                         currentCol = (currentCol + 1) % 2
                         photosOnCurrentPage++
 
+                        // Pindah baris jika sudah dua kolom
                         if (currentCol == 0) {
-                            y += rowHeight2
+                            y += rowHeight
                         }
                     }
 
+                    // Halaman foto terakhir, beri footer
                     drawFooter()
                     document.finishPage(page)
                 }
@@ -2431,7 +2126,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                 isAntiAlias = true
             }
             val lineHeight = titlePaintLocal.textSize + 4f
-            val lineHeight = boldPaint.textSize + 4f
             var currentY = y
 
             for (line in lines) {
@@ -2498,9 +2192,6 @@ class BASurveyBigActivity : AppCompatActivity() {
             val nameY = y + signatureBoxHeight - 40f
             canvas.drawText("($name)", x + 10f, nameY, namePaint)
             canvas.drawText("NIK: $nik", x + 10f, nameY + 20f, namePaint)
-            val nameY = y + signatureBoxHeight - 40f
-            canvas.drawText("($name)", x + 10f, nameY, paint)
-            canvas.drawText("NIK: $nik", x + 10f, nameY + 20f, paint)
         }
 
         val zteName = findViewById<EditText>(R.id.etZteName).text.toString()
@@ -2581,8 +2272,6 @@ class BASurveyBigActivity : AppCompatActivity() {
         val lineSpacing = justifiedPaint.textSize + 10f
         val extraWordSpacing = 4f
 
-        val lineSpacing = paint.textSize + 10f
-
         for ((i, line) in lines.withIndex()) {
             val words = line.split(" ")
             val lineWidth = justifiedPaint.measureText(line)
@@ -2590,7 +2279,6 @@ class BASurveyBigActivity : AppCompatActivity() {
 
             if (gapCount > 0 && i != lines.lastIndex) {
                 val extraSpace = ((maxWidth - lineWidth) / gapCount) + extraWordSpacing
-                val extraSpace = ((maxWidth - lineWidth) / gapCount) + 4f
                 var startX = x
                 for (word in words) {
                     canvas.drawText(word, startX, currentY, justifiedPaint)
@@ -2598,7 +2286,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                 }
             } else {
                 canvas.drawText(line, x, currentY, justifiedPaint)
-                canvas.drawText(line, x, currentY, paint)
             }
             currentY += lineSpacing
         }
@@ -2621,7 +2308,6 @@ class BASurveyBigActivity : AppCompatActivity() {
 
         for (word in words) {
             if (wrappingPaint.measureText(word) > maxWidth) {
-            if (paint.measureText(word) > maxWidth) {
                 if (currentLine.isNotEmpty()) {
                     lines.add(currentLine)
                     currentLine = ""
@@ -2660,13 +2346,5 @@ class BASurveyBigActivity : AppCompatActivity() {
         }
 
         return if (lines.isEmpty()) listOf("") else lines
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    companion object {
-        private const val REQUEST_ADD_LOP = 1001
     }
 }
