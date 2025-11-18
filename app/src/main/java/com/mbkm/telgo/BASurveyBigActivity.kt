@@ -1410,6 +1410,8 @@ class BASurveyBigActivity : AppCompatActivity() {
         return scaledBitmap
     }
 
+    // Bagian generateStyledPdf() yang lengkap dengan Times New Roman
+
     private suspend fun generateStyledPdf(): File {
         var createdFile: File? = null
 
@@ -1421,10 +1423,8 @@ class BASurveyBigActivity : AppCompatActivity() {
                     val dirCreated = downloadsDir.mkdirs()
                     if (!dirCreated) {
                         Log.e("BASurveyBig", "Failed to create downloads directory")
-                        // Try using app directory as fallback
                         val appDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
                         if (appDir != null && (appDir.exists() || appDir.mkdirs())) {
-                            // Use app directory as fallback
                             Log.i("BASurveyBig", "Using app directory as fallback")
                         } else {
                             throw IOException("Cannot create storage directory")
@@ -1435,17 +1435,15 @@ class BASurveyBigActivity : AppCompatActivity() {
                 // Get input from user
                 val projectTitle = findViewById<EditText>(R.id.inputProjectTitle).text.toString()
                 val contractNumber = findViewById<EditText>(R.id.inputContractNumber).text.toString()
-                val executor = findViewById<Spinner>(R.id.inputExecutor).selectedItem.toString()
+                val executor = inputExecutor.selectedItem.toString()
                 val location = findViewById<EditText>(R.id.inputLocation).text.toString()
-                // Generate automatic description
                 val description = generateDescription(projectTitle, contractNumber, executor)
 
-                // Show automatic description in description field
                 withContext(Dispatchers.Main) {
                     findViewById<EditText>(R.id.inputDescription).setText(description)
                 }
 
-                // Ensure all actual/remark fields are properly retrieved
+                // Get all actual and remark fields
                 val actual1 = findViewById<EditText>(R.id.inputAktual1)?.text?.toString() ?: ""
                 val remark1 = findViewById<EditText>(R.id.inputKeterangan1)?.text?.toString() ?: ""
                 val actual2 = findViewById<EditText>(R.id.inputAktual2)?.text?.toString() ?: ""
@@ -1491,34 +1489,53 @@ class BASurveyBigActivity : AppCompatActivity() {
                 // Page constants
                 val pageWidth = 595f
                 val pageHeight = 842f
-                val marginX = 50f
                 val marginTop = 50f
-                val marginBottom = 60f  // Add bottom margin for a cleaner footer
+                val marginBottom = 60f
                 val maxX = pageWidth - marginX
 
-                // Paints
+                // ===== TIMES NEW ROMAN TYPEFACE (SERIF) =====
+                val timesNewRomanTypeface = Typeface.create("serif", Typeface.NORMAL)
+                val timesNewRomanBold = Typeface.create("serif", Typeface.BOLD)
+                val timesNewRomanItalic = Typeface.create("serif", Typeface.ITALIC)
+                val timesNewRomanBoldItalic = Typeface.create("serif", Typeface.BOLD_ITALIC)
+
+                // Regular paint with Times New Roman
                 val paint = Paint().apply {
                     color = Color.BLACK
                     textSize = 11f
                     textAlign = Paint.Align.LEFT
+                    typeface = timesNewRomanTypeface
+                    isAntiAlias = true
                 }
+
+                // Title paint with Times New Roman Bold
                 val titlePaint = Paint().apply {
                     color = Color.BLACK
                     textSize = 16f
-                    typeface = Typeface.DEFAULT_BOLD
+                    typeface = timesNewRomanBold
                     textAlign = Paint.Align.CENTER
+                    isAntiAlias = true
                 }
+
+                // Bold paint with Times New Roman
                 val boldPaint = Paint().apply {
                     color = Color.BLACK
                     textSize = 11f
-                    typeface = Typeface.DEFAULT_BOLD
+                    typeface = timesNewRomanBold
                     textAlign = Paint.Align.LEFT
+                    isAntiAlias = true
                 }
+
+                // Cell paint for table with Times New Roman
                 val cellPaint = Paint().apply {
                     color = Color.BLACK
                     textSize = 11f
+                    typeface = timesNewRomanTypeface
                     textAlign = Paint.Align.LEFT
+                    isAntiAlias = true
                 }
+
+                // Table line paint
                 val tablePaint = Paint().apply {
                     color = Color.BLACK
                     style = Paint.Style.STROKE
@@ -1544,14 +1561,14 @@ class BASurveyBigActivity : AppCompatActivity() {
                     val centerX = (marginX + maxX) / 2
 
                     // Add logo based on executor
-                    val zteLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_zte) // ZTE logo
-                    val huaweiLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_huawei) // Huawei logo
-                    val telkomLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_telkom) // Telkom logo
+                    val zteLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_zte)
+                    val huaweiLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_huawei)
+                    val telkomLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_telkom)
 
                     // Logo size
-                    val logoWidth = 80 // Logo width
-                    val logoHeight = 50 // Logo height
-                    val topMargin = marginTop // Top margin for logo
+                    val logoWidth = 80
+                    val logoHeight = 50
+                    val topMargin = marginTop
 
                     // Draw executor logo in top left corner
                     when (executor) {
@@ -1572,54 +1589,40 @@ class BASurveyBigActivity : AppCompatActivity() {
                     // Add space below logo
                     val logoBottomY = topMargin + logoHeight + 20f
 
-                    // Header text
+                    // Header text with Times New Roman
                     canvas.drawText("BERITA ACARA", centerX, logoBottomY, titlePaint)
                     canvas.drawText("SURVEY LOKASI", centerX, logoBottomY + 20f, titlePaint)
                     canvas.drawLine(marginX, logoBottomY + 30f, maxX, logoBottomY + 30f, paint)
-                    y = logoBottomY + 40f // Update vertical position
+                    y = logoBottomY + 40f
                 }
 
                 // Improved page footer
                 fun drawFooter() {
-                    // Use smaller text size for footer text
-                    paint.textSize = 8f // Smaller text size
-                    paint.color = Color.BLACK
-                    paint.alpha = 220 // Slightly transparent for professional look
+                    val footerPaint = Paint().apply {
+                        color = Color.BLACK
+                        textSize = 8f
+                        typeface = timesNewRomanTypeface
+                        textAlign = Paint.Align.LEFT
+                        alpha = 220
+                        isAntiAlias = true
+                    }
 
-                    // Cleaner footer position
                     val footerY = pageHeight - 30f
 
                     // Thinner separator line
-                    paint.style = Paint.Style.STROKE
-                    paint.strokeWidth = 0.5f
-                    canvas.drawLine(
-                        marginX,          // Line starts at left margin
-                        footerY,          // Y position for line
-                        pageWidth - marginX, // Line ends at right margin
-                        footerY,
-                        paint
-                    )
+                    val linePaint = Paint().apply {
+                        style = Paint.Style.STROKE
+                        strokeWidth = 0.5f
+                        color = Color.BLACK
+                    }
+                    canvas.drawLine(marginX, footerY, pageWidth - marginX, footerY, linePaint)
 
                     // Document text
-                    paint.style = Paint.Style.FILL
-                    paint.textAlign = Paint.Align.LEFT
                     val documentText = "Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku"
                     val pageText = "Halaman ${pageCount - 1}"
 
-                    // Combine both texts with spacing
-                    val combinedText = "$documentText     $pageText" // Add spacing between texts
-                    paint.textAlign = Paint.Align.LEFT
-                    canvas.drawText(
-                        combinedText,
-                        marginX,          // Text starts at left margin
-                        footerY + 15f,    // Y position below line
-                        paint
-                    )
-
-                    // Reset paint properties
-                    paint.textSize = 11f
-                    paint.alpha = 255
-                    paint.textAlign = Paint.Align.LEFT
+                    val combinedText = "$documentText     $pageText"
+                    canvas.drawText(combinedText, marginX, footerY + 15f, footerPaint)
                 }
 
                 // Add closing text below the last table
@@ -1628,10 +1631,9 @@ class BASurveyBigActivity : AppCompatActivity() {
                     val closingMaxWidth = maxX - marginX * 2
                     val closingLines = wrapText(closingText, closingMaxWidth, paint)
 
-                    // Format today's date
                     val currentDate = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID")).format(Date())
-                    // Minimum height needed for text
-                    val closingHeight = 18f * closingLines.size + 10f + 20f // Add space for date
+                    val closingHeight = 18f * closingLines.size + 10f + 20f
+
                     if (y + closingHeight > pageHeight - marginBottom - 30f) {
                         drawFooter()
                         document.finishPage(page)
@@ -1640,18 +1642,16 @@ class BASurveyBigActivity : AppCompatActivity() {
                         y = marginTop
                     }
 
-                    y += 20f // 2-line space from last table
+                    y += 20f
                     for (line in closingLines) {
                         canvas.drawText(line, marginX, y, paint)
                         y += 18f
                     }
 
-                    // Write date with bold and right-aligned
-                    val boldPaint = Paint(paint).apply {
-                        typeface = Typeface.DEFAULT_BOLD
+                    val closingBoldPaint = Paint(boldPaint).apply {
                         textAlign = Paint.Align.RIGHT
                     }
-                    canvas.drawText(currentDate, maxX, y + 10f, boldPaint) // Right-aligned position
+                    canvas.drawText(currentDate, maxX, y + 10f, closingBoldPaint)
                 }
 
                 drawHeader(executor)
@@ -1680,22 +1680,22 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Separator line below location
                 canvas.drawLine(marginX, y + 5f, maxX, y + 5f, paint)
-                y += 20f // Add space after separator line
+                y += 20f
 
                 // Description
                 val descMaxWidth = maxX - marginX * 2
-                y = drawJustifiedText(canvas, description, marginX, y, descMaxWidth, paint) // Draw text and update Y position
+                y = drawJustifiedText(canvas, description, marginX, y, descMaxWidth, paint)
 
-                y += 10f // Space before table
+                y += 10f
 
-                // Table with adjusted columns - IMPORTANT: Give more room to ACTUAL column
+                // Table with adjusted columns
                 val colX = floatArrayOf(
-                    marginX,        // NO
-                    marginX + 40f,  // ITEM - wider
-                    marginX + 230f, // SATUAN - medium
-                    marginX + 300f, // ACTUAL - wider than before
-                    marginX + 370f, // KETERANGAN - wide
-                    maxX           // Right table border
+                    marginX,
+                    marginX + 40f,
+                    marginX + 230f,
+                    marginX + 300f,
+                    marginX + 370f,
+                    maxX
                 )
 
                 // Table header
@@ -1843,10 +1843,10 @@ class BASurveyBigActivity : AppCompatActivity() {
                 drawTableRow(19, "CME – Kebutuhan Air Conditioner", "Pcs", actual19, remark19)
 
                 // After all table rows are finished
-                drawClosingStatement() // Add closing text below last table
+                drawClosingStatement()
 
                 // Add signatures - ensure enough space
-                val signaturesHeight = 2 * 150f + 20f // 2 rows of signatures + spacing
+                val signaturesHeight = 2 * 150f + 20f
                 if (y + signaturesHeight > pageHeight - marginBottom - 50f) {
                     drawFooter()
                     document.finishPage(page)
@@ -1879,10 +1879,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                     // Header halaman foto
                     drawHeader(executor)
 
-                    // Judul section foto
+                    // Judul section foto dengan Times New Roman
                     val photoTitlePaint = Paint(titlePaint).apply {
                         textAlign = Paint.Align.CENTER
                         textSize = 16f
+                        typeface = timesNewRomanBold
                     }
                     canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
                     y += 40f
@@ -1902,9 +1903,8 @@ class BASurveyBigActivity : AppCompatActivity() {
                     val photoList = photoUris.entries
                         .sortedBy { it.key }
                         .map { entry ->
-                            val key = entry.key // biasanya mulai dari 1
+                            val key = entry.key
                             val uri = entry.value
-                            // Caption ambil dari photoLabelTexts jika ada, fallback ke "Photo <key>"
                             val caption = if (key in photoLabelTexts.indices) photoLabelTexts[key] else "Photo ${key + 1}"
                             Pair(uri, caption)
                         }
@@ -1928,7 +1928,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                         // Hitung posisi kolom
                         val photoX = if (currentCol == 0) marginX else marginX + photoContainerWidth + 20f
 
-                        // Gambar caption
+                        // Gambar caption dengan Times New Roman Bold
                         canvas.drawText(caption, photoX, y + 12f, boldPaint)
 
                         // Frame foto
@@ -2005,13 +2005,11 @@ class BASurveyBigActivity : AppCompatActivity() {
 
                 // Save document with better error handling
                 try {
-                    // Try to save in public Downloads directory first
                     val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     if (!downloadsDir.exists()) {
                         downloadsDir.mkdirs()
                     }
 
-                    // Create unique filename
                     var fileIndex = 1
                     var file: File
                     do {
@@ -2020,7 +2018,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                         fileIndex++
                     } while (file.exists())
 
-                    // Save file
                     val fileOutputStream = FileOutputStream(file)
                     document.writeTo(fileOutputStream)
                     fileOutputStream.close()
@@ -2038,7 +2035,6 @@ class BASurveyBigActivity : AppCompatActivity() {
                 } catch (e: IOException) {
                     Log.e("BASurveyBig", "Error saving to public Downloads: ${e.message}")
 
-                    // If fails, try saving to app directory as fallback
                     val fallbackDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
                     if (fallbackDir != null) {
                         if (!fallbackDir.exists()) {
@@ -2060,16 +2056,16 @@ class BASurveyBigActivity : AppCompatActivity() {
                             }
                         } catch (e2: Exception) {
                             Log.e("BASurveyBig", "Error saving to app directory: ${e2.message}")
-                            throw e2 // Re-throw exception if still fails
+                            throw e2
                         }
                     } else {
-                        throw e // Re-throw exception if no fallback
+                        throw e
                     }
                 }
 
             } catch (e: Exception) {
                 Log.e("BASurveyBig", "Error generating PDF: ${e.message}")
-                e.printStackTrace() // Log stacktrace for debugging
+                e.printStackTrace()
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -2081,7 +2077,6 @@ class BASurveyBigActivity : AppCompatActivity() {
             }
         }
 
-        // Use empty "dummy" file as last fallback to avoid crash
         if (createdFile == null) {
             val fallbackEmptyFile = File(cacheDir, "empty_survey_${System.currentTimeMillis()}.pdf")
             try {
@@ -2105,18 +2100,19 @@ class BASurveyBigActivity : AppCompatActivity() {
         boldPaint: Paint,
         executor: String
     ) {
-        val boxWidth = (595 - (marginX * 2)) / 3 // Signature box width
-        val signatureBoxHeight = 150f // Signature box height
+        val timesNewRomanTypeface = Typeface.create("serif", Typeface.NORMAL)
+        val timesNewRomanBold = Typeface.create("serif", Typeface.BOLD)
+
+        val boxWidth = (595 - (marginX * 2)) / 3
+        val signatureBoxHeight = 150f
         var y = yStart
 
-        // Paint for drawing box outline
         val boxPaint = Paint().apply {
             color = Color.BLACK
             style = Paint.Style.STROKE
             strokeWidth = 2f
         }
 
-        // Function to draw formatted company name with special format (2 or 3 lines)
         fun drawFormattedTitle(
             canvas: Canvas,
             lines: List<String>,
@@ -2125,18 +2121,21 @@ class BASurveyBigActivity : AppCompatActivity() {
             maxWidth: Float,
             boldPaint: Paint
         ): Float {
-            val lineHeight = boldPaint.textSize + 4f // Height of each line
+            val titlePaintLocal = Paint(boldPaint).apply {
+                typeface = timesNewRomanBold
+                isAntiAlias = true
+            }
+            val lineHeight = titlePaintLocal.textSize + 4f
             var currentY = y
 
             for (line in lines) {
-                canvas.drawText(line, x, currentY, boldPaint)
+                canvas.drawText(line, x, currentY, titlePaintLocal)
                 currentY += lineHeight
             }
 
-            return currentY // Return Y position after last text
+            return currentY
         }
 
-        // Function to draw signature box
         fun drawSignatureBox(
             lines: List<String>,
             name: String,
@@ -2145,11 +2144,9 @@ class BASurveyBigActivity : AppCompatActivity() {
             x: Float,
             y: Float
         ) {
-            // Draw box
             val rect = RectF(x, y, x + boxWidth, y + signatureBoxHeight)
             canvas.drawRect(rect, boxPaint)
 
-            // Write company name with 2 or 3-line format
             val titleY = drawFormattedTitle(
                 canvas,
                 lines,
@@ -2159,13 +2156,11 @@ class BASurveyBigActivity : AppCompatActivity() {
                 boldPaint
             )
 
-            // Draw signature in center of box
             val signatureY = titleY + 10f
             if (signature != null) {
                 try {
                     val bitmap = (signature as BitmapDrawable).bitmap
 
-                    // Enhanced signature rendering
                     val signatureWidth = 100f
                     val signatureHeight = 50f
 
@@ -2188,13 +2183,17 @@ class BASurveyBigActivity : AppCompatActivity() {
                 }
             }
 
-            // Write name and NIK below signature
-            val nameY = y + signatureBoxHeight - 40f // Fixed aligned position
-            canvas.drawText("($name)", x + 10f, nameY, paint)
-            canvas.drawText("NIK: $nik", x + 10f, nameY + 20f, paint)
+            val namePaint = Paint(paint).apply {
+                typeface = timesNewRomanTypeface
+                textSize = 11f
+                isAntiAlias = true
+            }
+
+            val nameY = y + signatureBoxHeight - 40f
+            canvas.drawText("($name)", x + 10f, nameY, namePaint)
+            canvas.drawText("NIK: $nik", x + 10f, nameY + 20f, namePaint)
         }
 
-        // Get signature inputs
         val zteName = findViewById<EditText>(R.id.etZteName).text.toString()
         val zteNik = findViewById<EditText>(R.id.etZteNik).text.toString()
         val zteSignature = findViewById<ImageView>(R.id.imgZteSignature).drawable
@@ -2219,7 +2218,6 @@ class BASurveyBigActivity : AppCompatActivity() {
         val tselRtpeNik = findViewById<EditText>(R.id.etTselRtpeNfNik).text.toString()
         val tselRtpeSignature = findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
 
-        // First row (Executor, TIF, TELKOM)
         val surveyCompany = if (executor == "PT Huawei Tech Investment")
             listOf("PT. Huawei Tech Investment", "TIM SURVEY")
         else
@@ -2238,7 +2236,6 @@ class BASurveyBigActivity : AppCompatActivity() {
             telkomName, telkomNik, telkomSignature, marginX + (2 * boxWidth), y
         )
 
-        // Second row (NOP, RTPDS, RTPE)
         y += signatureBoxHeight + 20f
         drawSignatureBox(
             listOf("PT. TELKOMSEL", "MGR NOP", region),
@@ -2263,31 +2260,32 @@ class BASurveyBigActivity : AppCompatActivity() {
         maxWidth: Float,
         paint: Paint
     ): Float {
-        val lines = wrapText(text, maxWidth, paint)
+        val timesNewRomanTypeface = Typeface.create("serif", Typeface.NORMAL)
+        val justifiedPaint = Paint(paint).apply {
+            typeface = timesNewRomanTypeface
+            isAntiAlias = true
+        }
+
+        val lines = wrapText(text, maxWidth, justifiedPaint)
         var currentY = y
 
-        // Set more spacious line spacing (textSize + 10f)
-        val lineSpacing = paint.textSize + 10f
-
-        // For more spacious word spacing, add extra space
-        val extraWordSpacing = 4f // px, can be increased for wider spacing
+        val lineSpacing = justifiedPaint.textSize + 10f
+        val extraWordSpacing = 4f
 
         for ((i, line) in lines.withIndex()) {
             val words = line.split(" ")
-            val lineWidth = paint.measureText(line)
+            val lineWidth = justifiedPaint.measureText(line)
             val gapCount = words.size - 1
 
             if (gapCount > 0 && i != lines.lastIndex) {
-                // calculate inter-word spacing (wider than usual)
                 val extraSpace = ((maxWidth - lineWidth) / gapCount) + extraWordSpacing
                 var startX = x
                 for (word in words) {
-                    canvas.drawText(word, startX, currentY, paint)
-                    startX += paint.measureText(word) + extraSpace
+                    canvas.drawText(word, startX, currentY, justifiedPaint)
+                    startX += justifiedPaint.measureText(word) + extraSpace
                 }
             } else {
-                // last line without justification
-                canvas.drawText(line, x, currentY, paint)
+                canvas.drawText(line, x, currentY, justifiedPaint)
             }
             currentY += lineSpacing
         }
@@ -2296,35 +2294,37 @@ class BASurveyBigActivity : AppCompatActivity() {
 
     // Improved wrapText function with better handling of very long words
     private fun wrapText(text: String, maxWidth: Float, paint: Paint): List<String> {
-        // If text is empty, return empty list
+        val timesNewRomanTypeface = Typeface.create("serif", Typeface.NORMAL)
+        val wrappingPaint = Paint(paint).apply {
+            typeface = timesNewRomanTypeface
+            isAntiAlias = true
+        }
+
         if (text.isEmpty()) return listOf("")
 
         val words = text.split(" ")
         val lines = mutableListOf<String>()
         var currentLine = ""
 
-        // Handle single long words that exceed maxWidth
         for (word in words) {
-            // If single word is longer than maxWidth, break it into parts
-            if (paint.measureText(word) > maxWidth) {
+            if (wrappingPaint.measureText(word) > maxWidth) {
                 if (currentLine.isNotEmpty()) {
                     lines.add(currentLine)
                     currentLine = ""
                 }
 
-                // Break long word into several parts
                 var remainingWord = word
-                while (paint.measureText(remainingWord) > maxWidth) {
+                while (wrappingPaint.measureText(remainingWord) > maxWidth) {
                     var i = 1
                     while (i < remainingWord.length) {
-                        if (paint.measureText(remainingWord.substring(0, i)) > maxWidth) {
+                        if (wrappingPaint.measureText(remainingWord.substring(0, i)) > maxWidth) {
                             i--
                             break
                         }
                         i++
                     }
 
-                    i = maxOf(1, i) // Take at least 1 character
+                    i = maxOf(1, i)
                     lines.add(remainingWord.substring(0, i))
                     remainingWord = remainingWord.substring(i)
                 }
@@ -2332,7 +2332,7 @@ class BASurveyBigActivity : AppCompatActivity() {
                 currentLine = remainingWord
             } else {
                 val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
-                if (paint.measureText(testLine) > maxWidth) {
+                if (wrappingPaint.measureText(testLine) > maxWidth) {
                     lines.add(currentLine)
                     currentLine = word
                 } else {

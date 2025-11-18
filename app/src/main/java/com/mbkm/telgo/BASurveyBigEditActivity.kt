@@ -1021,22 +1021,40 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 "dengan hasil sebagai berikut:"
     }
 
+    // Bagian generateStyledPdf() yang lengkap dengan Times New Roman
+
     private suspend fun generateStyledPdf(): File {
         var createdFile: File? = null
 
         withContext(Dispatchers.IO) {
             try {
+                // Check and create storage directory first
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 if (!downloadsDir.exists()) {
-                    downloadsDir.mkdirs()
+                    val dirCreated = downloadsDir.mkdirs()
+                    if (!dirCreated) {
+                        Log.e("BASurveyBig", "Failed to create downloads directory")
+                        val appDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                        if (appDir != null && (appDir.exists() || appDir.mkdirs())) {
+                            Log.i("BASurveyBig", "Using app directory as fallback")
+                        } else {
+                            throw IOException("Cannot create storage directory")
+                        }
+                    }
                 }
 
-                val projectTitle = inputProjectTitle.text.toString()
-                val contractNumber = inputContractNumber.text.toString()
+                // Get input from user
+                val projectTitle = findViewById<EditText>(R.id.inputProjectTitle).text.toString()
+                val contractNumber = findViewById<EditText>(R.id.inputContractNumber).text.toString()
                 val executor = inputExecutor.selectedItem.toString()
-                val location = inputLocation.text.toString()
+                val location = findViewById<EditText>(R.id.inputLocation).text.toString()
                 val description = generateDescription(projectTitle, contractNumber, executor)
 
+                withContext(Dispatchers.Main) {
+                    findViewById<EditText>(R.id.inputDescription).setText(description)
+                }
+
+                // Get all actual and remark fields
                 val actual1 = findViewById<EditText>(R.id.inputAktual1)?.text?.toString() ?: ""
                 val remark1 = findViewById<EditText>(R.id.inputKeterangan1)?.text?.toString() ?: ""
                 val actual2 = findViewById<EditText>(R.id.inputAktual2)?.text?.toString() ?: ""
@@ -1079,40 +1097,63 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 val document = PdfDocument()
                 var pageCount = 1
 
+                // Page constants
                 val pageWidth = 595f
                 val pageHeight = 842f
                 val marginTop = 50f
                 val marginBottom = 60f
                 val maxX = pageWidth - marginX
 
+                // ===== TIMES NEW ROMAN TYPEFACE (SERIF) =====
+                val timesNewRomanTypeface = Typeface.create("serif", Typeface.NORMAL)
+                val timesNewRomanBold = Typeface.create("serif", Typeface.BOLD)
+                val timesNewRomanItalic = Typeface.create("serif", Typeface.ITALIC)
+                val timesNewRomanBoldItalic = Typeface.create("serif", Typeface.BOLD_ITALIC)
+
+                // Regular paint with Times New Roman
                 val paint = Paint().apply {
                     color = Color.BLACK
                     textSize = 11f
                     textAlign = Paint.Align.LEFT
+                    typeface = timesNewRomanTypeface
+                    isAntiAlias = true
                 }
+
+                // Title paint with Times New Roman Bold
                 val titlePaint = Paint().apply {
                     color = Color.BLACK
                     textSize = 16f
-                    typeface = Typeface.DEFAULT_BOLD
+                    typeface = timesNewRomanBold
                     textAlign = Paint.Align.CENTER
+                    isAntiAlias = true
                 }
+
+                // Bold paint with Times New Roman
                 val boldPaint = Paint().apply {
                     color = Color.BLACK
                     textSize = 11f
-                    typeface = Typeface.DEFAULT_BOLD
+                    typeface = timesNewRomanBold
                     textAlign = Paint.Align.LEFT
+                    isAntiAlias = true
                 }
+
+                // Cell paint for table with Times New Roman
                 val cellPaint = Paint().apply {
                     color = Color.BLACK
                     textSize = 11f
+                    typeface = timesNewRomanTypeface
                     textAlign = Paint.Align.LEFT
+                    isAntiAlias = true
                 }
+
+                // Table line paint
                 val tablePaint = Paint().apply {
                     color = Color.BLACK
                     style = Paint.Style.STROKE
                     strokeWidth = 1f
                 }
 
+                // Function to create a new page
                 fun createPage(): PdfDocument.Page {
                     val pageInfo = PdfDocument.PageInfo.Builder(
                         pageWidth.toInt(),
@@ -1126,17 +1167,21 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 var canvas = page.canvas
                 var y = marginTop
 
+                // Page header with dynamic logo
                 fun drawHeader(executor: String) {
                     val centerX = (marginX + maxX) / 2
 
+                    // Add logo based on executor
                     val zteLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_zte)
                     val huaweiLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_huawei)
                     val telkomLogo = BitmapFactory.decodeResource(resources, R.drawable.logo_telkom)
 
+                    // Logo size
                     val logoWidth = 80
                     val logoHeight = 50
                     val topMargin = marginTop
 
+                    // Draw executor logo in top left corner
                     when (executor) {
                         "PT. ZTE INDONESIA" -> {
                             val scaledZteLogo = Bitmap.createScaledBitmap(zteLogo, logoWidth, logoHeight, false)
@@ -1148,52 +1193,50 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                         }
                     }
 
+                    // Draw Telkom logo in top right corner
                     val scaledTelkomLogo = Bitmap.createScaledBitmap(telkomLogo, logoWidth, logoHeight, false)
                     canvas.drawBitmap(scaledTelkomLogo, maxX - logoWidth, topMargin, null)
 
+                    // Add space below logo
                     val logoBottomY = topMargin + logoHeight + 20f
 
+                    // Header text with Times New Roman
                     canvas.drawText("BERITA ACARA", centerX, logoBottomY, titlePaint)
                     canvas.drawText("SURVEY LOKASI", centerX, logoBottomY + 20f, titlePaint)
                     canvas.drawLine(marginX, logoBottomY + 30f, maxX, logoBottomY + 30f, paint)
                     y = logoBottomY + 40f
                 }
 
+                // Improved page footer
                 fun drawFooter() {
-                    paint.textSize = 8f
-                    paint.color = Color.BLACK
-                    paint.alpha = 220
+                    val footerPaint = Paint().apply {
+                        color = Color.BLACK
+                        textSize = 8f
+                        typeface = timesNewRomanTypeface
+                        textAlign = Paint.Align.LEFT
+                        alpha = 220
+                        isAntiAlias = true
+                    }
 
                     val footerY = pageHeight - 30f
 
-                    paint.style = Paint.Style.STROKE
-                    paint.strokeWidth = 0.5f
-                    canvas.drawLine(
-                        marginX,
-                        footerY,
-                        pageWidth - marginX,
-                        footerY,
-                        paint
-                    )
+                    // Thinner separator line
+                    val linePaint = Paint().apply {
+                        style = Paint.Style.STROKE
+                        strokeWidth = 0.5f
+                        color = Color.BLACK
+                    }
+                    canvas.drawLine(marginX, footerY, pageWidth - marginX, footerY, linePaint)
 
-                    paint.style = Paint.Style.FILL
-                    paint.textAlign = Paint.Align.LEFT
+                    // Document text
                     val documentText = "Dokumen ini telah ditandatangani secara elektronik dan merupakan dokumen sah sesuai ketentuan yang berlaku"
                     val pageText = "Halaman ${pageCount - 1}"
 
                     val combinedText = "$documentText     $pageText"
-                    canvas.drawText(
-                        combinedText,
-                        marginX,
-                        footerY + 15f,
-                        paint
-                    )
-
-                    paint.textSize = 11f
-                    paint.alpha = 255
-                    paint.textAlign = Paint.Align.LEFT
+                    canvas.drawText(combinedText, marginX, footerY + 15f, footerPaint)
                 }
 
+                // Add closing text below the last table
                 fun drawClosingStatement() {
                     val closingText = "Demikian Berita Acara Hasil Survey ini dibuat berdasarkan kenyataan di lapangan untuk dijadikan pedoman pelaksanaan selanjutnya."
                     val closingMaxWidth = maxX - marginX * 2
@@ -1201,6 +1244,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
 
                     val currentDate = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID")).format(Date())
                     val closingHeight = 18f * closingLines.size + 10f + 20f
+
                     if (y + closingHeight > pageHeight - marginBottom - 30f) {
                         drawFooter()
                         document.finishPage(page)
@@ -1215,15 +1259,15 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                         y += 18f
                     }
 
-                    val boldPaint = Paint(paint).apply {
-                        typeface = Typeface.DEFAULT_BOLD
+                    val closingBoldPaint = Paint(boldPaint).apply {
                         textAlign = Paint.Align.RIGHT
                     }
-                    canvas.drawText(currentDate, maxX, y + 10f, boldPaint)
+                    canvas.drawText(currentDate, maxX, y + 10f, closingBoldPaint)
                 }
 
                 drawHeader(executor)
 
+                // Project Information
                 val labelX = marginX
                 val colonX = 180f
                 val valueX = 200f
@@ -1245,14 +1289,17 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 drawInfo("Pelaksana", executor)
                 drawInfo("Lokasi", location, isBold = true)
 
+                // Separator line below location
                 canvas.drawLine(marginX, y + 5f, maxX, y + 5f, paint)
                 y += 20f
 
+                // Description
                 val descMaxWidth = maxX - marginX * 2
                 y = drawJustifiedText(canvas, description, marginX, y, descMaxWidth, paint)
 
                 y += 10f
 
+                // Table with adjusted columns
                 val colX = floatArrayOf(
                     marginX,
                     marginX + 40f,
@@ -1262,6 +1309,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                     maxX
                 )
 
+                // Table header
                 val rowHeight = 40f
                 canvas.drawRect(colX[0], y, colX[5], y + rowHeight, tablePaint)
                 canvas.drawText("NO", colX[0] + 15f, y + 25f, boldPaint)
@@ -1275,6 +1323,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 }
                 y += rowHeight
 
+                // FUNCTION TO CREATE TABLE ROW WITH WRAPPING TEXT
                 fun drawTableRow(rowNum: Int, itemText: String, unitText: String, actualText: String, remarkText: String) {
                     val itemMaxWidth = colX[2] - colX[1] - 10f
                     val actualMaxWidth = colX[4] - colX[3] - 10f
@@ -1330,6 +1379,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                     y += dynamicRowHeight
                 }
 
+                // Row 1 with special handling due to different format
                 val itemMaxWidth1 = colX[2] - colX[1] - 10f
                 val actualMaxWidth1 = colX[4] - colX[3] - 10f
                 val remarkMaxWidth1 = colX[5] - colX[4] - 10f
@@ -1383,6 +1433,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
 
                 y += dynamicRowHeight1
 
+                // Draw rows 2-19 using the function
                 drawTableRow(2, "Panjang Bundlecore Uplink (Dari Metro ke FTM-Rack ET)", "Meter", actual2, remark2)
                 drawTableRow(3, "Panjang Bundlecore Uplink (Dari Rack ET ke OLT)", "Meter", actual3, remark3)
                 drawTableRow(4, "Panjang Bundlecore Downlink (Dari Rack EA ke OLT)", "Meter", actual4, remark4)
@@ -1402,8 +1453,10 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 drawTableRow(18, "Kondisi Penerangan di ruangan OLT", "OK/NOK", actual18, remark18)
                 drawTableRow(19, "CME – Kebutuhan Air Conditioner", "Pcs", actual19, remark19)
 
+                // After all table rows are finished
                 drawClosingStatement()
 
+                // Add signatures - ensure enough space
                 val signaturesHeight = 2 * 150f + 20f
                 if (y + signaturesHeight > pageHeight - marginBottom - 50f) {
                     drawFooter()
@@ -1416,14 +1469,21 @@ class BASurveyBigEditActivity : AppCompatActivity() {
 
                 drawSignaturesWithFormattedTitles(canvas, etTselRegion.text.toString(), y + 30f, paint, boldPaint, executor)
 
+                // Finish current page with signatures
                 drawFooter()
                 document.finishPage(page)
 
+                // Enhanced photo rendering paint for high quality images
                 val photoRenderPaint = Paint().apply {
                     isFilterBitmap = true
                     isAntiAlias = true
                     isDither = true
                 }
+
+                // *** IMPROVED PHOTO DOCUMENTATION SECTION (for HashMap<Int, Uri>) ***
+                // Ganti bagian photo generation di generateStyledPdf() dengan ini:
+
+                // Di bagian generateStyledPdf(), ganti logic foto baru dengan ini:
 
                 if (photoImageViews.any { it.drawable != null }) {
                     page = createPage()
@@ -1435,6 +1495,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                     val photoTitlePaint = Paint(titlePaint).apply {
                         textAlign = Paint.Align.CENTER
                         textSize = 16f
+                        typeface = timesNewRomanBold
                     }
                     canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
                     y += 40f
@@ -1449,71 +1510,147 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                     var currentCol = 0
                     var photosOnCurrentPage = 0
 
+                    val photoRenderPaint = Paint().apply {
+                        isFilterBitmap = true
+                        isAntiAlias = true
+                        isDither = true
+                    }
+
+                    // ===== ITERASI SEMUA photoImageViews (baik lama maupun baru) =====
                     for (i in 0 until 19) {
-                        if (photoImageViews[i].drawable != null) {
-                            if (currentCol == 0 && (photosOnCurrentPage == 4 || y + rowHeight > pageHeight - marginBottom)) {
-                                drawFooter()
-                                document.finishPage(page)
-                                page = createPage()
-                                canvas = page.canvas
-                                y = marginTop
-                                drawHeader(executor)
-                                canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
-                                y += 40f
-                                photosOnCurrentPage = 0
-                            }
+                        val imageView = photoImageViews[i]
 
-                            val photoX = if (currentCol == 0) marginX else marginX + photoContainerWidth + 20f
+                        // Skip jika tidak ada drawable
+                        if (imageView.drawable == null) {
+                            continue
+                        }
 
-                            canvas.drawText(photoLabelTexts[i], photoX, y + 12f, boldPaint)
+                        if (currentCol == 0 && (photosOnCurrentPage == 4 || y + rowHeight > pageHeight - marginBottom)) {
+                            drawFooter()
+                            document.finishPage(page)
+                            page = createPage()
+                            canvas = page.canvas
+                            y = marginTop
+                            drawHeader(executor)
+                            canvas.drawText("DOKUMENTASI FOTO", (marginX + maxX) / 2, y + 10f, photoTitlePaint)
+                            y += 40f
+                            photosOnCurrentPage = 0
+                        }
 
-                            val photoRect = RectF(photoX, y + 15f, photoX + photoWidth, y + 15f + photoHeight)
+                        val photoX = if (currentCol == 0) marginX else marginX + photoContainerWidth + 20f
 
-                            try {
-                                val drawable = photoImageViews[i].drawable
-                                if (drawable != null) {
-                                    val bitmap = (drawable as BitmapDrawable).bitmap
-                                    val originalRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
-                                    val displayWidth: Float
-                                    val displayHeight: Float
-                                    if (originalRatio > 1) {
-                                        displayWidth = photoWidth
-                                        displayHeight = photoWidth / originalRatio
-                                    } else {
-                                        displayHeight = photoHeight
-                                        displayWidth = photoHeight * originalRatio
-                                    }
-                                    val xOffset = photoX + (photoWidth - displayWidth) / 2
-                                    val yOffset = y + 15f + (photoHeight - displayHeight) / 2
-                                    val destRect = RectF(
-                                        xOffset, yOffset,
-                                        xOffset + displayWidth, yOffset + displayHeight
-                                    )
-                                    canvas.drawBitmap(bitmap, null, destRect, photoRenderPaint)
-                                    val borderPaint = Paint().apply {
-                                        style = Paint.Style.STROKE
-                                        strokeWidth = 0.5f
-                                        color = Color.BLACK
-                                    }
-                                    canvas.drawRect(destRect, borderPaint)
+                        // Caption dengan Times New Roman
+                        val caption = if (i in photoLabelTexts.indices) photoLabelTexts[i] else "Photo ${i + 1}"
+                        canvas.drawText(caption, photoX, y + 12f, boldPaint)
+
+                        val photoRect = RectF(photoX, y + 15f, photoX + photoWidth, y + 15f + photoHeight)
+
+                        try {
+                            val drawable = imageView.drawable
+
+                            if (drawable is BitmapDrawable) {
+                                // ===== UNTUK FOTO LAMA (dari Drawable BitmapDrawable) =====
+                                val bitmap = drawable.bitmap
+                                val originalRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+                                val displayWidth: Float
+                                val displayHeight: Float
+
+                                if (originalRatio > 1) {
+                                    displayWidth = photoWidth
+                                    displayHeight = photoWidth / originalRatio
+                                } else {
+                                    displayHeight = photoHeight
+                                    displayWidth = photoHeight * originalRatio
                                 }
-                            } catch (e: Exception) {
-                                Log.e("PDF", "Error drawing photo: ${e.message}")
+
+                                val xOffset = photoX + (photoWidth - displayWidth) / 2
+                                val yOffset = y + 15f + (photoHeight - displayHeight) / 2
+                                val destRect = RectF(
+                                    xOffset, yOffset,
+                                    xOffset + displayWidth, yOffset + displayHeight
+                                )
+
+                                canvas.drawBitmap(bitmap, null, destRect, photoRenderPaint)
+
                                 val borderPaint = Paint().apply {
                                     style = Paint.Style.STROKE
                                     strokeWidth = 0.5f
                                     color = Color.BLACK
                                 }
-                                canvas.drawRect(photoRect, borderPaint)
-                                canvas.drawText("Error loading photo", photoX + 20, y + 100, paint)
+                                canvas.drawRect(destRect, borderPaint)
+
+                            } else if (i in photoUris) {
+                                // ===== UNTUK FOTO BARU (dari photoUris) =====
+                                // ===== FIX: Gunakan let untuk null-safety =====
+                                val uri = photoUris[i]
+                                uri?.let { photoUri ->
+                                    contentResolver.openInputStream(photoUri)?.use { inputStream ->
+                                        val options = BitmapFactory.Options().apply {
+                                            inPreferredConfig = Bitmap.Config.ARGB_8888
+                                            inJustDecodeBounds = true
+                                        }
+                                        BitmapFactory.decodeStream(inputStream, null, options)
+
+                                        val sampleSize = calculateOptimalSampleSize(
+                                            options.outWidth, options.outHeight,
+                                            photoWidth.toInt(), photoHeight.toInt()
+                                        )
+
+                                        options.inJustDecodeBounds = false
+                                        options.inSampleSize = sampleSize
+
+                                        contentResolver.openInputStream(photoUri)?.use { input2 ->
+                                            val bitmap = BitmapFactory.decodeStream(input2, null, options)
+                                            if (bitmap != null) {
+                                                val originalRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+                                                val displayWidth: Float
+                                                val displayHeight: Float
+
+                                                if (originalRatio > 1) {
+                                                    displayWidth = photoWidth
+                                                    displayHeight = photoWidth / originalRatio
+                                                } else {
+                                                    displayHeight = photoHeight
+                                                    displayWidth = photoHeight * originalRatio
+                                                }
+
+                                                val xOffset = photoX + (photoWidth - displayWidth) / 2
+                                                val yOffset = y + 15f + (photoHeight - displayHeight) / 2
+                                                val destRect = RectF(
+                                                    xOffset, yOffset,
+                                                    xOffset + displayWidth, yOffset + displayHeight
+                                                )
+
+                                                canvas.drawBitmap(bitmap, null, destRect, photoRenderPaint)
+
+                                                val borderPaint = Paint().apply {
+                                                    style = Paint.Style.STROKE
+                                                    strokeWidth = 0.5f
+                                                    color = Color.BLACK
+                                                }
+                                                canvas.drawRect(destRect, borderPaint)
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
-                            currentCol = (currentCol + 1) % 2
-                            photosOnCurrentPage++
-
-                            if (currentCol == 0) {
-                                y += rowHeight
+                        } catch (e: Exception) {
+                            Log.e("PDF", "Error drawing photo $i: ${e.message}")
+                            val borderPaint = Paint().apply {
+                                style = Paint.Style.STROKE
+                                strokeWidth = 0.5f
+                                color = Color.BLACK
                             }
+                            canvas.drawRect(photoRect, borderPaint)
+                            canvas.drawText("Error loading photo", photoX + 20, y + 100, paint)
+                        }
+
+                        currentCol = (currentCol + 1) % 2
+                        photosOnCurrentPage++
+
+                        if (currentCol == 0) {
+                            y += rowHeight
                         }
                     }
 
@@ -1521,6 +1658,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                     document.finishPage(page)
                 }
 
+                // Save document with better error handling
                 try {
                     val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     if (!downloadsDir.exists()) {
@@ -1530,7 +1668,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                     var fileIndex = 1
                     var file: File
                     do {
-                        val fileName = "SurveyLokasi_Edit_$fileIndex.pdf"
+                        val fileName = "SurveyLokasi$fileIndex.pdf"
                         file = File(downloadsDir, fileName)
                         fileIndex++
                     } while (file.exists())
@@ -1550,7 +1688,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                         ).show()
                     }
                 } catch (e: IOException) {
-                    Log.e("BASurveyBigEdit", "Error saving to public Downloads: ${e.message}")
+                    Log.e("BASurveyBig", "Error saving to public Downloads: ${e.message}")
 
                     val fallbackDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
                     if (fallbackDir != null) {
@@ -1558,7 +1696,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                             fallbackDir.mkdirs()
                         }
 
-                        val fallbackFile = File(fallbackDir, "SurveyLokasi_Edit_${System.currentTimeMillis()}.pdf")
+                        val fallbackFile = File(fallbackDir, "SurveyLokasi_${System.currentTimeMillis()}.pdf")
                         try {
                             document.writeTo(FileOutputStream(fallbackFile))
                             document.close()
@@ -1572,7 +1710,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                                 ).show()
                             }
                         } catch (e2: Exception) {
-                            Log.e("BASurveyBigEdit", "Error saving to app directory: ${e2.message}")
+                            Log.e("BASurveyBig", "Error saving to app directory: ${e2.message}")
                             throw e2
                         }
                     } else {
@@ -1581,7 +1719,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 }
 
             } catch (e: Exception) {
-                Log.e("BASurveyBigEdit", "Error generating PDF: ${e.message}")
+                Log.e("BASurveyBig", "Error generating PDF: ${e.message}")
                 e.printStackTrace()
 
                 withContext(Dispatchers.Main) {
@@ -1600,7 +1738,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 fallbackEmptyFile.createNewFile()
                 return fallbackEmptyFile
             } catch (e: Exception) {
-                Log.e("BASurveyBigEdit", "Fatal error creating fallback file: ${e.message}")
+                Log.e("BASurveyBig", "Fatal error creating fallback file: ${e.message}")
                 throw IllegalStateException("PDF file could not be created: ${e.message}")
             }
         }
@@ -1616,6 +1754,9 @@ class BASurveyBigEditActivity : AppCompatActivity() {
         boldPaint: Paint,
         executor: String
     ) {
+        val timesNewRomanTypeface = Typeface.create("serif", Typeface.NORMAL)
+        val timesNewRomanBold = Typeface.create("serif", Typeface.BOLD)
+
         val boxWidth = (595 - (marginX * 2)) / 3
         val signatureBoxHeight = 150f
         var y = yStart
@@ -1634,11 +1775,15 @@ class BASurveyBigEditActivity : AppCompatActivity() {
             maxWidth: Float,
             boldPaint: Paint
         ): Float {
-            val lineHeight = boldPaint.textSize + 4f
+            val titlePaintLocal = Paint(boldPaint).apply {
+                typeface = timesNewRomanBold
+                isAntiAlias = true
+            }
+            val lineHeight = titlePaintLocal.textSize + 4f
             var currentY = y
 
             for (line in lines) {
-                canvas.drawText(line, x, currentY, boldPaint)
+                canvas.drawText(line, x, currentY, titlePaintLocal)
                 currentY += lineHeight
             }
 
@@ -1688,38 +1833,44 @@ class BASurveyBigEditActivity : AppCompatActivity() {
 
                     canvas.drawBitmap(bitmap, null, destRect, renderPaint)
                 } catch (e: Exception) {
-                    Log.e("BASurveyBigEdit", "Error rendering signature: ${e.message}")
+                    Log.e("BASurveyBig", "Error rendering signature: ${e.message}")
                 }
             }
 
+            val namePaint = Paint(paint).apply {
+                typeface = timesNewRomanTypeface
+                textSize = 11f
+                isAntiAlias = true
+            }
+
             val nameY = y + signatureBoxHeight - 40f
-            canvas.drawText("($name)", x + 10f, nameY, paint)
-            canvas.drawText("NIK: $nik", x + 10f, nameY + 20f, paint)
+            canvas.drawText("($name)", x + 10f, nameY, namePaint)
+            canvas.drawText("NIK: $nik", x + 10f, nameY + 20f, namePaint)
         }
 
-        val zteName = etZteName.text.toString()
-        val zteNik = etZteNik.text.toString()
-        val zteSignature = imgZteSignature.drawable
+        val zteName = findViewById<EditText>(R.id.etZteName).text.toString()
+        val zteNik = findViewById<EditText>(R.id.etZteNik).text.toString()
+        val zteSignature = findViewById<ImageView>(R.id.imgZteSignature).drawable
 
-        val tifName = etTifName.text.toString()
-        val tifNik = etTifNik.text.toString()
-        val tifSignature = imgTifSignature.drawable
+        val tifName = findViewById<EditText>(R.id.etTifName).text.toString()
+        val tifNik = findViewById<EditText>(R.id.etTifNik).text.toString()
+        val tifSignature = findViewById<ImageView>(R.id.imgTifSignature).drawable
 
-        val telkomName = etTelkomName.text.toString()
-        val telkomNik = etTelkomNik.text.toString()
-        val telkomSignature = imgTelkomSignature.drawable
+        val telkomName = findViewById<EditText>(R.id.etTelkomName).text.toString()
+        val telkomNik = findViewById<EditText>(R.id.etTelkomNik).text.toString()
+        val telkomSignature = findViewById<ImageView>(R.id.imgTelkomSignature).drawable
 
-        val tselNopName = etTselNopName.text.toString()
-        val tselNopNik = etTselNopNik.text.toString()
-        val tselNopSignature = imgTselNopSignature.drawable
+        val tselNopName = findViewById<EditText>(R.id.etTselNopName).text.toString()
+        val tselNopNik = findViewById<EditText>(R.id.etTselNopNik).text.toString()
+        val tselNopSignature = findViewById<ImageView>(R.id.imgTselNopSignature).drawable
 
-        val tselRtpdsName = etTselRtpdsName.text.toString()
-        val tselRtpdsNik = etTselRtpdsNik.text.toString()
-        val tselRtpdsSignature = imgTselRtpdsSignature.drawable
+        val tselRtpdsName = findViewById<EditText>(R.id.etTselRtpdsName).text.toString()
+        val tselRtpdsNik = findViewById<EditText>(R.id.etTselRtpdsNik).text.toString()
+        val tselRtpdsSignature = findViewById<ImageView>(R.id.imgTselRtpdsSignature).drawable
 
-        val tselRtpeName = etTselRtpeNfName.text.toString()
-        val tselRtpeNik = etTselRtpeNfNik.text.toString()
-        val tselRtpeSignature = imgTselRtpeNfSignature.drawable
+        val tselRtpeName = findViewById<EditText>(R.id.etTselRtpeNfName).text.toString()
+        val tselRtpeNik = findViewById<EditText>(R.id.etTselRtpeNfNik).text.toString()
+        val tselRtpeSignature = findViewById<ImageView>(R.id.imgTselRtpeNfSignature).drawable
 
         val surveyCompany = if (executor == "PT Huawei Tech Investment")
             listOf("PT. Huawei Tech Investment", "TIM SURVEY")
@@ -1762,26 +1913,32 @@ class BASurveyBigEditActivity : AppCompatActivity() {
         maxWidth: Float,
         paint: Paint
     ): Float {
-        val lines = wrapText(text, maxWidth, paint)
+        val timesNewRomanTypeface = Typeface.create("serif", Typeface.NORMAL)
+        val justifiedPaint = Paint(paint).apply {
+            typeface = timesNewRomanTypeface
+            isAntiAlias = true
+        }
+
+        val lines = wrapText(text, maxWidth, justifiedPaint)
         var currentY = y
 
-        val lineSpacing = paint.textSize + 10f
+        val lineSpacing = justifiedPaint.textSize + 10f
         val extraWordSpacing = 4f
 
         for ((i, line) in lines.withIndex()) {
             val words = line.split(" ")
-            val lineWidth = paint.measureText(line)
+            val lineWidth = justifiedPaint.measureText(line)
             val gapCount = words.size - 1
 
             if (gapCount > 0 && i != lines.lastIndex) {
                 val extraSpace = ((maxWidth - lineWidth) / gapCount) + extraWordSpacing
                 var startX = x
                 for (word in words) {
-                    canvas.drawText(word, startX, currentY, paint)
-                    startX += paint.measureText(word) + extraSpace
+                    canvas.drawText(word, startX, currentY, justifiedPaint)
+                    startX += justifiedPaint.measureText(word) + extraSpace
                 }
             } else {
-                canvas.drawText(line, x, currentY, paint)
+                canvas.drawText(line, x, currentY, justifiedPaint)
             }
             currentY += lineSpacing
         }
@@ -1789,6 +1946,12 @@ class BASurveyBigEditActivity : AppCompatActivity() {
     }
 
     private fun wrapText(text: String, maxWidth: Float, paint: Paint): List<String> {
+        val timesNewRomanTypeface = Typeface.create("serif", Typeface.NORMAL)
+        val wrappingPaint = Paint(paint).apply {
+            typeface = timesNewRomanTypeface
+            isAntiAlias = true
+        }
+
         if (text.isEmpty()) return listOf("")
 
         val words = text.split(" ")
@@ -1796,17 +1959,17 @@ class BASurveyBigEditActivity : AppCompatActivity() {
         var currentLine = ""
 
         for (word in words) {
-            if (paint.measureText(word) > maxWidth) {
+            if (wrappingPaint.measureText(word) > maxWidth) {
                 if (currentLine.isNotEmpty()) {
                     lines.add(currentLine)
                     currentLine = ""
                 }
 
                 var remainingWord = word
-                while (paint.measureText(remainingWord) > maxWidth) {
+                while (wrappingPaint.measureText(remainingWord) > maxWidth) {
                     var i = 1
                     while (i < remainingWord.length) {
-                        if (paint.measureText(remainingWord.substring(0, i)) > maxWidth) {
+                        if (wrappingPaint.measureText(remainingWord.substring(0, i)) > maxWidth) {
                             i--
                             break
                         }
@@ -1821,7 +1984,7 @@ class BASurveyBigEditActivity : AppCompatActivity() {
                 currentLine = remainingWord
             } else {
                 val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
-                if (paint.measureText(testLine) > maxWidth) {
+                if (wrappingPaint.measureText(testLine) > maxWidth) {
                     lines.add(currentLine)
                     currentLine = word
                 } else {
