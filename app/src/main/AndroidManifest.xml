@@ -32,6 +32,9 @@
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
         <activity
+            android:name=".BaSurveyMiniOltEditActivity"
+            android:exported="false" />
+        <activity
             android:name=".BASurveyBigEditActivity"
             android:exported="false" />
         <activity
