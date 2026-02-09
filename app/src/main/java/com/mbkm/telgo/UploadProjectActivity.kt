@@ -91,8 +91,11 @@ class UploadProjectActivity : AppCompatActivity() {
 
     // Dropdown options
     private val witelOptions = listOf(
-        "ACEH", "BABEL", "BENGKULU", "JAMBI", "LAMPUNG",
-        "RIDAR", "RIKEP", "SUMBAR", "SUMSEL", "SUMUT"
+        "ACEH", "BABEL", "BATAM", "BENGKULU", "BINJAI",
+        "BUKIT TINGGI", "DUMAI", "JAMBI", "LAMPUNG", "MEDAN",
+        "PADANG", "PALEMBANG", "PANGKAL PINANG", "PEKANBARU",
+        "PEMATANG SIANTAR", "RANTAU PRAPAT", "RIDAR", "RIKEP",
+        "SUMBAR", "SUMSEL", "SUMUT"
     )
 
     private val statusOptions = listOf(
@@ -821,7 +824,9 @@ class UploadProjectActivity : AppCompatActivity() {
 
         // Use provided timestamp for testing, or get current time in production
         // val currentTime = getCurrentDateTime()
-        val currentTime = "2025-04-28 07:40:37" // Using provided time from prompt
+        // Gunakan waktu saat ini
+        val currentTime = getCurrentDateTime()
+
         val issueWithTimestamp = "$currentTime - $lastIssue"
 
         // Compute calculated fields
@@ -841,6 +846,7 @@ class UploadProjectActivity : AppCompatActivity() {
             "createdAt" to currentTime,
             "updatedAt" to currentTime,
             "editHistory" to listOf("$currentTime - Created by $userEmail"), // Track edit history
+
 
             // New fields
             "kodeSto" to kodeSto,
@@ -910,7 +916,9 @@ class UploadProjectActivity : AppCompatActivity() {
         val userEmail = currentUser.email ?: "unknown@email.com"
 
         // Use provided timestamp for testing
-        val currentTime = "2025-04-28 07:40:37" // Using provided time from prompt
+        // Gunakan waktu saat ini
+        val currentTime = getCurrentDateTime()
+
         val issueWithTimestamp = "$currentTime - $lastIssue"
 
         // Compute calculated fields
