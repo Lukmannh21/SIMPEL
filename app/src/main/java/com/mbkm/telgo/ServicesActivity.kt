@@ -253,6 +253,12 @@ class ServicesActivity : AppCompatActivity(), BottomNavigationView.OnNavigationI
 
         // Handle if app was opened from notification
         handleNotificationIntent(intent)
+        // Di dalam onCreate
+        val btnPrediction: Button = findViewById(R.id.btnPrediction)
+        btnPrediction.setOnClickListener {
+            val intent = Intent(this, PredictionActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun initializeNotificationsUI() {

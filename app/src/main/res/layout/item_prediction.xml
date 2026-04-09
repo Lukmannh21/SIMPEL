@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardPrediction"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    android:elevation="4dp"
+    app:cardCornerRadius="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"> <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvSiteId"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="SITE-123"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tvPredictionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BERISIKO"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="#FFEBEE"
+            android:textColor="#D32F2F"
+            android:textStyle="bold"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvWitel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Witel Medan"
+        android:textColor="#757575"/>
+
+    <TextView
+        android:id="@+id/tvProbabilitas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Probabilitas Terlambat: 85%"
+        android:textSize="12sp"
+        android:layout_marginTop="8dp"/>
+</LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -32,6 +32,9 @@
         android:theme="@style/Theme.TelGO"
         tools:targetApi="31">
         <activity
+            android:name=".PredictionActivity"
+            android:exported="false" />
+        <activity
             android:name=".SecuritySettingsActivity"
             android:exported="false" />
         <activity
